@@ -526,6 +526,76 @@ document.querySelectorAll('.suggestion-card').forEach(card => {
   card.addEventListener('click', hideWelcome);
 });
 </script>
+<script type="module">
+  import Chatbot from 'https://cdn.jsdelivr.net/npm/flowise-embed/dist/web.js';
 
+  Chatbot.init({
+    chatflowid: 'eeed0f20-21f3-47dd-b931-2a344293c5be',
+    apiHost: 'https://flowiseai-railway-production-c71e.up.railway.app',
+    theme: {
+      button: {
+        backgroundColor: '#111111',
+        right: 24,
+        bottom: 24,
+        size: 'medium',
+        iconColor: '#ffffff',
+        autoWindowOpen: {
+          autoOpen: true,
+          openDelay: 1200
+        }
+      },
+      tooltip: {
+        showTooltip: true,
+        tooltipMessage: 'Merhaba, size nasıl yardımcı olabilirim?',
+        tooltipBackgroundColor: '#111111',
+        tooltipTextColor: '#ffffff',
+        tooltipFontSize: 14
+      },
+      chatWindow: {
+        showTitle: true,
+        showAgentMessages: true,
+        title: 'Legatis Tax',
+        titleAvatarSrc: '',
+        welcomeMessage: 'Merhaba, size nasıl yardımcı olabilirim?',
+        errorMessage: 'Bir sorun oluştu. Lütfen tekrar deneyin.',
+        backgroundColor: '#F7F5F2',
+        height: 700,
+        width: 420,
+        fontSize: 15,
+        poweredByTextColor: '#7A7A7A',
+        botMessage: {
+          backgroundColor: '#ECE7DF',
+          textColor: '#111111',
+          showAvatar: false
+        },
+        userMessage: {
+          backgroundColor: '#111111',
+          textColor: '#FFFFFF',
+          showAvatar: false
+        },
+        textInput: {
+          placeholder: 'Vergi sorunuzu yazın...',
+          backgroundColor: '#FFFFFF',
+          textColor: '#111111',
+          sendButtonColor: '#111111',
+          maxChars: 4000,
+          autoFocus: false
+        },
+        footer: {
+          textColor: '#7A7A7A',
+          text: 'Legatis Tax',
+          company: 'Yasal dayanaklı vergi danışmanlığı'
+        }
+      },
+      customCSS: `
+        .flowise-chat-window {
+          border-radius: 20px !important;
+          box-shadow: 0 18px 60px rgba(0,0,0,0.18) !important;
+          overflow: hidden !important;
+        }
+      `
+    }
+  });
+</script>
 </body>
 </html>
