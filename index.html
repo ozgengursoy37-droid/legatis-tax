@@ -445,19 +445,19 @@ html, body {
           Vergi avantajlarınızı keşfedin. Risklerinizi önceden görün.
         </p>
         <div class="suggestion-grid">
-          <div class="suggestion-card" onclick="hideWelcome()">
+          <div class="suggestion-card" onclick="hideWelcome(); sendPresetQuestion('Vergi yükümü yasal yollarla nasıl azaltabilirim?')">
             <div class="suggestion-title">Vergi yükümü nasıl azaltırım?</div>
             <div class="suggestion-desc">Yasal optimizasyon ve teşvik yolları</div>
           </div>
-          <div class="suggestion-card" onclick="hideWelcome()">
+          <div class="suggestion-card" onclick="hideWelcome(); sendPresetQuestion('Vergi incelemesine hazırlık için hangi riskli hesapları kontrol etmeliyim?')">
             <div class="suggestion-title">Vergi incelemesine hazırlık</div>
             <div class="suggestion-desc">Riskli hesaplar ve önlem stratejileri</div>
           </div>
-          <div class="suggestion-card" onclick="hideWelcome()">
+          <div class="suggestion-card" onclick="hideWelcome(); sendPresetQuestion('Şirket ortaklık işlemlerinde vergisel açıdan nelere dikkat etmeliyim?')">
             <div class="suggestion-title">Şirket ortaklık işlemleri</div>
             <div class="suggestion-desc">Sermaye, kâr dağıtımı ve vergisel etkileri</div>
           </div>
-          <div class="suggestion-card" onclick="hideWelcome()">
+          <div class="suggestion-card" onclick="hideWelcome(); sendPresetQuestion('Yatırım teşvikleri ve AR-GE avantajlarından nasıl yararlanabilirim?')">
             <div class="suggestion-title">Yatırım teşvikleri ve AR-GE</div>
             <div class="suggestion-desc">Kullanılmayan vergisel avantajlar</div>
           </div>
@@ -521,7 +521,28 @@ function hideWelcome() {
     document.getElementById('welcome').style.display = 'none';
   }, 300);
 }
+function sendPresetQuestion(question) {
+  setTimeout(() => {
+    const textarea =
+      document.querySelector('textarea') ||
+      document.querySelector('input[type="text"]');
 
+    if (!textarea) return;
+
+    textarea.value = question;
+    textarea.dispatchEvent(new Event('input', { bubbles: true }));
+
+    const sendButton =
+      document.querySelector('button[type="submit"]') ||
+      Array.from(document.querySelectorAll('button')).find(
+        btn => btn.innerText && btn.innerText.toLowerCase().includes('send')
+      );
+
+    if (sendButton) {
+      sendButton.click();
+    }
+  }, 1200);
+}
 document.querySelectorAll('.suggestion-card').forEach(card => {
   card.addEventListener('click', hideWelcome);
 });
