@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Legatis Tax — Vergi Danışmanlık Asistanı</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -15,335 +15,111 @@
   --gold-dk: #8B6B2A;
   --black: #0D0D0D;
   --off-white: #F7F6F2;
-  --warm-gray: #EEECEA;
   --mid-gray: #888580;
   --border: rgba(0,0,0,0.08);
   --sidebar-w: 260px;
 }
 
-html, body {
-  height: 100%;
-  background: var(--off-white);
-  color: var(--black);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-}
+html, body { height: 100%; background: var(--off-white); color: var(--black); font-family: 'DM Sans', sans-serif; font-size: 14px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
 
-.layout {
-  display: grid;
-  grid-template-columns: var(--sidebar-w) 1fr;
-  grid-template-rows: 100vh;
-  height: 100vh;
-  overflow: hidden;
-}
+.layout { display: grid; grid-template-columns: var(--sidebar-w) 1fr; height: 100vh; overflow: hidden; }
 
-/* SIDEBAR */
-.sidebar {
-  background: var(--black);
-  display: flex;
-  flex-direction: column;
-  padding: 0;
-  border-right: 1px solid rgba(255,255,255,0.06);
-  overflow-y: auto;
-}
+.sidebar { background: var(--black); display: flex; flex-direction: column; border-right: 1px solid rgba(255,255,255,0.06); overflow-y: auto; }
 
-.sidebar-top {
-  padding: 28px 24px 24px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-}
+.sidebar-top { padding: 28px 24px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
 
-.logo {
-  display: flex;
-  align-items: baseline;
-  gap: 2px;
-  margin-bottom: 6px;
-}
+.logo { display: flex; align-items: baseline; gap: 3px; margin-bottom: 6px; }
+.logo-text { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: #F2EEE4; letter-spacing: -0.02em; }
+.logo-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); margin-bottom: 3px; flex-shrink: 0; }
+.logo-sub { font-size: 10px; font-weight: 400; color: var(--gold); letter-spacing: 0.12em; text-transform: uppercase; }
 
-.logo-text {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 22px;
-  font-weight: 600;
-  color: #F2EEE4;
-  letter-spacing: -0.02em;
-}
+.sidebar-section { padding: 20px 16px 8px; }
+.sidebar-section-title { font-size: 9px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.25); padding: 0 8px; margin-bottom: 6px; }
 
-.logo-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--gold);
-  margin-bottom: 3px;
-  flex-shrink: 0;
-}
-
-.logo-sub {
-  font-size: 10px;
-  font-weight: 400;
-  color: var(--gold);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.sidebar-section {
-  padding: 20px 16px 8px;
-}
-
-.sidebar-section-title {
-  font-size: 9px;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.25);
-  padding: 0 8px;
-  margin-bottom: 6px;
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 9px 10px;
-  border-radius: 7px;
-  cursor: pointer;
-  transition: background 0.15s;
-  color: rgba(255,255,255,0.55);
-  font-size: 13px;
-  font-weight: 400;
-  text-decoration: none;
-  margin-bottom: 1px;
-}
-
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 7px; cursor: pointer; transition: background 0.15s; color: rgba(255,255,255,0.55); font-size: 13px; font-weight: 400; text-decoration: none; margin-bottom: 1px; }
 .nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); }
 .nav-item.active { background: rgba(201,168,76,0.12); color: var(--gold-lt); }
-
-.nav-icon {
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
-  opacity: 0.7;
-}
-
+.nav-icon { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.7; }
 .nav-item.active .nav-icon { opacity: 1; }
 
-.sidebar-bottom {
-  margin-top: auto;
-  padding: 16px;
-  border-top: 1px solid rgba(255,255,255,0.06);
-}
+.sidebar-bottom { margin-top: auto; padding: 16px; border-top: 1px solid rgba(255,255,255,0.06); }
+.plan-badge { background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.2); border-radius: 8px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; }
+.plan-name { font-size: 11px; font-weight: 500; color: var(--gold-lt); }
+.plan-limit { font-size: 10px; color: rgba(201,168,76,0.5); margin-top: 2px; }
+.upgrade-btn { font-size: 10px; color: var(--gold); background: rgba(201,168,76,0.15); border: none; border-radius: 5px; padding: 4px 8px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 500; }
 
-.plan-badge {
-  background: rgba(201,168,76,0.1);
-  border: 1px solid rgba(201,168,76,0.2);
-  border-radius: 8px;
-  padding: 10px 12px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+.main { display: flex; flex-direction: column; height: 100vh; overflow: hidden; background: var(--off-white); }
 
-.plan-name {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--gold-lt);
-}
+.topbar { padding: 16px 32px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--off-white); flex-shrink: 0; }
+.topbar-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 500; color: var(--black); letter-spacing: -0.01em; }
+.topbar-meta { font-size: 12px; color: var(--mid-gray); display: flex; align-items: center; gap: 16px; }
+.status-dot { width: 6px; height: 6px; border-radius: 50%; background: #4CAF50; display: inline-block; margin-right: 5px; }
 
-.plan-limit {
-  font-size: 10px;
-  color: rgba(201,168,76,0.5);
-  margin-top: 2px;
-}
+.chat-area { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
 
-.upgrade-btn {
-  font-size: 10px;
-  color: var(--gold);
-  background: rgba(201,168,76,0.15);
-  border: none;
-  border-radius: 5px;
-  padding: 4px 8px;
-  cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-  font-weight: 500;
-}
+.messages { flex: 1; overflow-y: auto; padding: 0 32px; scroll-behavior: smooth; }
+.messages::-webkit-scrollbar { width: 4px; }
+.messages::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 2px; }
 
-/* MAIN */
-.main {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  overflow: hidden;
-  background: var(--off-white);
-}
+.welcome { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100%; padding: 40px 20px; text-align: center; }
 
-.topbar {
-  padding: 16px 28px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--off-white);
-  flex-shrink: 0;
-}
+.welcome-emblem { width: 88px; height: 88px; border-radius: 20px; background: var(--black); display: flex; align-items: center; justify-content: center; margin-bottom: 24px; }
+.welcome-emblem-text { font-family: 'Cormorant Garamond', serif; font-size: 44px; font-weight: 600; color: var(--gold); line-height: 1; }
+.welcome-title { font-family: 'Cormorant Garamond', serif; font-size: 30px; font-weight: 500; color: var(--black); margin-bottom: 10px; }
+.welcome-desc { font-size: 13px; color: var(--mid-gray); max-width: 360px; line-height: 1.7; margin-bottom: 36px; }
 
-.topbar-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 18px;
-  font-weight: 500;
-  color: var(--black);
-  letter-spacing: -0.01em;
-}
+.suggestion-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 520px; width: 100%; }
+.suggestion-card { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; cursor: pointer; transition: border-color 0.15s, transform 0.1s; text-align: left; }
+.suggestion-card:hover { border-color: var(--gold-dk); transform: translateY(-1px); }
+.suggestion-title { font-size: 12px; font-weight: 500; color: var(--black); margin-bottom: 3px; }
+.suggestion-desc { font-size: 11px; color: var(--mid-gray); line-height: 1.5; }
 
-.topbar-meta {
-  font-size: 12px;
-  color: var(--mid-gray);
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
+.msg-row { display: flex; gap: 14px; padding: 20px 0; border-bottom: 1px solid rgba(0,0,0,0.04); animation: fadeIn 0.2s ease; }
+.msg-row:last-child { border-bottom: none; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 
-.status-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #4CAF50;
-  display: inline-block;
-  margin-right: 5px;
-}
+.msg-avatar { width: 28px; height: 28px; border-radius: 7px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; margin-top: 2px; }
+.msg-avatar.bot { background: var(--black); color: var(--gold); font-family: 'Cormorant Garamond', serif; font-size: 14px; }
+.msg-avatar.user { background: rgba(0,0,0,0.06); color: var(--black); }
 
-.chat-area {
-  flex: 1;
-  overflow: hidden;
-  position: relative;
-}
+.msg-content { flex: 1; min-width: 0; }
+.msg-sender { font-size: 11px; font-weight: 500; color: var(--mid-gray); margin-bottom: 6px; letter-spacing: 0.02em; }
+.msg-text { font-size: 14px; color: var(--black); line-height: 1.75; }
+.msg-text p { margin-bottom: 10px; }
+.msg-text p:last-child { margin-bottom: 0; }
+.msg-text strong { font-weight: 500; }
+.msg-text ul, .msg-text ol { padding-left: 20px; margin-bottom: 10px; }
+.msg-text li { margin-bottom: 4px; }
 
-/* Flowise embed tam alan kaplar */
-#flowise-container {
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
+.typing-dots { display: flex; gap: 4px; padding: 4px 0; align-items: center; }
+.typing-dots span { width: 5px; height: 5px; border-radius: 50%; background: var(--mid-gray); animation: bounce 1.2s infinite; }
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce { 0%, 80%, 100% { transform: translateY(0); opacity: 0.4; } 40% { transform: translateY(-4px); opacity: 1; } }
 
-/* Flowise iframe override */
-#flowise-container iframe {
-  width: 100% !important;
-  height: 100% !important;
-  border: none !important;
-}
+.input-area { padding: 16px 32px 20px; background: var(--off-white); flex-shrink: 0; display: flex; flex-direction: column; align-items: center; }
+.input-box { background: white; border: 1px solid rgba(0,0,0,0.1); border-radius: 14px; display: flex; align-items: flex-end; gap: 10px; padding: 12px 16px; transition: border-color 0.15s, box-shadow 0.15s; width: 100%; max-width: 520px; }
+.input-box:focus-within { border-color: rgba(0,0,0,0.2); box-shadow: 0 0 0 3px rgba(201,168,76,0.08); }
+.input-box textarea { flex: 1; border: none; outline: none; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--black); resize: none; line-height: 1.5; max-height: 140px; min-height: 22px; overflow-y: auto; }
+.input-box textarea::placeholder { color: rgba(0,0,0,0.3); }
 
-/* Hoş geldin ekranı — Flowise yüklenene kadar */
-.welcome {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px;
-  pointer-events: none;
-  opacity: 1;
-  transition: opacity 0.3s;
-}
+.send-btn { width: 32px; height: 32px; border-radius: 8px; background: var(--black); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s, transform 0.1s; flex-shrink: 0; }
+.send-btn:hover { background: #2a2a2a; }
+.send-btn:active { transform: scale(0.95); }
+.send-btn:disabled { background: rgba(0,0,0,0.12); cursor: not-allowed; }
 
-.welcome.hidden { opacity: 0; }
-
-.welcome-emblem {
-  width: 80px;
-  height: 56px;
-  border-radius: 14px;
-  background: var(--black);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-
-.welcome-emblem-text {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 42px;
-  font-weight: 600;
-  color: var(--gold);
-}
-
-.welcome-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 30px;
-  font-weight: 500;
-  color: var(--black);
-  margin-bottom: 8px;
-  text-align: center;
-}
-
-.welcome-desc {
-  font-size: 13px;
-  color: var(--mid-gray);
-  text-align: center;
-  max-width: 380px;
-  line-height: 1.7;
-  margin-bottom: 32px;
-}
-
-.suggestion-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  max-width: 480px;
-  width: 100%;
-  pointer-events: all;
-}
-
-.suggestion-card {
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 14px 16px;
-  cursor: pointer;
-  transition: border-color 0.15s, transform 0.1s;
-  text-align: left;
-}
-
-.suggestion-card:hover {
-  border-color: var(--gold-dk);
-  transform: translateY(-1px);
-}
-
-.suggestion-title {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--black);
-  margin-bottom: 3px;
-}
-
-.suggestion-desc {
-  font-size: 11px;
-  color: var(--mid-gray);
-  line-height: 1.5;
-}
-
-/* Disclaimer footer */
-.disclaimer {
-  padding: 8px 28px;
-  font-size: 10px;
-  color: var(--mid-gray);
-  border-top: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--off-white);
-  flex-shrink: 0;
-}
+.input-hint { text-align: center; font-size: 10px; color: rgba(0,0,0,0.25); margin-top: 8px; width: 100%; max-width: 520px; }
 
 @media (max-width: 768px) {
   .layout { grid-template-columns: 1fr; }
   .sidebar { display: none; }
+  .messages, .input-area { padding-left: 16px; padding-right: 16px; }
 }
 </style>
 </head>
 <body>
-
 <div class="layout">
 
-  <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-top">
       <div class="logo">
@@ -352,67 +128,37 @@ html, body {
       </div>
       <div class="logo-sub">Vergi Danışmanlık Asistanı</div>
     </div>
-
     <div class="sidebar-section">
       <div class="sidebar-section-title">Uzmanlık Alanları</div>
-
       <a class="nav-item active" href="#" onclick="return false">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
-          <rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/>
-          <rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/>
-          <rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/>
-          <rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/>
-        </svg>
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/></svg>
         Tüm Sorular
       </a>
-
       <a class="nav-item" href="#" onclick="return false">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
-          <path d="M2 4h12M2 8h8M2 12h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-        </svg>
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
         Katma Değer Vergisi
       </a>
-
       <a class="nav-item" href="#" onclick="return false">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
-          <circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.2"/>
-          <path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-        </svg>
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
         Kurumlar Vergisi
       </a>
-
       <a class="nav-item" href="#" onclick="return false">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
-          <path d="M3 13V7l5-4 5 4v6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-          <rect x="6" y="10" width="4" height="3" rx="0.5" stroke="currentColor" stroke-width="1.2"/>
-        </svg>
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M3 13V7l5-4 5 4v6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="6" y="10" width="4" height="3" rx="0.5" stroke="currentColor" stroke-width="1.2"/></svg>
         Gelir Vergisi
       </a>
-
       <a class="nav-item" href="#" onclick="return false">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
-          <path d="M2 14l4-4 3 3 5-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M2 14l4-4 3 3 5-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Teşvik & Avantajlar
       </a>
-
       <a class="nav-item" href="#" onclick="return false">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
-          <path d="M13 10.5A5.5 5.5 0 1 1 2.5 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-          <path d="M10 2l3 3-3 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M13 10.5A5.5 5.5 0 1 1 2.5 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M10 2l3 3-3 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Vergi İncelemeleri
       </a>
-
       <a class="nav-item" href="#" onclick="return false">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
-          <rect x="3" y="2" width="10" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/>
-          <path d="M6 6h4M6 9h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-        </svg>
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><rect x="3" y="2" width="10" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M6 6h4M6 9h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
         Muhasebe & Hesaplar
       </a>
     </div>
-
     <div class="sidebar-bottom">
       <div class="plan-badge">
         <div>
@@ -424,7 +170,6 @@ html, body {
     </div>
   </aside>
 
-  <!-- MAIN -->
   <main class="main">
     <div class="topbar">
       <div class="topbar-title">Vergi Danışmanınız</div>
@@ -435,188 +180,170 @@ html, body {
     </div>
 
     <div class="chat-area">
-      <!-- Hoş geldin ekranı -->
-      <div class="welcome" id="welcome">
-        <div class="welcome-emblem">
-          <span class="welcome-emblem-text">L</span>
-        </div>
-        <h1 class="welcome-title">Vergi mevzuatında uzman danışmanınız.</h1>
-        <p class="welcome-desc">
-          Vergi avantajlarınızı keşfedin. Risklerinizi önceden görün.
-        </p>
-        <div class="suggestion-grid">
-          <div class="suggestion-card" onclick="hideWelcome()">
-            <div class="suggestion-title">Vergi yükümü nasıl azaltırım?</div>
-            <div class="suggestion-desc">Yasal optimizasyon ve teşvik yolları</div>
+      <div class="messages" id="messages">
+        <div class="welcome" id="welcome">
+          <div class="welcome-emblem">
+            <span class="welcome-emblem-text">L</span>
           </div>
-          <div class="suggestion-card" onclick="hideWelcome()">
-            <div class="suggestion-title">Vergi incelemesine hazırlık</div>
-            <div class="suggestion-desc">Riskli hesaplar ve önlem stratejileri</div>
-          </div>
-          <div class="suggestion-card" onclick="hideWelcome()">
-            <div class="suggestion-title">Şirket ortaklık işlemleri</div>
-            <div class="suggestion-desc">Sermaye, kâr dağıtımı ve vergisel etkileri</div>
-          </div>
-          <div class="suggestion-card" onclick="hideWelcome()">
-            <div class="suggestion-title">Yatırım teşvikleri ve AR-GE</div>
-            <div class="suggestion-desc">Kullanılmayan vergisel avantajlar</div>
+          <h1 class="welcome-title">Vergi mevzuatında uzman danışmanınız.</h1>
+          <p class="welcome-desc">Vergi avantajlarınızı keşfedin. Risklerinizi önceden görün.</p>
+          <div class="suggestion-grid">
+            <div class="suggestion-card" onclick="sendSuggestion('Vergi yükümü nasıl azaltabilirim? Yasal optimizasyon yolları nelerdir?')">
+              <div class="suggestion-title">Vergi yükümü nasıl azaltırım?</div>
+              <div class="suggestion-desc">Yasal optimizasyon ve teşvik yolları</div>
+            </div>
+            <div class="suggestion-card" onclick="sendSuggestion('Vergi incelemesine nasıl hazırlanmalıyım? Riskli hesaplar hangileri?')">
+              <div class="suggestion-title">Vergi incelemesine hazırlık</div>
+              <div class="suggestion-desc">Riskli hesaplar ve önlem stratejileri</div>
+            </div>
+            <div class="suggestion-card" onclick="sendSuggestion('Şirket ortaklık işlemlerinde vergisel etkiler nelerdir? Kâr dağıtımı nasıl yapılır?')">
+              <div class="suggestion-title">Şirket ortaklık işlemleri</div>
+              <div class="suggestion-desc">Sermaye, kâr dağıtımı ve vergisel etkileri</div>
+            </div>
+            <div class="suggestion-card" onclick="sendSuggestion('Yatırım teşvikleri ve AR-GE indirimleri hakkında bilgi verir misiniz?')">
+              <div class="suggestion-title">Yatırım teşvikleri ve AR-GE</div>
+              <div class="suggestion-desc">Kullanılmayan vergisel avantajlar</div>
+            </div>
           </div>
         </div>
       </div>
-
-      <!-- Flowise chatbot embed -->
-      <div id="flowise-container"></div>
     </div>
 
-    <div class="disclaimer">
-      <span>Yanıtlar genel bilgilendirme amaçlıdır. Uygulamadan önce uzman görüşü alınız.</span>
-      <span>Legatis Denetim Danışmanlık © 2026</span>
+    <div class="input-area">
+      <div class="input-box">
+        <textarea id="userInput" placeholder="Vergi sorunuzu yazın..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+            <path d="M8 13V3M3 8l5-5 5 5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="input-hint">Yanıtlar genel bilgilendirme amaçlıdır. Uygulamadan önce uzman görüşü alınız.</div>
     </div>
   </main>
-
 </div>
 
-<!-- Flowise embed -->
-<script type="module">
-  import Chatbot from "https://cdn.jsdelivr.net/npm/flowise-embed/dist/web.js"
-  Chatbot.init({
-    chatflowid: "eeed0f20-21f3-47dd-b931-2a344293c5be",
-    apiHost: "https://flowiseai-railway-production-c71e.up.railway.app",
-    theme: {
-      button: { backgroundColor: "#0D0D0D", right: 24, bottom: 24 },
-      chatWindow: {
-        showTitle: false,
-        welcomeMessage: "Merhaba, size nasıl yardımcı olabilirim?",
-        backgroundColor: "#F7F6F2",
-        height: "100%",
-        width: "100%",
-        fontSize: 14,
-        userMessage: {
-          backgroundColor: "#0D0D0D",
-          textColor: "#F7F6F2",
-          showAvatar: false,
-        },
-        botMessage: {
-          backgroundColor: "#FFFFFF",
-          textColor: "#0D0D0D",
-          showAvatar: false,
-        },
-        textInput: {
-          placeholder: "Sorunuzu yazın...",
-          backgroundColor: "#FFFFFF",
-          textColor: "#0D0D0D",
-          sendButtonColor: "#C9A84C",
-          borderColor: "rgba(0,0,0,0.1)",
-        },
-        footer: { showFlowise: false }
-      }
-    }
-  })
-</script>
-
 <script>
+const FLOWISE_URL = 'https://flowiseai-railway-production-c71e.up.railway.app';
+const CHATFLOW_ID = 'eeed0f20-21f3-47dd-b931-2a344293c5be';
+let sessionId = 'session_' + Math.random().toString(36).substr(2, 9);
+let isLoading = false;
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 140) + 'px';
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+
 function hideWelcome() {
-  document.getElementById('welcome').classList.add('hidden');
-  setTimeout(() => {
-    document.getElementById('welcome').style.display = 'none';
-  }, 300);
+  const w = document.getElementById('welcome');
+  if (w) w.style.display = 'none';
 }
-function sendPresetQuestion(question) {
-  setTimeout(() => {
-    const textarea =
-      document.querySelector('textarea') ||
-      document.querySelector('input[type="text"]');
 
-    if (!textarea) return;
-
-    textarea.value = question;
-    textarea.dispatchEvent(new Event('input', { bubbles: true }));
-
-    const sendButton =
-      document.querySelector('button[type="submit"]') ||
-      Array.from(document.querySelectorAll('button')).find(
-        btn => btn.innerText && btn.innerText.toLowerCase().includes('send')
-      );
-
-    if (sendButton) {
-      sendButton.click();
-    }
-  }, 1200);
+function addMessage(role, text) {
+  hideWelcome();
+  const messages = document.getElementById('messages');
+  const row = document.createElement('div');
+  row.className = 'msg-row';
+  const avatar = document.createElement('div');
+  avatar.className = 'msg-avatar ' + (role === 'bot' ? 'bot' : 'user');
+  avatar.textContent = role === 'bot' ? 'L' : 'S';
+  const content = document.createElement('div');
+  content.className = 'msg-content';
+  const sender = document.createElement('div');
+  sender.className = 'msg-sender';
+  sender.textContent = role === 'bot' ? 'Legatis Tax' : 'Siz';
+  const msgText = document.createElement('div');
+  msgText.className = 'msg-text';
+  msgText.innerHTML = formatText(text);
+  content.appendChild(sender);
+  content.appendChild(msgText);
+  row.appendChild(avatar);
+  row.appendChild(content);
+  messages.appendChild(row);
+  messages.scrollTop = messages.scrollHeight;
 }
-document.querySelectorAll('.suggestion-card').forEach(card => {
-  card.addEventListener('click', hideWelcome);
-});
-</script>
-<script type="module">
-  import Chatbot from 'https://cdn.jsdelivr.net/npm/flowise-embed/dist/web.js';
 
-  Chatbot.init({
-    chatflowid: 'eeed0f20-21f3-47dd-b931-2a344293c5be',
-    apiHost: 'https://flowiseai-railway-production-c71e.up.railway.app',
-    theme: {
-      button: {
-        backgroundColor: '#111111',
-        right: 24,
-        bottom: 24,
-        size: 'medium',
-        iconColor: '#ffffff',
-        autoWindowOpen: {
-          autoOpen: true,
-          openDelay: 1200
-        }
-      },
-      tooltip: {
-        showTooltip: true,
-        tooltipMessage: 'Merhaba, size nasıl yardımcı olabilirim?',
-        tooltipBackgroundColor: '#111111',
-        tooltipTextColor: '#ffffff',
-        tooltipFontSize: 14
-      },
-      chatWindow: {
-        showTitle: true,
-        showAgentMessages: true,
-        title: 'Legatis Tax',
-        titleAvatarSrc: '',
-        welcomeMessage: 'Merhaba, size nasıl yardımcı olabilirim?',
-        errorMessage: 'Bir sorun oluştu. Lütfen tekrar deneyin.',
-        backgroundColor: '#F7F5F2',
-        height: 700,
-        width: 420,
-        fontSize: 15,
-        poweredByTextColor: '#7A7A7A',
-        botMessage: {
-          backgroundColor: '#ECE7DF',
-          textColor: '#111111',
-          showAvatar: false
-        },
-        userMessage: {
-          backgroundColor: '#111111',
-          textColor: '#FFFFFF',
-          showAvatar: false
-        },
-        textInput: {
-          placeholder: 'Vergi sorunuzu yazın...',
-          backgroundColor: '#FFFFFF',
-          textColor: '#111111',
-          sendButtonColor: '#111111',
-          maxChars: 4000,
-          autoFocus: false
-        },
-        footer: {
-          textColor: '#7A7A7A',
-          text: 'Legatis Tax',
-          company: 'Yasal dayanaklı vergi danışmanlığı'
-        }
-      },
-      customCSS: `
-        .flowise-chat-window {
-          border-radius: 20px !important;
-          box-shadow: 0 18px 60px rgba(0,0,0,0.18) !important;
-          overflow: hidden !important;
-        }
-      `
+function addTyping() {
+  hideWelcome();
+  const messages = document.getElementById('messages');
+  const row = document.createElement('div');
+  row.className = 'msg-row'; row.id = 'typing-row';
+  const avatar = document.createElement('div');
+  avatar.className = 'msg-avatar bot'; avatar.textContent = 'L';
+  const content = document.createElement('div');
+  content.className = 'msg-content';
+  const sender = document.createElement('div');
+  sender.className = 'msg-sender'; sender.textContent = 'Legatis Tax';
+  const dots = document.createElement('div');
+  dots.className = 'typing-dots';
+  dots.innerHTML = '<span></span><span></span><span></span>';
+  content.appendChild(sender); content.appendChild(dots);
+  row.appendChild(avatar); row.appendChild(content);
+  messages.appendChild(row);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+function removeTyping() {
+  const t = document.getElementById('typing-row');
+  if (t) t.remove();
+}
+
+function formatText(text) {
+  let html = text
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>');
+  const lines = html.split('\n');
+  let result = '';
+  let inUl = false;
+  for (let line of lines) {
+    if (/^[\*\-] (.+)/.test(line)) {
+      if (!inUl) { result += '<ul>'; inUl = true; }
+      result += '<li>' + line.replace(/^[\*\-] /, '') + '</li>';
+    } else {
+      if (inUl) { result += '</ul>'; inUl = false; }
+      if (line.trim()) result += '<p>' + line + '</p>';
     }
-  });
+  }
+  if (inUl) result += '</ul>';
+  return result || '<p>' + html + '</p>';
+}
+
+async function sendSuggestion(text) {
+  document.getElementById('userInput').value = text;
+  await sendMessage();
+}
+
+async function sendMessage() {
+  const input = document.getElementById('userInput');
+  const text = input.value.trim();
+  if (!text || isLoading) return;
+  input.value = ''; input.style.height = 'auto';
+  isLoading = true;
+  document.getElementById('sendBtn').disabled = true;
+  addMessage('user', text);
+  addTyping();
+  try {
+    const res = await fetch(`${FLOWISE_URL}/api/v1/prediction/${CHATFLOW_ID}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: text, sessionId: sessionId })
+    });
+    const data = await res.json();
+    removeTyping();
+    addMessage('bot', data.text || data.answer || data.output || 'Yanıt alınamadı.');
+  } catch(err) {
+    removeTyping();
+    addMessage('bot', 'Bağlantı hatası oluştu. Lütfen tekrar deneyin.');
+  }
+  isLoading = false;
+  document.getElementById('sendBtn').disabled = false;
+  document.getElementById('userInput').focus();
+}
 </script>
 </body>
 </html>
