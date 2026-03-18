@@ -6,6 +6,7 @@
 <title>Legatis Tax — Vergi Danışmanlık Asistanı</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -25,49 +26,44 @@ html, body { height: 100%; background: var(--off-white); color: var(--black); fo
 .layout { display: grid; grid-template-columns: var(--sidebar-w) 1fr; height: 100vh; overflow: hidden; }
 
 .sidebar { background: var(--black); display: flex; flex-direction: column; border-right: 1px solid rgba(255,255,255,0.06); overflow-y: auto; }
-
 .sidebar-top { padding: 28px 24px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
-
 .logo { display: flex; align-items: baseline; gap: 3px; margin-bottom: 6px; }
 .logo-text { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: #F2EEE4; letter-spacing: -0.02em; }
 .logo-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); margin-bottom: 3px; flex-shrink: 0; }
 .logo-sub { font-size: 10px; font-weight: 400; color: var(--gold); letter-spacing: 0.12em; text-transform: uppercase; }
-
 .sidebar-section { padding: 20px 16px 8px; }
 .sidebar-section-title { font-size: 9px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.25); padding: 0 8px; margin-bottom: 6px; }
-
 .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 7px; cursor: pointer; transition: background 0.15s; color: rgba(255,255,255,0.55); font-size: 13px; font-weight: 400; text-decoration: none; margin-bottom: 1px; }
 .nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); }
 .nav-item.active { background: rgba(201,168,76,0.12); color: var(--gold-lt); }
 .nav-icon { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.7; }
 .nav-item.active .nav-icon { opacity: 1; }
-
 .sidebar-bottom { margin-top: auto; padding: 16px; border-top: 1px solid rgba(255,255,255,0.06); }
 .plan-badge { background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.2); border-radius: 8px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; }
 .plan-name { font-size: 11px; font-weight: 500; color: var(--gold-lt); }
 .plan-limit { font-size: 10px; color: rgba(201,168,76,0.5); margin-top: 2px; }
 .upgrade-btn { font-size: 10px; color: var(--gold); background: rgba(201,168,76,0.15); border: none; border-radius: 5px; padding: 4px 8px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 500; }
+.user-info { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.user-email { font-size: 11px; color: rgba(255,255,255,0.4); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px; }
+.logout-btn { font-size: 10px; color: rgba(255,255,255,0.3); background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; padding: 2px 6px; border-radius: 4px; transition: color 0.15s; }
+.logout-btn:hover { color: rgba(255,255,255,0.7); }
 
 .main { display: flex; flex-direction: column; height: 100vh; overflow: hidden; background: var(--off-white); }
-
 .topbar { padding: 16px 32px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--off-white); flex-shrink: 0; }
 .topbar-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 500; color: var(--black); letter-spacing: -0.01em; }
 .topbar-meta { font-size: 12px; color: var(--mid-gray); display: flex; align-items: center; gap: 16px; }
 .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #4CAF50; display: inline-block; margin-right: 5px; }
 
 .chat-area { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
-
 .messages { flex: 1; overflow-y: auto; padding: 0 32px; scroll-behavior: smooth; }
 .messages::-webkit-scrollbar { width: 4px; }
 .messages::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 2px; }
 
 .welcome { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100%; padding: 40px 20px; text-align: center; }
-
 .welcome-emblem { width: 88px; height: 88px; border-radius: 20px; background: var(--black); display: flex; align-items: center; justify-content: center; margin-bottom: 24px; }
 .welcome-emblem-text { font-family: 'Cormorant Garamond', serif; font-size: 44px; font-weight: 600; color: var(--gold); line-height: 1; }
 .welcome-title { font-family: 'Cormorant Garamond', serif; font-size: 30px; font-weight: 500; color: var(--black); margin-bottom: 10px; }
 .welcome-desc { font-size: 13px; color: var(--mid-gray); max-width: 360px; line-height: 1.7; margin-bottom: 36px; }
-
 .suggestion-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 520px; width: 100%; }
 .suggestion-card { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; cursor: pointer; transition: border-color 0.15s, transform 0.1s; text-align: left; }
 .suggestion-card:hover { border-color: var(--gold-dk); transform: translateY(-1px); }
@@ -77,11 +73,9 @@ html, body { height: 100%; background: var(--off-white); color: var(--black); fo
 .msg-row { display: flex; gap: 14px; padding: 20px 0; border-bottom: 1px solid rgba(0,0,0,0.04); animation: fadeIn 0.2s ease; }
 .msg-row:last-child { border-bottom: none; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
-
 .msg-avatar { width: 28px; height: 28px; border-radius: 7px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; margin-top: 2px; }
 .msg-avatar.bot { background: var(--black); color: var(--gold); font-family: 'Cormorant Garamond', serif; font-size: 14px; }
 .msg-avatar.user { background: rgba(0,0,0,0.06); color: var(--black); }
-
 .msg-content { flex: 1; min-width: 0; }
 .msg-sender { font-size: 11px; font-weight: 500; color: var(--mid-gray); margin-bottom: 6px; letter-spacing: 0.02em; }
 .msg-text { font-size: 14px; color: var(--black); line-height: 1.75; }
@@ -102,13 +96,33 @@ html, body { height: 100%; background: var(--off-white); color: var(--black); fo
 .input-box:focus-within { border-color: rgba(0,0,0,0.2); box-shadow: 0 0 0 3px rgba(201,168,76,0.08); }
 .input-box textarea { flex: 1; border: none; outline: none; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--black); resize: none; line-height: 1.5; max-height: 140px; min-height: 22px; overflow-y: auto; }
 .input-box textarea::placeholder { color: rgba(0,0,0,0.3); }
-
 .send-btn { width: 32px; height: 32px; border-radius: 8px; background: var(--black); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s, transform 0.1s; flex-shrink: 0; }
 .send-btn:hover { background: #2a2a2a; }
 .send-btn:active { transform: scale(0.95); }
 .send-btn:disabled { background: rgba(0,0,0,0.12); cursor: not-allowed; }
-
 .input-hint { text-align: center; font-size: 10px; color: rgba(0,0,0,0.25); margin-top: 8px; width: 100%; max-width: 520px; }
+
+/* AUTH MODAL */
+.auth-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+.auth-overlay.hidden { display: none; }
+.auth-modal { background: white; border-radius: 16px; padding: 36px 32px; width: 100%; max-width: 380px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+.auth-logo { display: flex; align-items: center; gap: 8px; margin-bottom: 24px; }
+.auth-logo-emblem { width: 36px; height: 36px; border-radius: 9px; background: var(--black); display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: var(--gold); }
+.auth-logo-text { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; color: var(--black); }
+.auth-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 500; color: var(--black); margin-bottom: 6px; }
+.auth-subtitle { font-size: 12px; color: var(--mid-gray); margin-bottom: 24px; line-height: 1.6; }
+.auth-field { margin-bottom: 14px; }
+.auth-field label { display: block; font-size: 11px; font-weight: 500; color: var(--black); margin-bottom: 6px; letter-spacing: 0.02em; }
+.auth-field input { width: 100%; padding: 10px 14px; border: 1px solid rgba(0,0,0,0.12); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--black); outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
+.auth-field input:focus { border-color: var(--gold-dk); box-shadow: 0 0 0 3px rgba(201,168,76,0.1); }
+.auth-submit { width: 100%; padding: 11px; background: var(--black); color: white; border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 6px; transition: background 0.15s; }
+.auth-submit:hover { background: #2a2a2a; }
+.auth-submit:disabled { background: rgba(0,0,0,0.2); cursor: not-allowed; }
+.auth-toggle { text-align: center; margin-top: 16px; font-size: 12px; color: var(--mid-gray); }
+.auth-toggle a { color: var(--gold-dk); cursor: pointer; text-decoration: none; font-weight: 500; }
+.auth-toggle a:hover { text-decoration: underline; }
+.auth-error { font-size: 12px; color: #e53e3e; margin-top: 10px; text-align: center; min-height: 18px; }
+.auth-success { font-size: 12px; color: #38a169; margin-top: 10px; text-align: center; min-height: 18px; }
 
 @media (max-width: 768px) {
   .layout { grid-template-columns: 1fr; }
@@ -118,8 +132,35 @@ html, body { height: 100%; background: var(--off-white); color: var(--black); fo
 </style>
 </head>
 <body>
-<div class="layout">
 
+<!-- AUTH MODAL -->
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-modal">
+    <div class="auth-logo">
+      <div class="auth-logo-emblem">L</div>
+      <div class="auth-logo-text">Legatis Tax</div>
+    </div>
+    <h2 class="auth-title" id="authTitle">Hoş geldiniz</h2>
+    <p class="auth-subtitle" id="authSubtitle">Devam etmek için giriş yapın veya ücretsiz hesap oluşturun.</p>
+    <div class="auth-field">
+      <label>E-posta</label>
+      <input type="email" id="authEmail" placeholder="ornek@email.com" />
+    </div>
+    <div class="auth-field" id="authPasswordField">
+      <label>Şifre</label>
+      <input type="password" id="authPassword" placeholder="En az 6 karakter" />
+    </div>
+    <button class="auth-submit" id="authSubmit" onclick="handleAuth()">Giriş Yap</button>
+    <div class="auth-error" id="authError"></div>
+    <div class="auth-success" id="authSuccess"></div>
+    <div class="auth-toggle">
+      <span id="authToggleText">Hesabınız yok mu?</span>
+      <a onclick="toggleAuthMode()"> <span id="authToggleLink">Kayıt ol</span></a>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
   <aside class="sidebar">
     <div class="sidebar-top">
       <div class="logo">
@@ -130,40 +171,44 @@ html, body { height: 100%; background: var(--off-white); color: var(--black); fo
     </div>
     <div class="sidebar-section">
       <div class="sidebar-section-title">Uzmanlık Alanları</div>
-      <a class="nav-item active" href="#" onclick="return false">
+      <a class="nav-item active" href="#" onclick="setCategory('Tüm Sorular', this); return false;">
         <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/></svg>
         Tüm Sorular
       </a>
-      <a class="nav-item" href="#" onclick="return false">
+      <a class="nav-item" href="#" onclick="setCategory('Katma Değer Vergisi', this); return false;">
         <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
         Katma Değer Vergisi
       </a>
-      <a class="nav-item" href="#" onclick="return false">
+      <a class="nav-item" href="#" onclick="setCategory('Kurumlar Vergisi', this); return false;">
         <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
         Kurumlar Vergisi
       </a>
-      <a class="nav-item" href="#" onclick="return false">
+      <a class="nav-item" href="#" onclick="setCategory('Gelir Vergisi', this); return false;">
         <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M3 13V7l5-4 5 4v6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="6" y="10" width="4" height="3" rx="0.5" stroke="currentColor" stroke-width="1.2"/></svg>
         Gelir Vergisi
       </a>
-      <a class="nav-item" href="#" onclick="return false">
+      <a class="nav-item" href="#" onclick="setCategory('Teşvik & Avantajlar', this); return false;">
         <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M2 14l4-4 3 3 5-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Teşvik & Avantajlar
       </a>
-      <a class="nav-item" href="#" onclick="return false">
+      <a class="nav-item" href="#" onclick="setCategory('Vergi İncelemeleri', this); return false;">
         <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M13 10.5A5.5 5.5 0 1 1 2.5 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M10 2l3 3-3 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Vergi İncelemeleri
       </a>
-      <a class="nav-item" href="#" onclick="return false">
+      <a class="nav-item" href="#" onclick="setCategory('Muhasebe & Hesaplar', this); return false;">
         <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><rect x="3" y="2" width="10" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M6 6h4M6 9h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
         Muhasebe & Hesaplar
       </a>
     </div>
     <div class="sidebar-bottom">
+      <div class="user-info">
+        <span class="user-email" id="userEmailDisplay"></span>
+        <button class="logout-btn" onclick="logout()">Çıkış</button>
+      </div>
       <div class="plan-badge">
         <div>
-          <div class="plan-name">Ücretsiz Plan</div>
-          <div class="plan-limit">10 soru / gün kaldı</div>
+          <div class="plan-name" id="planName">Ücretsiz Plan</div>
+          <div class="plan-limit" id="planLimit">10 soru / gün</div>
         </div>
         <button class="upgrade-btn">Yükselt</button>
       </div>
@@ -178,7 +223,6 @@ html, body { height: 100%; background: var(--off-white); color: var(--black); fo
         <span>Legatis Denetim Danışmanlık</span>
       </div>
     </div>
-
     <div class="chat-area">
       <div class="messages" id="messages">
         <div class="welcome" id="welcome">
@@ -208,7 +252,6 @@ html, body { height: 100%; background: var(--off-white); color: var(--black); fo
         </div>
       </div>
     </div>
-
     <div class="input-area">
       <div class="input-box">
         <textarea id="userInput" placeholder="Vergi sorunuzu yazın..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
@@ -226,9 +269,114 @@ html, body { height: 100%; background: var(--off-white); color: var(--black); fo
 <script>
 const FLOWISE_URL = 'https://flowiseai-railway-production-c71e.up.railway.app';
 const CHATFLOW_ID = 'eeed0f20-21f3-47dd-b931-2a344293c5be';
+const SUPABASE_URL = 'https://tqwsqfedasmizwijedpc.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_0vktgY22QNJRZ8yGXz7VMA_V6S_tfZf';
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 let sessionId = 'session_' + Math.random().toString(36).substr(2, 9);
 let isLoading = false;
+let currentUser = null;
+let currentCategory = 'Tüm Sorular';
+let remainingQuestions = 10;
+let isLoginMode = true;
 
+// AUTH BAŞLAT
+async function initAuth() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    await onLogin(session.user);
+  } else {
+    document.getElementById('authOverlay').classList.remove('hidden');
+  }
+}
+
+async function onLogin(user) {
+  currentUser = user;
+  document.getElementById('authOverlay').classList.add('hidden');
+  document.getElementById('userEmailDisplay').textContent = user.email;
+  await loadProfile();
+}
+
+async function loadProfile() {
+  const { data: profile } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+  if (profile) {
+    const today = new Date().toISOString().split('T')[0];
+    const isNewDay = profile.last_question_date !== today;
+    const used = isNewDay ? 0 : profile.daily_question_count;
+    remainingQuestions = profile.is_premium ? 999 : Math.max(0, 10 - used);
+    document.getElementById('planName').textContent = profile.is_premium ? 'Premium Plan' : 'Ücretsiz Plan';
+    document.getElementById('planLimit').textContent = profile.is_premium ? 'Sınırsız soru' : `${remainingQuestions} soru / gün kaldı`;
+  }
+}
+
+function toggleAuthMode() {
+  isLoginMode = !isLoginMode;
+  document.getElementById('authTitle').textContent = isLoginMode ? 'Hoş geldiniz' : 'Hesap oluştur';
+  document.getElementById('authSubtitle').textContent = isLoginMode
+    ? 'Devam etmek için giriş yapın veya ücretsiz hesap oluşturun.'
+    : 'Ücretsiz hesabınızla günde 10 soru hakkı kazanın.';
+  document.getElementById('authSubmit').textContent = isLoginMode ? 'Giriş Yap' : 'Kayıt Ol';
+  document.getElementById('authToggleText').textContent = isLoginMode ? 'Hesabınız yok mu?' : 'Zaten hesabınız var mı?';
+  document.getElementById('authToggleLink').textContent = isLoginMode ? 'Kayıt ol' : 'Giriş yap';
+  document.getElementById('authError').textContent = '';
+  document.getElementById('authSuccess').textContent = '';
+}
+
+async function handleAuth() {
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+  const btn = document.getElementById('authSubmit');
+  const errEl = document.getElementById('authError');
+  const successEl = document.getElementById('authSuccess');
+
+  errEl.textContent = '';
+  successEl.textContent = '';
+
+  if (!email || !password) { errEl.textContent = 'E-posta ve şifre gereklidir.'; return; }
+  if (password.length < 6) { errEl.textContent = 'Şifre en az 6 karakter olmalıdır.'; return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Lütfen bekleyin...';
+
+  if (isLoginMode) {
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) {
+      errEl.textContent = 'E-posta veya şifre hatalı.';
+      btn.disabled = false;
+      btn.textContent = 'Giriş Yap';
+    } else {
+      await onLogin(data.user);
+    }
+  } else {
+    const { data, error } = await sb.auth.signUp({ email, password });
+    if (error) {
+      errEl.textContent = 'Kayıt başarısız: ' + error.message;
+      btn.disabled = false;
+      btn.textContent = 'Kayıt Ol';
+    } else {
+      successEl.textContent = 'Hesabınız oluşturuldu! E-postanızı doğrulayın.';
+      btn.disabled = false;
+      btn.textContent = 'Kayıt Ol';
+    }
+  }
+}
+
+async function logout() {
+  await sb.auth.signOut();
+  currentUser = null;
+  document.getElementById('authOverlay').classList.remove('hidden');
+  document.getElementById('authEmail').value = '';
+  document.getElementById('authPassword').value = '';
+}
+
+function setCategory(name, el) {
+  currentCategory = name;
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// CHAT
 function autoResize(el) {
   el.style.height = 'auto';
   el.style.height = Math.min(el.scrollHeight, 140) + 'px';
@@ -322,28 +470,66 @@ async function sendMessage() {
   const input = document.getElementById('userInput');
   const text = input.value.trim();
   if (!text || isLoading) return;
+  if (!currentUser) { document.getElementById('authOverlay').classList.remove('hidden'); return; }
+
+  if (remainingQuestions <= 0) {
+    addMessage('bot', 'Günlük soru limitinize ulaştınız. Premium plana geçerek sınırsız soru sorabilirsiniz.');
+    return;
+  }
+
   input.value = ''; input.style.height = 'auto';
   isLoading = true;
   document.getElementById('sendBtn').disabled = true;
   addMessage('user', text);
   addTyping();
+
   try {
-    const res = await fetch(`${FLOWISE_URL}/api/v1/prediction/${CHATFLOW_ID}`, {
+    // Sayaç + kayıt
+    const res = await fetch('/api/question', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_id: currentUser.id,
+        category: currentCategory,
+        question_text: text
+      })
+    });
+    const qData = await res.json();
+
+    if (qData.error === 'LIMIT_REACHED') {
+      removeTyping();
+      addMessage('bot', 'Günlük soru limitinize ulaştınız. Premium plana geçerek sınırsız soru sorabilirsiniz.');
+      isLoading = false;
+      document.getElementById('sendBtn').disabled = false;
+      return;
+    }
+
+    remainingQuestions = qData.remaining;
+    document.getElementById('planLimit').textContent = remainingQuestions === 999
+      ? 'Sınırsız soru'
+      : `${remainingQuestions} soru / gün kaldı`;
+
+    // Flowise'a gönder
+    const flowRes = await fetch(`${FLOWISE_URL}/api/v1/prediction/${CHATFLOW_ID}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ question: text, sessionId: sessionId })
     });
-    const data = await res.json();
+    const flowData = await flowRes.json();
     removeTyping();
-    addMessage('bot', data.text || data.answer || data.output || 'Yanıt alınamadı.');
+    addMessage('bot', flowData.text || flowData.answer || flowData.output || 'Yanıt alınamadı.');
   } catch(err) {
     removeTyping();
     addMessage('bot', 'Bağlantı hatası oluştu. Lütfen tekrar deneyin.');
   }
+
   isLoading = false;
   document.getElementById('sendBtn').disabled = false;
   document.getElementById('userInput').focus();
 }
+
+// BAŞLAT
+initAuth();
 </script>
 </body>
 </html>
