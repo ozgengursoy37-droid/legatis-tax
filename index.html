@@ -426,7 +426,7 @@ function formatText(text) {
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
   // Uyarı kutusunu özel işle
-  html = html.replace(/⚠️([^\n]+(?:\n(?!##|###)[^\n]+)*)/g, '<div class="warning-box">⚠️$1</div>');
+  html = html.replace(/⚠️\s*\*?\*?([^<]+)\*?\*?/g, '<div class="warning-box">⚠️ $1</div>');
 
   // Başlıklar
   html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
