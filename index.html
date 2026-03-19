@@ -22,23 +22,27 @@ html, body { height: 100%; background: var(--off-white); color: var(--black); fo
 .logo-text { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: #F2EEE4; letter-spacing: -0.02em; }
 .logo-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); margin-bottom: 3px; flex-shrink: 0; }
 .logo-sub { font-size: 10px; font-weight: 400; color: var(--gold); letter-spacing: 0.12em; text-transform: uppercase; }
-.sidebar-section { padding: 20px 16px 8px; }
-.sidebar-section-title { font-size: 9px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.25); padding: 0 8px; margin-bottom: 6px; }
-.nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 7px; cursor: pointer; transition: background 0.15s; color: rgba(255,255,255,0.55); font-size: 13px; font-weight: 400; text-decoration: none; margin-bottom: 1px; }
+.sidebar-top { padding: 32px 28px 28px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.logo { display: flex; align-items: baseline; gap: 3px; margin-bottom: 8px; }
+.logo-text { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; color: #F2EEE4; letter-spacing: -0.02em; }
+.logo-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); margin-bottom: 3px; flex-shrink: 0; }
+.logo-sub { font-size: 11px; font-weight: 400; color: var(--gold); letter-spacing: 0.12em; text-transform: uppercase; }
+.sidebar-section { padding: 24px 18px 10px; }
+.sidebar-section-title { font-size: 10px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.25); padding: 0 10px; margin-bottom: 8px; }
+.nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 8px; cursor: pointer; transition: background 0.15s; color: rgba(255,255,255,0.55); font-size: 14px; font-weight: 400; text-decoration: none; margin-bottom: 2px; }
 .nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); }
 .nav-item.active { background: rgba(201,168,76,0.12); color: var(--gold-lt); }
-.nav-icon { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.7; }
+.nav-icon { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.7; }
 .nav-item.active .nav-icon { opacity: 1; }
-.sidebar-bottom { margin-top: auto; padding: 16px; border-top: 1px solid rgba(255,255,255,0.06); }
-.user-info { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-.user-email { font-size: 11px; color: rgba(255,255,255,0.4); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px; }
-.logout-btn { font-size: 10px; color: rgba(255,255,255,0.3); background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; padding: 2px 6px; border-radius: 4px; transition: color 0.15s; }
+.sidebar-bottom { margin-top: auto; padding: 20px; border-top: 1px solid rgba(255,255,255,0.06); }
+.user-info { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.user-email { font-size: 12px; color: rgba(255,255,255,0.4); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px; }
+.logout-btn { font-size: 11px; color: rgba(255,255,255,0.3); background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; padding: 2px 6px; border-radius: 4px; transition: color 0.15s; }
 .logout-btn:hover { color: rgba(255,255,255,0.7); }
-.plan-badge { background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.2); border-radius: 8px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; }
-.plan-name { font-size: 11px; font-weight: 500; color: var(--gold-lt); }
-.plan-limit { font-size: 10px; color: rgba(201,168,76,0.5); margin-top: 2px; }
-.upgrade-btn { font-size: 10px; color: var(--gold); background: rgba(201,168,76,0.15); border: none; border-radius: 5px; padding: 4px 8px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 500; }
-.main { display: flex; flex-direction: column; height: 100vh; overflow: hidden; background: var(--off-white); }
+.plan-badge { background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.2); border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; }
+.plan-name { font-size: 12px; font-weight: 500; color: var(--gold-lt); }
+.plan-limit { font-size: 11px; color: rgba(201,168,76,0.5); margin-top: 2px; }
+.upgrade-btn { font-size: 11px; color: var(--gold); background: rgba(201,168,76,0.15); border: none; border-radius: 6px; padding: 5px 10px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 500; }
 .topbar { padding: 16px 32px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--off-white); flex-shrink: 0; }
 .topbar-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 500; color: var(--black); letter-spacing: -0.01em; }
 .topbar-meta { font-size: 12px; color: var(--mid-gray); display: flex; align-items: center; gap: 16px; }
