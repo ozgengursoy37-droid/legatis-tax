@@ -48,7 +48,7 @@ html, body { height: 100%; background: var(--off-white); color: var(--black); fo
 .messages { flex: 1; overflow-y: auto; padding: 0 32px; scroll-behavior: smooth; min-height: 0; }
 .messages::-webkit-scrollbar { width: 4px; }
 .messages::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 2px; }
-.welcome { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100%; padding: 20px 20px; text-align: center; }
+.welcome { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100%; padding: 20px; text-align: center; }
 .welcome-emblem { width: 88px; height: 88px; border-radius: 20px; background: var(--black); display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
 .welcome-emblem-text { font-family: 'Cormorant Garamond', serif; font-size: 44px; font-weight: 600; color: var(--gold); line-height: 1; }
 .welcome-title { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 500; color: var(--black); margin-bottom: 10px; }
@@ -94,11 +94,19 @@ html, body { height: 100%; background: var(--off-white); color: var(--black); fo
 .input-box:focus-within { border-color: rgba(0,0,0,0.2); box-shadow: 0 0 0 3px rgba(201,168,76,0.08); }
 .input-box textarea { flex: 1; border: none; outline: none; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--black); resize: none; line-height: 1.5; max-height: 140px; min-height: 22px; overflow-y: auto; }
 .input-box textarea::placeholder { color: rgba(0,0,0,0.3); }
+.input-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.upload-btn { width: 32px; height: 32px; border-radius: 8px; background: transparent; border: 1px solid rgba(0,0,0,0.1); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; color: var(--mid-gray); }
+.upload-btn:hover { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.2); color: var(--black); }
 .send-btn { width: 32px; height: 32px; border-radius: 8px; background: var(--black); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s, transform 0.1s; flex-shrink: 0; }
 .send-btn:hover { background: #2a2a2a; }
 .send-btn:active { transform: scale(0.95); }
 .send-btn:disabled { background: rgba(0,0,0,0.12); cursor: not-allowed; }
 .input-hint { text-align: center; font-size: 10px; color: rgba(0,0,0,0.25); margin-top: 8px; width: 100%; max-width: 640px; }
+.file-preview { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(201,168,76,0.06); border: 1px solid rgba(201,168,76,0.2); border-radius: 8px; margin-bottom: 8px; width: 100%; max-width: 640px; }
+.file-preview-name { font-size: 12px; font-weight: 500; color: var(--black); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.file-preview-size { font-size: 11px; color: var(--mid-gray); flex-shrink: 0; }
+.file-preview-remove { background: none; border: none; cursor: pointer; color: var(--mid-gray); padding: 2px; border-radius: 4px; display: flex; align-items: center; justify-content: center; }
+.file-preview-remove:hover { color: #e53e3e; }
 .auth-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; }
 .auth-overlay.hidden { display: none; }
 .auth-modal { background: white; border-radius: 16px; padding: 36px 32px; width: 100%; max-width: 380px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
@@ -129,7 +137,7 @@ html, body { height: 100%; background: var(--off-white); color: var(--black); fo
   .mobile-header { display: flex; }
   .messages { padding: 0 16px; }
   .input-area { padding: 12px 16px 16px; }
-  .topbar { padding: 12px 16px; display: none; }
+  .topbar { display: none; }
   .suggestion-grid { grid-template-columns: 1fr; }
   .welcome-title { font-size: 22px; }
   .trust-row { gap: 12px; }
@@ -165,6 +173,7 @@ html, body { height: 100%; background: var(--off-white); color: var(--black); fo
 </div>
 
 <div class="mobile-sidebar-overlay" id="mobileSidebarOverlay" onclick="closeMobileSidebar()"></div>
+<input type="file" id="fileInput" style="display:none" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.gif,.webp" onchange="handleFileSelect(event)">
 
 <div class="layout">
   <aside class="sidebar" id="sidebar">
@@ -205,6 +214,10 @@ html, body { height: 100%; background: var(--off-white); color: var(--black); fo
         <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><rect x="3" y="2" width="10" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M6 6h4M6 9h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
         Muhasebe & Hesaplar
       </a>
+      <a class="nav-item" href="#" onclick="setCategory('Belge Analizi', this); return false;">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M6 7h4M6 10h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        Belge Analizi
+      </a>
     </div>
     <div class="sidebar-bottom">
       <div class="user-info">
@@ -231,7 +244,6 @@ html, body { height: 100%; background: var(--off-white); color: var(--black); fo
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
       </button>
     </div>
-
     <div class="topbar">
       <div class="topbar-title">Vergi Danışmanınız</div>
       <div class="topbar-meta">
@@ -242,7 +254,6 @@ html, body { height: 100%; background: var(--off-white); color: var(--black); fo
         </div>
       </div>
     </div>
-
     <div class="chat-area">
       <div class="messages" id="messages">
         <div class="welcome" id="welcome">
@@ -283,26 +294,38 @@ html, body { height: 100%; background: var(--off-white); color: var(--black); fo
               <div class="suggestion-title">Şirket ortaklık işlemleri</div>
               <div class="suggestion-desc">Sermaye, kâr dağıtımı ve vergisel etkileri</div>
             </div>
-            <div class="suggestion-card" onclick="sendSuggestion('Yatırım teşvikleri ve AR-GE indirimleri hakkında bilgi verir misiniz?')">
-              <div class="suggestion-icon">💡</div>
-              <div class="suggestion-title">Yatırım teşvikleri ve AR-GE</div>
-              <div class="suggestion-desc">Kullanılmayan vergisel avantajlar</div>
+            <div class="suggestion-card" onclick="triggerFileUpload()">
+              <div class="suggestion-icon">📄</div>
+              <div class="suggestion-title">Belge analizi yap</div>
+              <div class="suggestion-desc">PDF, Word, Excel veya görsel yükle</div>
             </div>
           </div>
         </div>
       </div>
     </div>
-
     <div class="input-area">
-      <div class="input-box">
-        <textarea id="userInput" placeholder="Vergi sorunuzu yazın..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
-        <button class="send-btn" id="sendBtn" onclick="sendMessage()">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-            <path d="M8 13V3M3 8l5-5 5 5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+      <div id="filePreview" style="display:none" class="file-preview">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+        <span class="file-preview-name" id="filePreviewName"></span>
+        <span class="file-preview-size" id="filePreviewSize"></span>
+        <button class="file-preview-remove" onclick="removeFile()">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
         </button>
       </div>
-      <div class="input-hint">Yanıtlar genel bilgilendirme amaçlıdır. Uygulamadan önce uzman görüşü alınız.</div>
+      <div class="input-box">
+        <textarea id="userInput" placeholder="Vergi sorunuzu yazın veya belge yükleyin..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+        <div class="input-actions">
+          <button class="upload-btn" onclick="triggerFileUpload()" title="Belge yükle">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M8 7v4M6 9l2-2 2 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+              <path d="M8 13V3M3 8l5-5 5 5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="input-hint">Yanıtlar genel bilgilendirme amaçlıdır. PDF, Word, Excel ve görsel dosyalar desteklenir.</div>
     </div>
   </main>
 </div>
@@ -320,6 +343,7 @@ let currentUser = null;
 let currentCategory = 'Tüm Sorular';
 let remainingQuestions = 10;
 let isLoginMode = true;
+let selectedFile = null;
 
 async function initAuth() {
   const { data: { session } } = await sb.auth.getSession();
@@ -403,6 +427,34 @@ function closeMobileSidebar() {
   document.getElementById('mobileSidebarOverlay').classList.remove('open');
 }
 
+function triggerFileUpload() {
+  if (!currentUser) { document.getElementById('authOverlay').classList.remove('hidden'); return; }
+  document.getElementById('fileInput').click();
+}
+
+function handleFileSelect(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const maxSize = 10 * 1024 * 1024; // 10MB
+  if (file.size > maxSize) {
+    alert('Dosya boyutu 10MB\'dan büyük olamaz.');
+    return;
+  }
+  selectedFile = file;
+  const preview = document.getElementById('filePreview');
+  document.getElementById('filePreviewName').textContent = file.name;
+  document.getElementById('filePreviewSize').textContent = (file.size / 1024).toFixed(0) + ' KB';
+  preview.style.display = 'flex';
+  document.getElementById('userInput').placeholder = 'Bu belge hakkında sormak istediğinizi yazın... (veya boş bırakın)';
+}
+
+function removeFile() {
+  selectedFile = null;
+  document.getElementById('fileInput').value = '';
+  document.getElementById('filePreview').style.display = 'none';
+  document.getElementById('userInput').placeholder = 'Vergi sorunuzu yazın veya belge yükleyin...';
+}
+
 function autoResize(el) {
   el.style.height = 'auto';
   el.style.height = Math.min(el.scrollHeight, 140) + 'px';
@@ -418,8 +470,7 @@ function hideWelcome() {
 }
 
 function formatText(text) {
-  let html = text
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  let html = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   html = html.replace(/⚠️\s*\*?\*?([^<]+)\*?\*?/g, '<div class="warning-box">⚠️ $1</div>');
   html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
   html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
@@ -444,7 +495,7 @@ function formatText(text) {
   return result;
 }
 
-function addMessage(role, text) {
+function addMessage(role, text, fileInfo) {
   hideWelcome();
   const messages = document.getElementById('messages');
   const row = document.createElement('div');
@@ -459,7 +510,11 @@ function addMessage(role, text) {
   sender.textContent = role === 'bot' ? 'Legatis Tax' : 'Siz';
   const msgText = document.createElement('div');
   msgText.className = 'msg-text';
-  msgText.innerHTML = formatText(text);
+  if (fileInfo) {
+    msgText.innerHTML = `<div style="display:flex;align-items:center;gap:6px;padding:8px 10px;background:rgba(0,0,0,0.04);border-radius:6px;margin-bottom:8px;font-size:12px;color:var(--mid-gray)"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>${fileInfo}</div>` + (text ? formatText(text) : '');
+  } else {
+    msgText.innerHTML = formatText(text);
+  }
   content.appendChild(sender);
   content.appendChild(msgText);
   if (role === 'bot') {
@@ -501,9 +556,7 @@ function downloadText(btn) {
   const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url;
-  a.download = 'legatis-tax-yanit.txt';
-  a.click();
+  a.href = url; a.download = 'legatis-tax-yanit.txt'; a.click();
   URL.revokeObjectURL(url);
 }
 
@@ -547,45 +600,79 @@ async function sendSuggestion(text) {
 async function sendMessage() {
   const input = document.getElementById('userInput');
   const text = input.value.trim();
-  if (!text || isLoading) return;
+  if (!text && !selectedFile) return;
+  if (isLoading) return;
   if (!currentUser) { document.getElementById('authOverlay').classList.remove('hidden'); return; }
   if (remainingQuestions <= 0) {
     addMessage('bot', 'Günlük soru limitinize ulaştınız. Premium plana geçerek sınırsız soru sorabilirsiniz.');
     return;
   }
+
+  const fileToSend = selectedFile;
+  const questionText = text;
   input.value = ''; input.style.height = 'auto';
   isLoading = true;
   document.getElementById('sendBtn').disabled = true;
-  addMessage('user', text);
+
+  if (fileToSend) {
+    addMessage('user', questionText || 'Bu belgeyi analiz edin.', fileToSend.name);
+    removeFile();
+  } else {
+    addMessage('user', questionText);
+  }
   addTyping();
+
   try {
-    const res = await fetch('/api/question', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_id: currentUser.id, category: currentCategory, question_text: text })
-    });
-    const qData = await res.json();
-    if (qData.error === 'LIMIT_REACHED') {
+    if (fileToSend) {
+      // Belge analizi
+      const formData = new FormData();
+      formData.append('file', fileToSend);
+      formData.append('question', questionText || 'Bu belgeyi vergi mevzuatı açısından analiz et. Mükellef lehine yasal avantajları, riskleri ve önerileri belirt.');
+      formData.append('user_id', currentUser.id);
+
+      const res = await fetch('/api/analyze', { method: 'POST', body: formData });
+      const data = await res.json();
       removeTyping();
-      addMessage('bot', 'Günlük soru limitinize ulaştınız. Premium plana geçerek sınırsız soru sorabilirsiniz.');
-      isLoading = false;
-      document.getElementById('sendBtn').disabled = false;
-      return;
+
+      if (data.ok) {
+        remainingQuestions = Math.max(0, remainingQuestions - 1);
+        document.getElementById('planLimit').textContent = remainingQuestions === 999 ? 'Sınırsız soru' : `${remainingQuestions} soru / gün kaldı`;
+        addMessage('bot', data.analysis);
+      } else {
+        addMessage('bot', 'Belge analizi sırasında bir hata oluştu: ' + (data.error || 'Bilinmeyen hata'));
+      }
+    } else {
+      // Normal soru
+      const res = await fetch('/api/question', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: currentUser.id, category: currentCategory, question_text: questionText })
+      });
+      const qData = await res.json();
+      if (qData.error === 'LIMIT_REACHED') {
+        removeTyping();
+        addMessage('bot', 'Günlük soru limitinize ulaştınız. Premium plana geçerek sınırsız soru sorabilirsiniz.');
+        isLoading = false;
+        document.getElementById('sendBtn').disabled = false;
+        return;
+      }
+      remainingQuestions = qData.remaining;
+      document.getElementById('planLimit').textContent = remainingQuestions === 999 ? 'Sınırsız soru' : `${remainingQuestions} soru / gün kaldı`;
+
+      const flowRes = await fetch(`${FLOWISE_URL}/api/v1/prediction/${CHATFLOW_ID}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: questionText, sessionId: sessionId })
+      });
+      const flowData = await flowRes.json();
+      removeTyping();
+      addMessage('bot', flowData.text || flowData.answer || flowData.output || 'Yanıt alınamadı.');
     }
-    remainingQuestions = qData.remaining;
-    document.getElementById('planLimit').textContent = remainingQuestions === 999 ? 'Sınırsız soru' : `${remainingQuestions} soru / gün kaldı`;
-    const flowRes = await fetch(`${FLOWISE_URL}/api/v1/prediction/${CHATFLOW_ID}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question: text, sessionId: sessionId })
-    });
-    const flowData = await flowRes.json();
-    removeTyping();
-    addMessage('bot', flowData.text || flowData.answer || flowData.output || 'Yanıt alınamadı.');
   } catch(err) {
     removeTyping();
     addMessage('bot', 'Bağlantı hatası oluştu. Lütfen tekrar deneyin.');
   }
+
   isLoading = false;
   document.getElementById('sendBtn').disabled = false;
   document.getElementById('userInput').focus();
