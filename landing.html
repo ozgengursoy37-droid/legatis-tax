@@ -5,322 +5,828 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Legatis Tax — Türkiye'nin Yapay Zeka Destekli Vergi Danışmanı</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
 :root {
-  --gold: #C9A84C; --gold-lt: #E8D49A; --gold-dk: #8B6B2A;
-  --black: #0D0D0D; --dark: #111111; --dark2: #161616;
-  --off-white: #F7F6F2; --mid-gray: #888580; --border: rgba(0,0,0,0.08);
+  --gold: #C9A84C;
+  --gold-lt: #E8D49A;
+  --gold-dim: rgba(201,168,76,0.15);
+  --black: #080808;
+  --dark: #0E0E0E;
+  --dark2: #141414;
+  --dark3: #1A1A1A;
+  --white: #F5F3EE;
+  --white-dim: rgba(245,243,238,0.5);
+  --white-faint: rgba(245,243,238,0.12);
+  --line: rgba(245,243,238,0.08);
 }
+
 html { scroll-behavior: smooth; }
-body { font-family: 'DM Sans', sans-serif; font-size: 15px; line-height: 1.6; color: var(--black); background: var(--black); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
-
-/* SCROLL REVEAL */
-.reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.65s cubic-bezier(0.16,1,0.3,1), transform 0.65s cubic-bezier(0.16,1,0.3,1); }
-.reveal.visible { opacity: 1; transform: none; }
-.reveal-delay-1 { transition-delay: 0.08s; }
-.reveal-delay-2 { transition-delay: 0.16s; }
-.reveal-delay-3 { transition-delay: 0.24s; }
-.reveal-delay-4 { transition-delay: 0.32s; }
-.reveal-delay-5 { transition-delay: 0.40s; }
-.reveal-delay-6 { transition-delay: 0.48s; }
-
-/* NAV */
-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(13,13,13,0.96); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.06); }
-.nav-inner { max-width: 1160px; margin: 0 auto; padding: 0 32px; height: 64px; display: flex; align-items: center; justify-content: space-between; }
-.nav-logo { display: flex; align-items: baseline; gap: 4px; text-decoration: none; }
-.nav-logo-text { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: #F2EEE4; letter-spacing: -0.02em; }
-.nav-logo-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); margin-bottom: 2px; flex-shrink: 0; }
-.nav-links { display: flex; align-items: center; gap: 32px; }
-.nav-link { color: rgba(255,255,255,0.45); text-decoration: none; font-size: 13px; font-weight: 400; transition: color 0.15s; }
-.nav-link:hover { color: rgba(255,255,255,0.85); }
-.nav-right { display: flex; align-items: center; gap: 12px; }
-.nav-cta { background: var(--gold); color: var(--black); text-decoration: none; font-size: 13px; font-weight: 600; padding: 9px 20px; border-radius: 8px; transition: all 0.15s; letter-spacing: 0.02em; }
-.nav-cta:hover { background: var(--gold-lt); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(201,168,76,0.3); }
-.hamburger { display: none; background: none; border: none; cursor: pointer; padding: 6px; color: rgba(255,255,255,0.7); flex-direction: column; gap: 4px; align-items: center; justify-content: center; }
-.hamburger span { display: block; width: 20px; height: 1.5px; background: currentColor; border-radius: 2px; transition: transform 0.2s, opacity 0.2s; }
-.hamburger.open span:nth-child(1) { transform: translateY(5.5px) rotate(45deg); }
-.hamburger.open span:nth-child(2) { opacity: 0; }
-.hamburger.open span:nth-child(3) { transform: translateY(-5.5px) rotate(-45deg); }
-.mobile-drawer { display: none; position: fixed; top: 64px; left: 0; right: 0; background: rgba(13,13,13,0.98); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,0.08); padding: 20px 24px 28px; z-index: 99; flex-direction: column; gap: 4px; }
-.mobile-drawer.open { display: flex; }
-.mobile-drawer .nav-link { font-size: 15px; padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,0.05); color: rgba(255,255,255,0.5); }
-.mobile-drawer .nav-cta { margin-top: 12px; text-align: center; padding: 13px; font-size: 14px; }
-
-/* HERO */
-.hero { min-height: 100vh; background: var(--black); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 120px 32px 100px; position: relative; overflow: hidden; }
-.hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 60% at 50% 20%, rgba(201,168,76,0.07) 0%, transparent 65%); pointer-events: none; }
-.hero::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 120px; background: linear-gradient(to bottom, transparent, var(--dark)); pointer-events: none; }
-.hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.2); border-radius: 100px; padding: 6px 16px; margin-bottom: 36px; opacity: 0; animation: heroFadeUp 0.7s 0.1s cubic-bezier(0.16,1,0.3,1) forwards; }
-.hero-title { opacity: 0; animation: heroFadeUp 0.7s 0.25s cubic-bezier(0.16,1,0.3,1) forwards; }
-.hero-desc { opacity: 0; animation: heroFadeUp 0.7s 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
-.hero-cta-row { opacity: 0; animation: heroFadeUp 0.7s 0.52s cubic-bezier(0.16,1,0.3,1) forwards; }
-.hero-stats { opacity: 0; animation: heroFadeUp 0.7s 0.64s cubic-bezier(0.16,1,0.3,1) forwards; }
-@keyframes heroFadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
-.hero-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); animation: pulse 2s infinite; }
-@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-.hero-badge-text { font-size: 11px; font-weight: 500; color: var(--gold-lt); letter-spacing: 0.08em; text-transform: uppercase; }
-.hero-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(44px, 7vw, 84px); font-weight: 600; color: #F2EEE4; line-height: 1.05; letter-spacing: -0.025em; max-width: 860px; margin-bottom: 28px; }
-.hero-title .accent { color: var(--gold); font-style: italic; }
-.hero-desc { font-size: 17px; color: rgba(255,255,255,0.38); max-width: 480px; line-height: 1.8; margin-bottom: 52px; font-weight: 300; letter-spacing: 0.01em; }
-.hero-cta-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: center; margin-bottom: 72px; }
-.btn-primary { background: var(--gold); color: var(--black); text-decoration: none; font-size: 14px; font-weight: 600; padding: 14px 32px; border-radius: 8px; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; letter-spacing: 0.02em; }
-.btn-primary:hover { background: var(--gold-lt); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(201,168,76,0.3); }
-.btn-secondary { color: rgba(255,255,255,0.4); text-decoration: none; font-size: 14px; font-weight: 400; display: inline-flex; align-items: center; gap: 6px; transition: color 0.15s; border: 1px solid rgba(255,255,255,0.1); padding: 14px 24px; border-radius: 8px; }
-.btn-secondary:hover { color: rgba(255,255,255,0.8); border-color: rgba(255,255,255,0.25); }
-.hero-stats { display: flex; align-items: center; gap: 56px; flex-wrap: wrap; justify-content: center; position: relative; z-index: 1; }
-.hero-stat { text-align: center; }
-.hero-stat-num { font-family: 'Cormorant Garamond', serif; font-size: 38px; font-weight: 600; color: #F2EEE4; line-height: 1; }
-.hero-stat-label { font-size: 11px; color: rgba(255,255,255,0.25); margin-top: 5px; letter-spacing: 0.06em; text-transform: uppercase; }
-.hero-stat-divider { width: 1px; height: 36px; background: rgba(255,255,255,0.06); }
-
-/* SCREENSHOT */
-.screenshot-section { background: var(--dark); padding: 0 32px 100px; display: flex; justify-content: center; }
-.screenshot-wrapper { max-width: 960px; width: 100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; overflow: hidden; box-shadow: 0 40px 80px rgba(0,0,0,0.5); }
-.screenshot-bar { background: rgba(255,255,255,0.03); padding: 12px 16px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-.screenshot-dot { width: 10px; height: 10px; border-radius: 50%; }
-.screenshot-url { flex: 1; text-align: center; font-size: 11px; color: rgba(255,255,255,0.15); }
-.screenshot-preview { display: grid; grid-template-columns: 200px 1fr; min-height: 400px; }
-.sp-sidebar { background: #0A0A0A; padding: 18px 14px; border-right: 1px solid rgba(255,255,255,0.05); }
-.sp-logo { font-family: 'Cormorant Garamond', serif; font-size: 17px; color: #F2EEE4; margin-bottom: 3px; }
-.sp-sub { font-size: 8px; color: var(--gold); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 18px; }
-.sp-cat { font-size: 8px; color: rgba(255,255,255,0.18); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px; margin-top: 14px; }
-.sp-item { font-size: 11px; color: rgba(255,255,255,0.35); padding: 5px 8px; border-radius: 5px; margin-bottom: 1px; }
-.sp-item.active { background: rgba(201,168,76,0.1); color: var(--gold-lt); }
-.sp-main { background: #F7F6F2; padding: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.sp-emblem { width: 52px; height: 52px; background: #0D0D0D; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 26px; color: var(--gold); margin-bottom: 12px; }
-.sp-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; color: #0D0D0D; margin-bottom: 5px; text-align: center; }
-.sp-desc { font-size: 10px; color: #888; text-align: center; margin-bottom: 18px; }
-.sp-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; width: 100%; max-width: 360px; }
-.sp-card { background: white; border: 1px solid rgba(0,0,0,0.07); border-radius: 7px; padding: 10px; }
-.sp-card-title { font-weight: 500; color: #0D0D0D; font-size: 10px; margin-bottom: 2px; }
-.sp-card-desc { color: #888; font-size: 9px; }
-
-/* SOCIAL PROOF */
-.social-proof { padding: 80px 32px; background: var(--black); border-top: 1px solid rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.04); }
-.social-proof-inner { max-width: 1160px; margin: 0 auto; }
-.social-proof-label { font-size: 10px; font-weight: 500; color: rgba(255,255,255,0.2); letter-spacing: 0.14em; text-transform: uppercase; text-align: center; margin-bottom: 48px; }
-.testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: rgba(255,255,255,0.05); border-radius: 16px; overflow: hidden; }
-.testimonial { background: #0f0f0f; padding: 32px 28px; }
-.testimonial-text { font-size: 14px; color: rgba(255,255,255,0.55); line-height: 1.8; margin-bottom: 24px; font-style: italic; position: relative; padding-top: 20px; }
-.testimonial-text::before { content: '"'; font-family: 'Cormorant Garamond', serif; font-size: 56px; color: rgba(201,168,76,0.18); position: absolute; top: -8px; left: -4px; line-height: 1; }
-.testimonial-author { display: flex; align-items: center; gap: 12px; }
-.testimonial-avatar { width: 36px; height: 36px; border-radius: 10px; background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.15); display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--gold); flex-shrink: 0; }
-.testimonial-name { font-size: 13px; font-weight: 500; color: #F2EEE4; }
-.testimonial-role { font-size: 11px; color: rgba(255,255,255,0.25); margin-top: 1px; }
-
-/* SHARED */
-.section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; display: block; }
-.section-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(30px, 4vw, 50px); font-weight: 500; line-height: 1.1; margin-bottom: 16px; }
-.section-title.light { color: #F2EEE4; }
-.section-cta { margin-top: 48px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
-.section-cta-link { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: var(--gold); text-decoration: none; transition: gap 0.2s; }
-.section-cta-link:hover { gap: 10px; }
-.section-cta-sub { font-size: 12px; color: rgba(255,255,255,0.2); }
-
-/* FEATURES */
-.features { padding: 100px 32px; background: var(--dark); }
-.features-inner { max-width: 1160px; margin: 0 auto; }
-.features-header { margin-bottom: 56px; }
-.features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: rgba(255,255,255,0.06); border-radius: 16px; overflow: hidden; }
-.feature-card { background: var(--dark2); padding: 36px 32px; transition: background 0.2s; }
-.feature-card:hover { background: #1a1a1a; }
-.feature-icon { font-size: 24px; margin-bottom: 18px; }
-.feature-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: #F2EEE4; margin-bottom: 10px; }
-.feature-desc { font-size: 13px; color: rgba(255,255,255,0.38); line-height: 1.75; }
-
-/* HOW */
-.how { padding: 100px 32px; background: var(--black); }
-.how-inner { max-width: 1160px; margin: 0 auto; }
-.how-header { margin-bottom: 64px; }
-.how-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: rgba(255,255,255,0.05); border-radius: 16px; overflow: hidden; }
-.how-step { background: #0f0f0f; padding: 40px 32px; }
-.how-step-num { font-family: 'Cormorant Garamond', serif; font-size: 56px; font-weight: 600; color: rgba(201,168,76,0.12); line-height: 1; margin-bottom: 20px; }
-.how-step-title { font-size: 16px; font-weight: 500; color: #F2EEE4; margin-bottom: 10px; }
-.how-step-desc { font-size: 13px; color: rgba(255,255,255,0.32); line-height: 1.7; }
-.how-step-tag { display: inline-block; background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.15); border-radius: 4px; padding: 3px 10px; font-size: 10px; color: var(--gold); letter-spacing: 0.06em; text-transform: uppercase; margin-top: 16px; }
-
-/* DIFFERENCE */
-.difference { padding: 100px 32px; background: var(--dark); }
-.difference-inner { max-width: 1160px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
-.diff-list { margin-top: 36px; display: flex; flex-direction: column; gap: 0; }
-.diff-item { display: flex; gap: 20px; padding: 24px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-.diff-item:first-child { padding-top: 0; }
-.diff-item:last-child { border-bottom: none; }
-.diff-num { font-family: 'Cormorant Garamond', serif; font-size: 28px; color: rgba(201,168,76,0.25); font-weight: 600; line-height: 1; flex-shrink: 0; margin-top: 2px; }
-.diff-item-title { font-size: 15px; font-weight: 500; color: #F2EEE4; margin-bottom: 6px; }
-.diff-item-desc { font-size: 13px; color: rgba(255,255,255,0.35); line-height: 1.7; }
-.diff-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; padding: 36px; position: sticky; top: 90px; }
-.diff-card-label { font-size: 10px; color: var(--gold); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
-.diff-card-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; color: #F2EEE4; margin-bottom: 20px; line-height: 1.4; }
-.diff-quote { font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.8; border-left: 2px solid rgba(201,168,76,0.3); padding-left: 16px; margin-bottom: 20px; font-style: italic; }
-.diff-examples { display: flex; flex-direction: column; gap: 8px; }
-.diff-example { background: rgba(255,255,255,0.03); border-radius: 8px; padding: 11px 14px; font-size: 12px; color: rgba(255,255,255,0.45); display: flex; align-items: flex-start; gap: 10px; line-height: 1.5; }
-.diff-example-arrow { color: var(--gold); font-size: 12px; flex-shrink: 0; margin-top: 1px; }
-
-/* FOUNDER */
-.founder { padding: 100px 32px; background: var(--black); }
-.founder-inner { max-width: 1160px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
-.founder-visual { display: flex; flex-direction: column; align-items: flex-start; gap: 24px; }
-.founder-avatar { width: 96px; height: 96px; border-radius: 20px; background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.2); display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 40px; font-weight: 600; color: var(--gold); }
-.founder-name { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; color: #F2EEE4; margin-bottom: 4px; }
-.founder-role { font-size: 12px; color: rgba(255,255,255,0.3); letter-spacing: 0.06em; text-transform: uppercase; }
-.founder-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-.founder-badge { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 5px 12px; font-size: 11px; color: rgba(255,255,255,0.4); }
-.founder-quote { font-family: 'Cormorant Garamond', serif; font-size: clamp(22px, 3vw, 34px); font-weight: 500; color: #F2EEE4; line-height: 1.3; margin-bottom: 24px; font-style: italic; }
-.founder-quote span { color: var(--gold); }
-.founder-body { font-size: 14px; color: rgba(255,255,255,0.38); line-height: 1.85; }
-
-/* PRICING */
-.pricing { padding: 100px 32px; background: var(--dark); }
-.pricing-inner { max-width: 1060px; margin: 0 auto; }
-.pricing-header { margin-bottom: 56px; }
-.pricing-header-sub { font-size: 15px; color: rgba(255,255,255,0.32); margin-top: 12px; max-width: 440px; line-height: 1.7; }
-.pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: rgba(255,255,255,0.06); border-radius: 20px; overflow: hidden; }
-.pricing-card { background: #0f0f0f; padding: 36px 28px; position: relative; display: flex; flex-direction: column; }
-.pricing-card.featured { background: #131208; }
-.pricing-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(201,168,76,0.12); border: 1px solid rgba(201,168,76,0.25); border-radius: 4px; padding: 3px 10px; font-size: 9px; font-weight: 600; color: var(--gold); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 20px; width: fit-content; }
-.pricing-plan { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.3); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; }
-.pricing-price { font-family: 'Cormorant Garamond', serif; font-size: 56px; font-weight: 600; color: #F2EEE4; line-height: 1; margin-bottom: 4px; }
-.pricing-price sup { font-size: 22px; font-weight: 400; color: rgba(255,255,255,0.4); vertical-align: super; }
-.pricing-period { font-size: 12px; color: rgba(255,255,255,0.25); margin-bottom: 28px; padding-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
-.pricing-features { display: flex; flex-direction: column; gap: 11px; margin-bottom: 28px; flex: 1; }
-.pricing-feature { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.5; }
-.pricing-feature-check { color: var(--gold); font-size: 12px; flex-shrink: 0; margin-top: 1px; }
-.pricing-feature.muted { color: rgba(255,255,255,0.2); }
-.pricing-btn { display: block; text-align: center; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 500; text-decoration: none; transition: all 0.15s; margin-top: auto; }
-.pricing-btn-free { border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.45); }
-.pricing-btn-free:hover { border-color: rgba(255,255,255,0.25); color: rgba(255,255,255,0.8); }
-.pricing-btn-premium { background: var(--gold); color: var(--black); font-weight: 600; }
-.pricing-btn-premium:hover { background: var(--gold-lt); box-shadow: 0 4px 20px rgba(201,168,76,0.25); }
-.pricing-btn-enterprise { background: rgba(37,211,102,0.08); border: 1px solid rgba(37,211,102,0.2); color: rgba(37,211,102,0.7); display: flex; align-items: center; justify-content: center; gap: 7px; }
-.pricing-btn-enterprise:hover { background: rgba(37,211,102,0.14); color: rgba(37,211,102,0.95); border-color: rgba(37,211,102,0.4); }
-
-/* CTA */
-.cta-section { padding: 120px 32px; background: var(--black); text-align: center; position: relative; overflow: hidden; }
-.cta-section::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(201,168,76,0.05) 0%, transparent 70%); pointer-events: none; }
-.cta-inner { max-width: 600px; margin: 0 auto; position: relative; z-index: 1; }
-.cta-emblem { width: 64px; height: 64px; background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.2); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 32px; color: var(--gold); margin: 0 auto 32px; }
-.cta-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(30px, 4vw, 48px); font-weight: 500; color: #F2EEE4; margin-bottom: 16px; line-height: 1.15; }
-.cta-desc { font-size: 15px; color: rgba(255,255,255,0.32); margin-bottom: 40px; line-height: 1.8; }
-.cta-btn { display: inline-flex; align-items: center; gap: 8px; background: var(--gold); color: var(--black); text-decoration: none; font-size: 14px; font-weight: 600; padding: 14px 36px; border-radius: 8px; transition: all 0.2s; }
-.cta-btn:hover { background: var(--gold-lt); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(201,168,76,0.3); }
-.cta-note { font-size: 11px; color: rgba(255,255,255,0.2); margin-top: 14px; letter-spacing: 0.04em; }
-
-/* FOOTER */
-footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.05); padding: 44px 32px; }
-.footer-inner { max-width: 1160px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; }
-.footer-logo-text { font-family: 'Cormorant Garamond', serif; font-size: 17px; color: rgba(255,255,255,0.4); }
-.footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
-.footer-link { font-size: 12px; color: rgba(255,255,255,0.2); text-decoration: none; transition: color 0.15s; }
-.footer-link:hover { color: rgba(255,255,255,0.6); }
-.footer-copy { font-size: 11px; color: rgba(255,255,255,0.15); }
-
-/* MOBILE */
-@media (max-width: 900px) {
-  .nav-links { display: none; }
-  .hamburger { display: flex; }
-  .features-grid, .how-steps, .pricing-grid, .testimonials-grid { grid-template-columns: 1fr; }
-  .difference-inner, .founder-inner { grid-template-columns: 1fr; gap: 48px; }
-  .diff-card { position: static; }
-  .screenshot-preview { grid-template-columns: 1fr; }
-  .sp-sidebar { display: none; }
-  .hero-stats { gap: 28px; }
-  .hero-stat-divider { display: none; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--black);
+  color: var(--white);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
-@media (max-width: 600px) {
-  .nav-inner { padding: 0 20px; }
-  .features, .how, .difference, .founder, .pricing, .cta-section, .social-proof { padding-left: 20px; padding-right: 20px; }
-  .hero { padding: 100px 20px 80px; }
-  .features, .how, .difference, .founder, .pricing, .cta-section { padding-top: 60px; padding-bottom: 60px; }
+
+/* ── NOISE TEXTURE ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.022;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ── SCROLL REVEAL ── */
+.sr { opacity: 0; transform: translateY(32px); transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1); }
+.sr.on { opacity: 1; transform: none; }
+.sr-d1 { transition-delay: 0.1s; }
+.sr-d2 { transition-delay: 0.2s; }
+.sr-d3 { transition-delay: 0.3s; }
+.sr-d4 { transition-delay: 0.4s; }
+.sr-d5 { transition-delay: 0.5s; }
+.sr-d6 { transition-delay: 0.6s; }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  padding: 0 48px;
+  height: 68px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+  background: rgba(8,8,8,0.92);
+  backdrop-filter: blur(20px);
+  transition: border-color 0.3s;
+}
+.nav-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+.nav-logo-mark {
+  width: 28px; height: 28px; border-radius: 6px;
+  background: var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 15px; font-weight: 600; color: var(--black);
+}
+.nav-logo-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px; font-weight: 500; color: var(--white);
+  letter-spacing: 0.01em;
+}
+.nav-center { display: flex; align-items: center; gap: 40px; }
+.nav-link {
+  font-size: 12px; font-weight: 400; letter-spacing: 0.06em;
+  text-transform: uppercase; color: rgba(245,243,238,0.4);
+  text-decoration: none; transition: color 0.2s;
+}
+.nav-link:hover { color: var(--white); }
+.nav-right { display: flex; align-items: center; gap: 16px; }
+.nav-btn {
+  font-size: 12px; font-weight: 500; letter-spacing: 0.04em;
+  color: var(--black); background: var(--gold);
+  text-decoration: none; padding: 9px 22px; border-radius: 4px;
+  transition: all 0.2s;
+}
+.nav-btn:hover { background: var(--gold-lt); transform: translateY(-1px); }
+
+/* HAMBURGER */
+.hamburger { display: none; background: none; border: none; cursor: pointer; padding: 4px; color: rgba(245,243,238,0.6); flex-direction: column; gap: 5px; align-items: center; justify-content: center; }
+.hamburger span { display: block; width: 22px; height: 1px; background: currentColor; transition: transform 0.25s, opacity 0.25s; }
+.hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+.mobile-drawer {
+  display: none; position: fixed; top: 68px; left: 0; right: 0;
+  background: rgba(8,8,8,0.98); backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--line);
+  padding: 24px 32px 32px; z-index: 190;
+  flex-direction: column; gap: 2px;
+}
+.mobile-drawer.open { display: flex; }
+.mobile-drawer .nav-link { font-size: 14px; padding: 13px 0; border-bottom: 1px solid var(--line); text-transform: none; letter-spacing: 0; color: rgba(245,243,238,0.45); }
+.mobile-drawer .nav-btn { margin-top: 16px; text-align: center; padding: 14px; font-size: 13px; }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  padding: 160px 48px 100px;
+  position: relative;
+  display: flex; flex-direction: column; justify-content: center;
+  overflow: hidden;
+}
+
+/* Büyük dekoratif "L" arka plan */
+.hero-bg-letter {
+  position: absolute;
+  right: -2%;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(320px, 30vw, 520px);
+  font-weight: 300;
+  color: rgba(201,168,76,0.04);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: -0.05em;
+}
+
+/* Yatay ince çizgi aksan */
+.hero-line {
+  position: absolute;
+  top: 68px; left: 0; right: 0;
+  height: 1px; background: var(--line);
+}
+
+.hero-inner { max-width: 1200px; position: relative; z-index: 1; }
+
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 10px;
+  margin-bottom: 52px;
+  opacity: 0; animation: fadeUp 0.9s 0.1s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+.hero-tag-line { width: 32px; height: 1px; background: var(--gold); }
+.hero-tag-text {
+  font-size: 10px; font-weight: 500; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--gold);
+}
+.hero-tag-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(52px, 8.5vw, 112px);
+  font-weight: 300;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  color: var(--white);
+  margin-bottom: 48px;
+  max-width: 900px;
+  opacity: 0; animation: fadeUp 0.9s 0.22s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+.hero-title em {
+  font-style: italic;
+  color: var(--gold);
+  font-weight: 300;
+}
+.hero-title .hero-title-line2 {
+  display: block;
+  padding-left: clamp(40px, 8vw, 120px);
+}
+
+.hero-bottom {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 40px; flex-wrap: wrap;
+  opacity: 0; animation: fadeUp 0.9s 0.38s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+.hero-desc {
+  font-size: 15px; color: rgba(245,243,238,0.4); line-height: 1.85;
+  max-width: 380px; font-weight: 300;
+}
+.hero-actions { display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
+.btn-gold {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--gold); color: var(--black);
+  font-size: 13px; font-weight: 600; letter-spacing: 0.04em;
+  padding: 14px 28px; border-radius: 4px;
+  text-decoration: none; transition: all 0.2s;
+}
+.btn-gold:hover { background: var(--gold-lt); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(201,168,76,0.25); }
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: rgba(245,243,238,0.4); font-size: 13px; font-weight: 400;
+  text-decoration: none; transition: color 0.2s;
+  border-bottom: 1px solid rgba(245,243,238,0.12); padding-bottom: 2px;
+}
+.btn-ghost:hover { color: var(--white); border-color: rgba(245,243,238,0.4); }
+
+/* STATS STRIP */
+.stats-strip {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  margin-top: 80px;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  opacity: 0; animation: fadeUp 0.9s 0.52s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+.stat-item {
+  padding: 32px 0;
+  border-right: 1px solid var(--line);
+  padding-left: 32px;
+}
+.stat-item:last-child { border-right: none; }
+.stat-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(36px, 4vw, 52px);
+  font-weight: 300; color: var(--white); line-height: 1;
+  letter-spacing: -0.02em;
+}
+.stat-num em { font-style: italic; color: var(--gold); }
+.stat-label {
+  font-size: 10px; font-weight: 500; letter-spacing: 0.12em;
+  text-transform: uppercase; color: rgba(245,243,238,0.25);
+  margin-top: 8px;
+}
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:none} }
+
+/* ── APP PREVIEW ── */
+.preview-section {
+  background: var(--dark); padding: 100px 48px;
+  border-top: 1px solid var(--line);
+}
+.preview-label {
+  font-size: 10px; font-weight: 500; letter-spacing: 0.16em;
+  text-transform: uppercase; color: rgba(245,243,238,0.2);
+  text-align: center; margin-bottom: 48px;
+  display: flex; align-items: center; justify-content: center; gap: 16px;
+}
+.preview-label::before, .preview-label::after {
+  content: ''; flex: 1; max-width: 120px; height: 1px; background: var(--line);
+}
+.preview-frame {
+  max-width: 1000px; margin: 0 auto;
+  background: #0A0A0A;
+  border: 1px solid rgba(245,243,238,0.07);
+  border-radius: 12px; overflow: hidden;
+  box-shadow: 0 60px 120px rgba(0,0,0,0.6), 0 0 0 1px rgba(245,243,238,0.04);
+}
+.preview-titlebar {
+  background: #111; padding: 14px 20px;
+  display: flex; align-items: center; gap: 8px;
+  border-bottom: 1px solid rgba(245,243,238,0.05);
+}
+.preview-dot { width: 10px; height: 10px; border-radius: 50%; }
+.preview-url {
+  flex: 1; text-align: center;
+  font-size: 11px; color: rgba(245,243,238,0.12); letter-spacing: 0.03em;
+}
+.preview-body { display: grid; grid-template-columns: 190px 1fr; min-height: 420px; }
+.preview-sidebar {
+  background: #080808; padding: 20px 14px;
+  border-right: 1px solid rgba(245,243,238,0.04);
+}
+.ps-logo { font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--white); margin-bottom: 2px; }
+.ps-sub { font-size: 8px; color: var(--gold); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 20px; }
+.ps-section { font-size: 8px; color: rgba(245,243,238,0.15); letter-spacing: 0.14em; text-transform: uppercase; margin: 16px 0 6px 8px; }
+.ps-item { font-size: 11px; color: rgba(245,243,238,0.3); padding: 6px 8px; border-radius: 4px; margin-bottom: 1px; cursor: default; }
+.ps-item.active { background: rgba(201,168,76,0.1); color: var(--gold-lt); }
+.preview-main {
+  background: #F5F3EE; padding: 28px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.pm-emblem {
+  width: 48px; height: 48px; background: #080808; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif; font-size: 24px; color: var(--gold);
+  margin-bottom: 14px;
+}
+.pm-title { font-family: 'Cormorant Garamond', serif; font-size: 17px; color: #0E0E0E; margin-bottom: 4px; text-align: center; }
+.pm-desc { font-size: 10px; color: #888; text-align: center; margin-bottom: 20px; }
+.pm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; max-width: 340px; }
+.pm-card { background: white; border: 1px solid rgba(0,0,0,0.06); border-radius: 6px; padding: 10px 12px; }
+.pm-card-t { font-size: 10px; font-weight: 500; color: #0E0E0E; margin-bottom: 2px; }
+.pm-card-d { font-size: 9px; color: #999; }
+
+/* ── SOCIAL PROOF ── */
+.proof-section {
+  padding: 100px 48px;
+  background: var(--black);
+  border-top: 1px solid var(--line);
+}
+.proof-inner { max-width: 1200px; margin: 0 auto; }
+.proof-header {
+  display: flex; align-items: baseline; justify-content: space-between;
+  margin-bottom: 64px; gap: 24px;
+}
+.proof-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 300; color: var(--white); line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+.proof-title em { font-style: italic; color: rgba(245,243,238,0.3); }
+.proof-tag {
+  font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(245,243,238,0.2); white-space: nowrap;
+}
+.proof-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); }
+.proof-card {
+  background: var(--dark); padding: 40px 36px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  gap: 28px;
+}
+.proof-quote-mark {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 64px; font-weight: 300; color: rgba(201,168,76,0.15);
+  line-height: 0.8; margin-bottom: 8px;
+}
+.proof-text {
+  font-size: 14px; color: rgba(245,243,238,0.5); line-height: 1.85;
+  font-weight: 300; flex: 1;
+}
+.proof-author { display: flex; align-items: center; gap: 14px; }
+.proof-avatar {
+  width: 38px; height: 38px; border-radius: 8px;
+  background: rgba(201,168,76,0.08);
+  border: 1px solid rgba(201,168,76,0.15);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 17px; color: var(--gold); flex-shrink: 0;
+}
+.proof-name { font-size: 13px; font-weight: 500; color: var(--white); }
+.proof-role { font-size: 11px; color: rgba(245,243,238,0.25); margin-top: 2px; }
+
+/* ── FEATURES ── */
+.features-section {
+  padding: 120px 48px;
+  background: var(--dark);
+  border-top: 1px solid var(--line);
+}
+.features-inner { max-width: 1200px; margin: 0 auto; }
+
+/* Asimetrik header */
+.features-header {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+  align-items: end; margin-bottom: 80px; padding-bottom: 64px;
+  border-bottom: 1px solid var(--line);
+}
+.features-kicker {
+  font-size: 10px; font-weight: 500; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 20px;
+}
+.features-heading {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(40px, 5vw, 68px);
+  font-weight: 300; color: var(--white); line-height: 1;
+  letter-spacing: -0.025em;
+}
+.features-heading em { font-style: italic; }
+.features-subtext {
+  font-size: 14px; color: rgba(245,243,238,0.35); line-height: 1.85;
+  font-weight: 300; max-width: 340px; align-self: end;
+}
+.features-cta-inline {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-top: 28px; font-size: 12px; font-weight: 500;
+  color: var(--gold); text-decoration: none;
+  letter-spacing: 0.04em; transition: gap 0.2s;
+}
+.features-cta-inline:hover { gap: 12px; }
+
+/* Feature grid — 2 sütun asimetrik */
+.features-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--line);
+}
+.feature-item {
+  background: var(--dark2); padding: 44px 40px;
+  position: relative; overflow: hidden;
+  transition: background 0.25s;
+}
+.feature-item:hover { background: #1c1c1c; }
+.feature-item::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201,168,76,0.3), transparent);
+  opacity: 0; transition: opacity 0.3s;
+}
+.feature-item:hover::before { opacity: 1; }
+.feature-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 11px; font-weight: 400; letter-spacing: 0.12em;
+  color: rgba(245,243,238,0.15); margin-bottom: 28px;
+}
+.feature-icon-wrap {
+  width: 42px; height: 42px; border-radius: 8px;
+  background: rgba(201,168,76,0.06); border: 1px solid rgba(201,168,76,0.12);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; margin-bottom: 24px;
+}
+.feature-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px; font-weight: 500; color: var(--white);
+  margin-bottom: 12px; line-height: 1.2;
+}
+.feature-text {
+  font-size: 13px; color: rgba(245,243,238,0.35); line-height: 1.8; font-weight: 300;
+}
+
+/* ── HOW IT WORKS ── */
+.how-section {
+  padding: 120px 48px;
+  background: var(--black);
+  border-top: 1px solid var(--line);
+}
+.how-inner { max-width: 1200px; margin: 0 auto; }
+.how-top { margin-bottom: 80px; }
+.how-kicker { font-size: 10px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+.how-heading {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(40px, 5vw, 68px);
+  font-weight: 300; line-height: 1; color: var(--white); letter-spacing: -0.025em;
+}
+.how-heading em { font-style: italic; }
+.how-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); }
+.how-step {
+  background: var(--dark2); padding: 48px 40px;
+  position: relative;
+}
+.how-step-n {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 88px; font-weight: 300; line-height: 1;
+  color: rgba(201,168,76,0.07); margin-bottom: 32px;
+  letter-spacing: -0.04em;
+}
+.how-step-title { font-size: 15px; font-weight: 500; color: var(--white); margin-bottom: 12px; line-height: 1.4; }
+.how-step-text { font-size: 13px; color: rgba(245,243,238,0.3); line-height: 1.8; font-weight: 300; }
+.how-step-tag {
+  display: inline-block; margin-top: 20px;
+  background: rgba(201,168,76,0.06); border: 1px solid rgba(201,168,76,0.14);
+  border-radius: 3px; padding: 4px 12px;
+  font-size: 9px; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; color: rgba(201,168,76,0.7);
+}
+.how-cta-row {
+  margin-top: 56px; display: flex; align-items: center; gap: 24px;
+}
+.how-cta-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 13px; font-weight: 500; color: var(--gold);
+  text-decoration: none; letter-spacing: 0.03em; transition: gap 0.2s;
+}
+.how-cta-link:hover { gap: 12px; }
+.how-cta-note { font-size: 12px; color: rgba(245,243,238,0.18); }
+
+/* ── WHY SECTION ── */
+.why-section {
+  padding: 120px 48px;
+  background: var(--dark);
+  border-top: 1px solid var(--line);
+}
+.why-inner { max-width: 1200px; margin: 0 auto; }
+.why-layout { display: grid; grid-template-columns: 5fr 4fr; gap: 80px; align-items: start; }
+.why-left {}
+.why-kicker { font-size: 10px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+.why-heading {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(36px, 4.5vw, 60px);
+  font-weight: 300; color: var(--white);
+  line-height: 1.05; letter-spacing: -0.025em; margin-bottom: 52px;
+}
+.why-heading em { font-style: italic; }
+.why-items { display: flex; flex-direction: column; }
+.why-item {
+  display: grid; grid-template-columns: 52px 1fr;
+  gap: 0; padding: 28px 0;
+  border-bottom: 1px solid var(--line);
+  transition: background 0.2s;
+}
+.why-item:first-child { border-top: 1px solid var(--line); }
+.why-item-n {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 13px; font-weight: 400; color: rgba(201,168,76,0.3);
+  padding-top: 2px;
+}
+.why-item-title { font-size: 14px; font-weight: 500; color: var(--white); margin-bottom: 8px; }
+.why-item-text { font-size: 13px; color: rgba(245,243,238,0.35); line-height: 1.75; font-weight: 300; }
+
+/* Real example card */
+.why-card {
+  background: rgba(245,243,238,0.03);
+  border: 1px solid rgba(245,243,238,0.07);
+  border-radius: 8px; padding: 36px; position: sticky; top: 88px;
+}
+.why-card-kicker {
+  font-size: 9px; font-weight: 500; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+.why-card-kicker::before { content: ''; width: 20px; height: 1px; background: var(--gold); }
+.why-card-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 19px; font-weight: 400; color: var(--white);
+  line-height: 1.4; margin-bottom: 20px;
+}
+.why-card-quote {
+  font-size: 12px; color: rgba(245,243,238,0.35); line-height: 1.8;
+  border-left: 2px solid rgba(201,168,76,0.25); padding-left: 16px;
+  margin-bottom: 24px; font-style: italic;
+}
+.why-card-items { display: flex; flex-direction: column; gap: 10px; }
+.why-card-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  background: rgba(245,243,238,0.025); border-radius: 5px;
+  padding: 12px 14px; font-size: 12px; color: rgba(245,243,238,0.45); line-height: 1.5;
+}
+.why-card-arrow { color: var(--gold); flex-shrink: 0; margin-top: 1px; font-size: 11px; }
+
+/* ── FOUNDER ── */
+.founder-section {
+  padding: 120px 48px;
+  background: var(--black);
+  border-top: 1px solid var(--line);
+}
+.founder-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: center; }
+.founder-left {}
+.founder-avatar-wrap { margin-bottom: 32px; }
+.founder-avatar {
+  width: 88px; height: 88px; border-radius: 14px;
+  background: rgba(201,168,76,0.07); border: 1px solid rgba(201,168,76,0.18);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif; font-size: 38px;
+  font-weight: 300; color: var(--gold);
+}
+.founder-meta { margin-top: 20px; }
+.founder-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px; font-weight: 400; color: var(--white);
+}
+.founder-role { font-size: 11px; color: rgba(245,243,238,0.25); margin-top: 4px; letter-spacing: 0.06em; text-transform: uppercase; }
+.founder-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.founder-tag {
+  font-size: 11px; color: rgba(245,243,238,0.3);
+  border: 1px solid rgba(245,243,238,0.08); border-radius: 3px;
+  padding: 5px 12px;
+}
+.founder-right {}
+.founder-kicker { font-size: 10px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); margin-bottom: 24px; }
+.founder-quote {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(24px, 3vw, 38px);
+  font-weight: 300; color: var(--white); line-height: 1.25;
+  font-style: italic; margin-bottom: 28px; letter-spacing: -0.01em;
+}
+.founder-quote span { color: var(--gold); }
+.founder-body { font-size: 14px; color: rgba(245,243,238,0.35); line-height: 1.9; font-weight: 300; }
+
+/* ── PRICING ── */
+.pricing-section {
+  padding: 120px 48px;
+  background: var(--dark);
+  border-top: 1px solid var(--line);
+}
+.pricing-inner { max-width: 1200px; margin: 0 auto; }
+.pricing-header { margin-bottom: 64px; }
+.pricing-kicker { font-size: 10px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+.pricing-heading {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(40px, 5vw, 64px);
+  font-weight: 300; color: var(--white); line-height: 1; letter-spacing: -0.025em;
+}
+.pricing-heading em { font-style: italic; }
+.pricing-sub { font-size: 14px; color: rgba(245,243,238,0.3); margin-top: 16px; max-width: 400px; line-height: 1.7; font-weight: 300; }
+
+.pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); }
+.pricing-card {
+  background: var(--dark2); padding: 44px 36px;
+  display: flex; flex-direction: column;
+  position: relative;
+}
+.pricing-card.best {
+  background: #121108;
+}
+.pricing-card.best::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.p-badge {
+  display: inline-block; margin-bottom: 24px;
+  font-size: 9px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--gold);
+  background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.2);
+  border-radius: 3px; padding: 4px 10px; width: fit-content;
+}
+.p-plan { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(245,243,238,0.3); margin-bottom: 12px; }
+.p-price {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 60px; font-weight: 300; color: var(--white); line-height: 1;
+  letter-spacing: -0.02em; margin-bottom: 4px;
+}
+.p-price sup { font-size: 22px; color: rgba(245,243,238,0.35); vertical-align: super; }
+.p-period { font-size: 12px; color: rgba(245,243,238,0.22); margin-bottom: 32px; padding-bottom: 28px; border-bottom: 1px solid var(--line); }
+.p-features { display: flex; flex-direction: column; gap: 12px; flex: 1; margin-bottom: 32px; }
+.p-feature { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: rgba(245,243,238,0.45); line-height: 1.5; }
+.p-check { color: var(--gold); flex-shrink: 0; margin-top: 1px; font-size: 12px; }
+.p-feature.off { color: rgba(245,243,238,0.18); }
+.p-btn {
+  display: block; text-align: center; padding: 13px;
+  border-radius: 4px; font-size: 13px; font-weight: 500;
+  text-decoration: none; transition: all 0.15s; margin-top: auto;
+  letter-spacing: 0.02em;
+}
+.p-btn-free { border: 1px solid rgba(245,243,238,0.1); color: rgba(245,243,238,0.4); }
+.p-btn-free:hover { border-color: rgba(245,243,238,0.25); color: rgba(245,243,238,0.8); }
+.p-btn-gold { background: var(--gold); color: var(--black); font-weight: 600; }
+.p-btn-gold:hover { background: var(--gold-lt); box-shadow: 0 4px 24px rgba(201,168,76,0.2); }
+.p-btn-wa { background: rgba(37,211,102,0.07); border: 1px solid rgba(37,211,102,0.18); color: rgba(37,211,102,0.65); display: flex; align-items: center; justify-content: center; gap: 8px; }
+.p-btn-wa:hover { background: rgba(37,211,102,0.13); color: rgba(37,211,102,0.9); }
+
+/* ── FINAL CTA ── */
+.final-cta {
+  padding: 140px 48px;
+  background: var(--black);
+  border-top: 1px solid var(--line);
+  text-align: center; position: relative; overflow: hidden;
+}
+.final-cta::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 50% 70% at 50% 50%, rgba(201,168,76,0.04) 0%, transparent 70%);
+  pointer-events: none;
+}
+.final-inner { max-width: 640px; margin: 0 auto; position: relative; z-index: 1; }
+.final-mark {
+  width: 56px; height: 56px; border-radius: 10px;
+  background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.18);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif; font-size: 28px; color: var(--gold);
+  margin: 0 auto 36px;
+}
+.final-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(36px, 5vw, 60px);
+  font-weight: 300; color: var(--white); line-height: 1.1;
+  letter-spacing: -0.02em; margin-bottom: 18px;
+}
+.final-title em { font-style: italic; color: var(--gold); }
+.final-desc { font-size: 15px; color: rgba(245,243,238,0.3); margin-bottom: 44px; line-height: 1.8; font-weight: 300; }
+.final-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--gold); color: var(--black);
+  font-size: 14px; font-weight: 600; letter-spacing: 0.04em;
+  padding: 16px 40px; border-radius: 4px;
+  text-decoration: none; transition: all 0.2s;
+}
+.final-btn:hover { background: var(--gold-lt); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(201,168,76,0.25); }
+.final-note { font-size: 11px; color: rgba(245,243,238,0.15); margin-top: 16px; letter-spacing: 0.05em; }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--black); border-top: 1px solid var(--line);
+  padding: 40px 48px;
+}
+.footer-inner {
+  max-width: 1200px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 20px;
+}
+.footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 16px; color: rgba(245,243,238,0.3); }
+.footer-links { display: flex; gap: 28px; }
+.footer-link { font-size: 11px; letter-spacing: 0.05em; color: rgba(245,243,238,0.18); text-decoration: none; transition: color 0.15s; }
+.footer-link:hover { color: rgba(245,243,238,0.55); }
+.footer-copy { font-size: 11px; color: rgba(245,243,238,0.12); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1024px) {
+  nav { padding: 0 32px; }
+  .nav-center { display: none; }
+  .hamburger { display: flex; }
+  .hero, .preview-section, .proof-section, .features-section,
+  .how-section, .why-section, .founder-section,
+  .pricing-section, .final-cta, footer { padding-left: 32px; padding-right: 32px; }
+  .features-header { grid-template-columns: 1fr; gap: 32px; }
+  .features-grid { grid-template-columns: 1fr; }
+  .why-layout { grid-template-columns: 1fr; gap: 56px; }
+  .why-card { position: static; }
+  .founder-inner { grid-template-columns: 1fr; gap: 56px; }
+  .pricing-grid { grid-template-columns: 1fr; }
+  .proof-grid { grid-template-columns: 1fr; }
+  .how-steps { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .stats-strip { grid-template-columns: 1fr 1fr; }
+  .stat-item:nth-child(2n) { border-right: none; }
+  .preview-body { grid-template-columns: 1fr; }
+  .preview-sidebar { display: none; }
+  .hero-bottom { flex-direction: column; align-items: flex-start; }
+  .proof-header { flex-direction: column; gap: 12px; }
+}
+@media (max-width: 480px) {
+  nav { padding: 0 20px; }
+  .hero, .preview-section, .proof-section, .features-section,
+  .how-section, .why-section, .founder-section,
+  .pricing-section, .final-cta, footer { padding-left: 20px; padding-right: 20px; }
+  .stats-strip { grid-template-columns: 1fr 1fr; }
+  .stat-item { padding-left: 16px; }
 }
 </style>
 </head>
 <body>
 
+<!-- NAV -->
 <nav>
-  <div class="nav-inner">
-    <a href="/" class="nav-logo">
-      <span class="nav-logo-text">Legatis Tax</span>
-      <div class="nav-logo-dot"></div>
-    </a>
-    <div class="nav-links">
-      <a href="#ozellikler" class="nav-link">Özellikler</a>
-      <a href="#nasil-calisir" class="nav-link">Nasıl Çalışır</a>
-      <a href="#fark" class="nav-link">Neden Legatis</a>
-      <a href="#fiyatlar" class="nav-link">Fiyatlar</a>
-    </div>
-    <div class="nav-right">
-      <a href="/app" class="nav-cta">Hemen Dene →</a>
-      <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menü">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
+  <a href="/" class="nav-logo">
+    <div class="nav-logo-mark">L</div>
+    <span class="nav-logo-text">Legatis Tax</span>
+  </a>
+  <div class="nav-center">
+    <a href="#ozellikler" class="nav-link">Özellikler</a>
+    <a href="#nasil-calisir" class="nav-link">Nasıl Çalışır</a>
+    <a href="#neden" class="nav-link">Neden Legatis</a>
+    <a href="#fiyatlar" class="nav-link">Fiyatlar</a>
+  </div>
+  <div class="nav-right">
+    <a href="/app" class="nav-btn">Hemen Dene →</a>
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menü">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
 
 <div class="mobile-drawer" id="mobileDrawer">
   <a href="#ozellikler" class="nav-link" onclick="closeMenu()">Özellikler</a>
   <a href="#nasil-calisir" class="nav-link" onclick="closeMenu()">Nasıl Çalışır</a>
-  <a href="#fark" class="nav-link" onclick="closeMenu()">Neden Legatis</a>
+  <a href="#neden" class="nav-link" onclick="closeMenu()">Neden Legatis</a>
   <a href="#fiyatlar" class="nav-link" onclick="closeMenu()">Fiyatlar</a>
-  <a href="/app" class="nav-cta" onclick="closeMenu()">Hemen Dene →</a>
+  <a href="/app" class="nav-btn" onclick="closeMenu()">Hemen Dene →</a>
 </div>
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-badge">
-    <div class="hero-badge-dot"></div>
-    <span class="hero-badge-text">Mükellef Odaklı Vergi Zekası</span>
-  </div>
-  <h1 class="hero-title">Vergi mevzuatı<br>sizin <span class="accent">lehinize</span> çalışmalı.</h1>
-  <p class="hero-desc">Haklarınızı bilin. Risklerinizi önceden görün.<br>Yasal avantajlarınızı kaçırmayın.</p>
-  <div class="hero-cta-row">
-    <a href="/app" class="btn-primary">Ücretsiz Başlayın <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-    <a href="#ozellikler" class="btn-secondary">Keşfedin</a>
-  </div>
-  <div class="hero-stats">
-    <div class="hero-stat"><div class="hero-stat-num" data-count="14" data-suffix="+">14+</div><div class="hero-stat-label">Vergi Kanunu</div></div>
-    <div class="hero-stat-divider"></div>
-    <div class="hero-stat"><div class="hero-stat-num" data-count="7000" data-suffix="+" data-sep="true">7.000+</div><div class="hero-stat-label">Mevzuat Bölümü</div></div>
-    <div class="hero-stat-divider"></div>
-    <div class="hero-stat"><div class="hero-stat-num">7/24</div><div class="hero-stat-label">Erişim</div></div>
-    <div class="hero-stat-divider"></div>
-    <div class="hero-stat"><div class="hero-stat-num" data-count="100" data-prefix="%">%100</div><div class="hero-stat-label">Mükellef Odaklı</div></div>
+  <div class="hero-line"></div>
+  <div class="hero-bg-letter">L</div>
+  <div class="hero-inner">
+    <div class="hero-tag">
+      <div class="hero-tag-line"></div>
+      <span class="hero-tag-text">Mükellef Odaklı Vergi Zekası</span>
+      <div class="hero-tag-dot"></div>
+    </div>
+    <h1 class="hero-title">
+      Vergi mevzuatı
+      <span class="hero-title-line2">sizin <em>lehinize</em> çalışmalı.</span>
+    </h1>
+    <div class="hero-bottom">
+      <p class="hero-desc">
+        Haklarınızı bilin. Risklerinizi önceden görün.<br>
+        Yasal avantajlarınızı kaçırmayın.
+      </p>
+      <div class="hero-actions">
+        <a href="/app" class="btn-gold">
+          Ücretsiz Başlayın
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a href="#ozellikler" class="btn-ghost">Keşfedin</a>
+      </div>
+    </div>
+    <div class="stats-strip">
+      <div class="stat-item">
+        <div class="stat-num" data-count="14" data-suffix="+">14+</div>
+        <div class="stat-label">Vergi Kanunu</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" data-count="7000" data-suffix="+" data-sep="true">7.000+</div>
+        <div class="stat-label">Mevzuat Bölümü</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">7/24</div>
+        <div class="stat-label">Erişim</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" data-count="100" data-prefix="%">%100</div>
+        <div class="stat-label">Mükellef Odaklı</div>
+      </div>
+    </div>
   </div>
 </section>
 
-<!-- SCREENSHOT -->
-<section class="screenshot-section">
-  <div class="screenshot-wrapper reveal">
-    <div class="screenshot-bar">
-      <div class="screenshot-dot" style="background:#FF5F57"></div>
-      <div class="screenshot-dot" style="background:#FFBD2E"></div>
-      <div class="screenshot-dot" style="background:#28C840"></div>
-      <div class="screenshot-url">legatis-tax · vergi danışmanlık asistanı</div>
+<!-- APP PREVIEW -->
+<section class="preview-section">
+  <div class="preview-label sr">Platform Önizlemesi</div>
+  <div class="preview-frame sr sr-d1">
+    <div class="preview-titlebar">
+      <div class="preview-dot" style="background:#FF5F57"></div>
+      <div class="preview-dot" style="background:#FFBD2E"></div>
+      <div class="preview-dot" style="background:#28C840"></div>
+      <div class="preview-url">legatis-tax-production.up.railway.app/app</div>
     </div>
-    <div class="screenshot-preview">
-      <div class="sp-sidebar">
-        <div class="sp-logo">Legatis Tax<span style="display:inline-block;width:4px;height:4px;border-radius:50%;background:#C9A84C;margin-left:3px;margin-bottom:2px;vertical-align:middle"></span></div>
-        <div class="sp-sub">Vergi Danışmanlık Asistanı</div>
-        <div class="sp-cat">Uzmanlık Alanları</div>
-        <div class="sp-item active">Tüm Sorular</div>
-        <div class="sp-item">Katma Değer Vergisi</div>
-        <div class="sp-item">Kurumlar Vergisi</div>
-        <div class="sp-item">Gelir Vergisi</div>
-        <div class="sp-item">Teşvik & Avantajlar</div>
-        <div class="sp-item">Belge Analizi</div>
+    <div class="preview-body">
+      <div class="preview-sidebar">
+        <div class="ps-logo">Legatis Tax <span style="display:inline-block;width:4px;height:4px;border-radius:50%;background:var(--gold);margin-bottom:2px;vertical-align:middle"></span></div>
+        <div class="ps-sub">Vergi Danışmanlık Asistanı</div>
+        <div class="ps-section">Uzmanlık Alanları</div>
+        <div class="ps-item active">Tüm Sorular</div>
+        <div class="ps-item">Katma Değer Vergisi</div>
+        <div class="ps-item">Kurumlar Vergisi</div>
+        <div class="ps-item">Gelir Vergisi</div>
+        <div class="ps-item">Teşvik & Avantajlar</div>
+        <div class="ps-item">Belge Analizi</div>
       </div>
-      <div class="sp-main">
-        <div class="sp-emblem">L</div>
-        <div class="sp-title">Vergi mevzuatında uzman danışmanınız.</div>
-        <div class="sp-desc">Mükellef haklarınızı öğrenin. Yasal avantajlarınızı keşfedin.</div>
-        <div class="sp-cards">
-          <div class="sp-card"><div class="sp-card-title">📊 Vergi yükümü nasıl azaltırım?</div><div class="sp-card-desc">Yasal optimizasyon yolları</div></div>
-          <div class="sp-card"><div class="sp-card-title">🔍 Vergi incelemesine hazırlık</div><div class="sp-card-desc">Riskler ve stratejiler</div></div>
-          <div class="sp-card"><div class="sp-card-title">🏢 Şirket ortaklık işlemleri</div><div class="sp-card-desc">Kâr dağıtımı ve vergi</div></div>
-          <div class="sp-card"><div class="sp-card-title">📄 Belge analizi yap</div><div class="sp-card-desc">PDF ve görsel yükle</div></div>
+      <div class="preview-main">
+        <div class="pm-emblem">L</div>
+        <div class="pm-title">Vergi mevzuatında uzman danışmanınız.</div>
+        <div class="pm-desc">Mükellef haklarınızı öğrenin. Yasal avantajlarınızı keşfedin.</div>
+        <div class="pm-grid">
+          <div class="pm-card"><div class="pm-card-t">📊 Vergi yükümü nasıl azaltırım?</div><div class="pm-card-d">Yasal optimizasyon yolları</div></div>
+          <div class="pm-card"><div class="pm-card-t">🔍 Vergi incelemesine hazırlık</div><div class="pm-card-d">Riskler ve stratejiler</div></div>
+          <div class="pm-card"><div class="pm-card-t">🏢 Şirket ortaklık işlemleri</div><div class="pm-card-d">Kâr dağıtımı ve vergi</div></div>
+          <div class="pm-card"><div class="pm-card-t">📄 Belge analizi yap</div><div class="pm-card-d">PDF ve görsel yükle</div></div>
         </div>
       </div>
     </div>
@@ -328,29 +834,41 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.05);
 </section>
 
 <!-- SOCIAL PROOF -->
-<section class="social-proof">
-  <div class="social-proof-inner">
-    <div class="social-proof-label reveal">Beta kullanıcılarımızdan ilk izlenimler</div>
-    <div class="testimonials-grid">
-      <div class="testimonial reveal reveal-delay-1">
-        <p class="testimonial-text">Bir VDK yazısı geldiğinde ne yapacağımı bilmiyordum. Legatis Tax'a sordum, 5 dakikada haklarımı ve adımlarımı öğrendim. Mali müşavirime hazırlıklı gittim.</p>
-        <div class="testimonial-author">
-          <div class="testimonial-avatar">M</div>
-          <div><div class="testimonial-name">Mehmet A.</div><div class="testimonial-role">Serbest Muhasebeci</div></div>
+<section class="proof-section">
+  <div class="proof-inner">
+    <div class="proof-header sr">
+      <h2 class="proof-title">Kullanıcılar ne <em>diyor</em></h2>
+      <span class="proof-tag">Beta Kullanıcı Deneyimleri</span>
+    </div>
+    <div class="proof-grid">
+      <div class="proof-card sr sr-d1">
+        <div>
+          <div class="proof-quote-mark">"</div>
+          <p class="proof-text">Bir VDK yazısı geldiğinde ne yapacağımı bilmiyordum. Legatis Tax'a sordum, 5 dakikada haklarımı ve adımlarımı öğrendim. Mali müşavirime hazırlıklı gittim.</p>
+        </div>
+        <div class="proof-author">
+          <div class="proof-avatar">M</div>
+          <div><div class="proof-name">Mehmet A.</div><div class="proof-role">Serbest Muhasebeci</div></div>
         </div>
       </div>
-      <div class="testimonial reveal reveal-delay-2">
-        <p class="testimonial-text">KDV iade sürecinde hangi kanun maddelerine dayanabileceğimi bilmiyordum. Platform her adımı madde numarasıyla gösterdi. Bu kadar somut cevap beklemiyordum.</p>
-        <div class="testimonial-author">
-          <div class="testimonial-avatar">S</div>
-          <div><div class="testimonial-name">Selin K.</div><div class="testimonial-role">KOBİ Sahibi</div></div>
+      <div class="proof-card sr sr-d2">
+        <div>
+          <div class="proof-quote-mark">"</div>
+          <p class="proof-text">KDV iade sürecinde hangi kanun maddelerine dayanabileceğimi bilmiyordum. Platform her adımı madde numarasıyla gösterdi. Bu kadar somut cevap beklemiyordum.</p>
+        </div>
+        <div class="proof-author">
+          <div class="proof-avatar">S</div>
+          <div><div class="proof-name">Selin K.</div><div class="proof-role">KOBİ Sahibi</div></div>
         </div>
       </div>
-      <div class="testimonial reveal reveal-delay-3">
-        <p class="testimonial-text">Şirket kurarken hangi vergi teşviklerinden yararlanabileceğimi sordum. Rakamsal etkileriyle 4 farklı seçenek sundu. Danışmanımla aylar sonra aynı bilgilere ulaştım.</p>
-        <div class="testimonial-author">
-          <div class="testimonial-avatar">E</div>
-          <div><div class="testimonial-name">Emre T.</div><div class="testimonial-role">Girişimci</div></div>
+      <div class="proof-card sr sr-d3">
+        <div>
+          <div class="proof-quote-mark">"</div>
+          <p class="proof-text">Şirket kurarken hangi teşviklerden yararlanabileceğimi sordum. Rakamsal etkileriyle 4 farklı seçenek sundu. Danışmanımla aylar sonra aynı bilgilere ulaştım.</p>
+        </div>
+        <div class="proof-author">
+          <div class="proof-avatar">E</div>
+          <div><div class="proof-name">Emre T.</div><div class="proof-role">Girişimci</div></div>
         </div>
       </div>
     </div>
@@ -358,147 +876,222 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.05);
 </section>
 
 <!-- FEATURES -->
-<section class="features" id="ozellikler">
+<section class="features-section" id="ozellikler">
   <div class="features-inner">
     <div class="features-header">
-      <span class="section-label reveal">Özellikler</span>
-      <h2 class="section-title light reveal reveal-delay-1">Tek platformda<br>kapsamlı vergi zekası</h2>
-    </div>
-    <div class="features-grid">
-      <div class="feature-card reveal reveal-delay-1"><div class="feature-icon">⚖️</div><h3 class="feature-title">Mükellef Lehine Yorum</h3><p class="feature-desc">Aynı mevzuatı Gelir İdaresi hazine lehine yorumlar. Biz mükellef lehine yorumluyoruz. Her ikisi de yasaldır — siz sadece haklarınızı bilmiyordunuz.</p></div>
-      <div class="feature-card reveal reveal-delay-2"><div class="feature-icon">📄</div><h3 class="feature-title">Belge Analizi</h3><p class="feature-desc">Vergi yazısı, sözleşme, fatura veya VDK bildirimi yükleyin. AI belgeyi mevzuat çerçevesinde analiz eder, risk ve avantajlarınızı raporlar.</p></div>
-      <div class="feature-card reveal reveal-delay-3"><div class="feature-icon">📚</div><h3 class="feature-title">Güncel Mevzuat Tabanı</h3><p class="feature-desc">GVK, KVK, KDV, VUK, TTK, ÖTV, SGK, AR-GE ve daha fazlası. Her yanıt kanun adı ve madde numarasıyla desteklenir.</p></div>
-      <div class="feature-card reveal reveal-delay-4"><div class="feature-icon">🎯</div><h3 class="feature-title">Kategorili Danışmanlık</h3><p class="feature-desc">KDV, Kurumlar Vergisi, Gelir Vergisi, Teşvik & Avantajlar, Vergi İncelemeleri — her konu için özelleştirilmiş yanıt alın.</p></div>
-      <div class="feature-card reveal reveal-delay-5"><div class="feature-icon">💬</div><h3 class="feature-title">Konuşma Geçmişi</h3><p class="feature-desc">Tüm danışmanlık oturumlarınız kayıtlı ve erişilebilir. Eski konularınıza geri dönün, sorularınızı derinleştirin.</p></div>
-      <div class="feature-card reveal reveal-delay-6"><div class="feature-icon">🔒</div><h3 class="feature-title">Kurumsal Güvence</h3><p class="feature-desc">Legatis Denetim Danışmanlık'ın denetim ve danışmanlık deneyimiyle desteklenen bir platform. Sorularınız gizli ve güvende.</p></div>
-    </div>
-    <div class="section-cta reveal">
-      <a href="/app" class="section-cta-link">Tüm özellikleri deneyin <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-      <span class="section-cta-sub">Kayıt gerektirmez</span>
-    </div>
-  </div>
-</section>
-
-<!-- HOW -->
-<section class="how" id="nasil-calisir">
-  <div class="how-inner">
-    <div class="how-header">
-      <span class="section-label reveal">Nasıl Çalışır</span>
-      <h2 class="section-title light reveal reveal-delay-1">Sorandan yanıta,<br>mevzuattan stratejiye</h2>
-    </div>
-    <div class="how-steps">
-      <div class="how-step reveal reveal-delay-1"><div class="how-step-num">01</div><div class="how-step-title">Sorunuzu yazın veya belge yükleyin</div><p class="how-step-desc">Vergi sorunuzu serbest dille anlatın ya da PDF, Word, Excel veya görsel olarak belgenizi yükleyin. Teknik bilgiye gerek yok.</p><span class="how-step-tag">Anında işleme</span></div>
-      <div class="how-step reveal reveal-delay-2"><div class="how-step-num">02</div><div class="how-step-title">Mevzuat taranır, kanun maddeleri bulunur</div><p class="how-step-desc">7.000'den fazla mevzuat bölümü içinde sorunuzla ilgili kanun maddeleri, tebliğler ve kararlar anında taranır ve eşleştirilir.</p><span class="how-step-tag">14+ kanun kaynağı</span></div>
-      <div class="how-step reveal reveal-delay-3"><div class="how-step-num">03</div><div class="how-step-title">Mükellef lehine analiz ve strateji</div><p class="how-step-desc">Yasal alternatifler, vergisel etkiler, riskler ve önerilen adımlar — kanun maddesiyle desteklenerek, açık ve uygulanabilir biçimde sunulur.</p><span class="how-step-tag">Mükellef odaklı</span></div>
-    </div>
-    <div class="section-cta reveal">
-      <a href="/app" class="section-cta-link">Hemen bir soru sorun <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-      <span class="section-cta-sub">Ücretsiz · Saniyeler içinde yanıt</span>
-    </div>
-  </div>
-</section>
-
-<!-- DIFFERENCE -->
-<section class="difference" id="fark">
-  <div class="difference-inner">
-    <div class="diff-content">
-      <span class="section-label reveal">Neden Legatis Tax</span>
-      <h2 class="section-title light reveal reveal-delay-1">Sadece cevap değil,<br>mükellef savunuculuğu</h2>
-      <div class="diff-list">
-        <div class="diff-item reveal reveal-delay-1"><div class="diff-num">01</div><div><div class="diff-item-title">Sizin tarafınızda duruyoruz</div><p class="diff-item-desc">Genel AI araçları tarafsız yanıt verir. Biz açıkça mükellef lehine yorumluyoruz — aynı mevzuatın iki farklı yasal yorumu var ve biz sizin lehinize olanı gösteriyoruz.</p></div></div>
-        <div class="diff-item reveal reveal-delay-2"><div class="diff-num">02</div><div><div class="diff-item-title">Her yanıt kanun maddesiyle desteklenir</div><p class="diff-item-desc">Boş tavsiye değil, kaynağı olan bilgi. Her yanıtta hangi kanunun hangi maddesine dayandığı belirtilir. Müşavirinizle doğrulayabilirsiniz.</p></div></div>
-        <div class="diff-item reveal reveal-delay-3"><div class="diff-num">03</div><div><div class="diff-item-title">Denetim deneyimiyle şekillendirilmiş</div><p class="diff-item-desc">Platformun arkasında yıllarca vergi denetimi ve özel sektör danışmanlığı yapmış bir ekip var. Bu deneyim, AI'ın nasıl yorum yapacağını doğrudan belirliyor.</p></div></div>
+      <div class="sr">
+        <div class="features-kicker">Özellikler</div>
+        <h2 class="features-heading">Tek platformda<br><em>kapsamlı</em> vergi zekası</h2>
+      </div>
+      <div class="sr sr-d2">
+        <p class="features-subtext">Vergi sorularından belge analizine, kanun maddelerinden pratik strateji adımlarına kadar her şey tek yerde.</p>
+        <a href="/app" class="features-cta-inline">
+          Uygulamayı aç
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
       </div>
     </div>
-    <div class="diff-card reveal reveal-delay-2">
-      <div class="diff-card-label">Gerçek Örnek</div>
-      <div class="diff-card-title">VDK'dan bilgilendirme yazısı geldi. Ne yapmalısınız?</div>
-      <div class="diff-quote">"Yüksek Gelir Grupları Gözetim ve Uyum Programı kapsamında bilgilendirme yazısı gönderilmiştir..."</div>
-      <div class="diff-examples">
-        <div class="diff-example"><span class="diff-example-arrow">→</span>Bu henüz vergi incelemesi değil — gönüllü uyum aşaması</div>
-        <div class="diff-example"><span class="diff-example-arrow">→</span>Görüşmeye katılma veya yazılı izahat verme hakkınız var</div>
-        <div class="diff-example"><span class="diff-example-arrow">→</span>Mali müşaviriniz vekil olarak katılabilir</div>
-        <div class="diff-example"><span class="diff-example-arrow">→</span>Risk seviyesi: Orta-Yüksek — 13 gün içinde aksiyon alın</div>
+    <div class="features-grid">
+      <div class="feature-item sr sr-d1">
+        <div class="feature-num">01</div>
+        <div class="feature-icon-wrap">⚖️</div>
+        <div class="feature-name">Mükellef Lehine Yorum</div>
+        <p class="feature-text">Aynı mevzuatı Gelir İdaresi hazine lehine yorumlar. Biz mükellef lehine yorumluyoruz. Her ikisi de yasaldır — siz sadece haklarınızı bilmiyordunuz.</p>
+      </div>
+      <div class="feature-item sr sr-d2">
+        <div class="feature-num">02</div>
+        <div class="feature-icon-wrap">📄</div>
+        <div class="feature-name">Belge Analizi</div>
+        <p class="feature-text">Vergi yazısı, sözleşme, fatura veya VDK bildirimi yükleyin. AI belgeyi mevzuat çerçevesinde analiz eder, risk ve avantajlarınızı raporlar.</p>
+      </div>
+      <div class="feature-item sr sr-d3">
+        <div class="feature-num">03</div>
+        <div class="feature-icon-wrap">📚</div>
+        <div class="feature-name">Güncel Mevzuat Tabanı</div>
+        <p class="feature-text">GVK, KVK, KDV, VUK, TTK, ÖTV, SGK, AR-GE ve daha fazlası. Her yanıt kanun adı ve madde numarasıyla desteklenir.</p>
+      </div>
+      <div class="feature-item sr sr-d4">
+        <div class="feature-num">04</div>
+        <div class="feature-icon-wrap">🎯</div>
+        <div class="feature-name">Kategorili Danışmanlık</div>
+        <p class="feature-text">KDV, Kurumlar Vergisi, Gelir Vergisi, Teşvik & Avantajlar, Vergi İncelemeleri — her konu için özelleştirilmiş yanıt alın.</p>
+      </div>
+      <div class="feature-item sr sr-d5">
+        <div class="feature-num">05</div>
+        <div class="feature-icon-wrap">💬</div>
+        <div class="feature-name">Konuşma Geçmişi</div>
+        <p class="feature-text">Tüm danışmanlık oturumlarınız kayıtlı ve erişilebilir. Eski konularınıza geri dönün, sorularınızı derinleştirin.</p>
+      </div>
+      <div class="feature-item sr sr-d6">
+        <div class="feature-num">06</div>
+        <div class="feature-icon-wrap">🔒</div>
+        <div class="feature-name">Kurumsal Güvence</div>
+        <p class="feature-text">Legatis Denetim Danışmanlık'ın denetim ve danışmanlık deneyimiyle desteklenen bir platform. Sorularınız gizli ve güvende.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="nasil-calisir">
+  <div class="how-inner">
+    <div class="how-top sr">
+      <div class="how-kicker">Nasıl Çalışır</div>
+      <h2 class="how-heading">Sorandan yanıta,<br><em>mevzuattan stratejiye</em></h2>
+    </div>
+    <div class="how-steps">
+      <div class="how-step sr sr-d1">
+        <div class="how-step-n">01</div>
+        <div class="how-step-title">Sorunuzu yazın veya belge yükleyin</div>
+        <p class="how-step-text">Vergi sorunuzu serbest dille anlatın ya da PDF, Word, Excel veya görsel olarak belgenizi yükleyin. Teknik bilgiye gerek yok.</p>
+        <span class="how-step-tag">Anında işleme</span>
+      </div>
+      <div class="how-step sr sr-d2">
+        <div class="how-step-n">02</div>
+        <div class="how-step-title">Mevzuat taranır, kanun maddeleri bulunur</div>
+        <p class="how-step-text">7.000'den fazla mevzuat bölümü içinde sorunuzla ilgili kanun maddeleri, tebliğler ve kararlar anında taranır ve eşleştirilir.</p>
+        <span class="how-step-tag">14+ kanun kaynağı</span>
+      </div>
+      <div class="how-step sr sr-d3">
+        <div class="how-step-n">03</div>
+        <div class="how-step-title">Mükellef lehine analiz ve strateji</div>
+        <p class="how-step-text">Yasal alternatifler, vergisel etkiler, riskler ve önerilen adımlar — kanun maddesiyle desteklenerek, açık ve uygulanabilir biçimde sunulur.</p>
+        <span class="how-step-tag">Mükellef odaklı</span>
+      </div>
+    </div>
+    <div class="how-cta-row sr">
+      <a href="/app" class="how-cta-link">
+        Hemen bir soru sorun
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <span class="how-cta-note">Ücretsiz · Kayıt gerektirmez</span>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section class="why-section" id="neden">
+  <div class="why-inner">
+    <div class="why-layout">
+      <div class="why-left">
+        <div class="why-kicker sr">Neden Legatis Tax</div>
+        <h2 class="why-heading sr sr-d1">Sadece cevap değil,<br><em>mükellef savunuculuğu</em></h2>
+        <div class="why-items">
+          <div class="why-item sr sr-d2">
+            <div class="why-item-n">01</div>
+            <div>
+              <div class="why-item-title">Sizin tarafınızda duruyoruz</div>
+              <p class="why-item-text">Genel AI araçları tarafsız yanıt verir. Biz açıkça mükellef lehine yorumluyoruz — aynı mevzuatın iki farklı yasal yorumu var ve biz sizin lehinize olanı gösteriyoruz.</p>
+            </div>
+          </div>
+          <div class="why-item sr sr-d3">
+            <div class="why-item-n">02</div>
+            <div>
+              <div class="why-item-title">Her yanıt kanun maddesiyle desteklenir</div>
+              <p class="why-item-text">Boş tavsiye değil, kaynağı olan bilgi. Her yanıtta hangi kanunun hangi maddesine dayandığı belirtilir. Müşavirinizle doğrulayabilirsiniz.</p>
+            </div>
+          </div>
+          <div class="why-item sr sr-d4">
+            <div class="why-item-n">03</div>
+            <div>
+              <div class="why-item-title">Denetim deneyimiyle şekillendirilmiş</div>
+              <p class="why-item-text">Platformun arkasında yıllarca vergi denetimi ve özel sektör danışmanlığı yapmış bir ekip var. Bu deneyim, AI'ın nasıl yorum yapacağını doğrudan belirliyor.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="why-card sr sr-d2">
+        <div class="why-card-kicker">Gerçek Örnek</div>
+        <div class="why-card-title">VDK'dan bilgilendirme yazısı geldi. Ne yapmalısınız?</div>
+        <div class="why-card-quote">"Yüksek Gelir Grupları Gözetim ve Uyum Programı kapsamında bilgilendirme yazısı gönderilmiştir..."</div>
+        <div class="why-card-items">
+          <div class="why-card-item"><span class="why-card-arrow">→</span>Bu henüz vergi incelemesi değil — gönüllü uyum aşaması</div>
+          <div class="why-card-item"><span class="why-card-arrow">→</span>Görüşmeye katılma veya yazılı izahat verme hakkınız var</div>
+          <div class="why-card-item"><span class="why-card-arrow">→</span>Mali müşaviriniz vekil olarak katılabilir</div>
+          <div class="why-card-item"><span class="why-card-arrow">→</span>Risk seviyesi: Orta-Yüksek — 13 gün içinde aksiyon alın</div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- FOUNDER -->
-<section class="founder" id="kurucu">
+<section class="founder-section" id="kurucu">
   <div class="founder-inner">
-    <div class="founder-visual reveal">
-      <div class="founder-avatar">[AD]</div>
-      <div>
+    <div class="founder-left sr">
+      <div class="founder-avatar-wrap">
+        <div class="founder-avatar">[AD]</div>
+      </div>
+      <div class="founder-meta">
         <div class="founder-name">[Kurucu Adı Soyadı]</div>
         <div class="founder-role">Kurucu & Baş Danışman</div>
       </div>
-      <div class="founder-badges">
-        <span class="founder-badge">15 Yıl Vergi Müfettişliği</span>
-        <span class="founder-badge">Legatis Denetim Danışmanlık</span>
-        <span class="founder-badge">Özel Sektör Danışmanlığı</span>
+      <div class="founder-tags">
+        <span class="founder-tag">15 Yıl Vergi Müfettişliği</span>
+        <span class="founder-tag">Legatis Denetim Danışmanlık</span>
+        <span class="founder-tag">Özel Sektör Danışmanlığı</span>
       </div>
     </div>
-    <div class="founder-text reveal reveal-delay-2">
-      <span class="section-label">Platformun Arkasındaki İnsan</span>
+    <div class="founder-right sr sr-d2">
+      <div class="founder-kicker">Platformun Arkasındaki İnsan</div>
       <blockquote class="founder-quote">"Mevzuat her iki taraf için de aynı. Fark, <span>nasıl yorumlandığında.</span>"</blockquote>
-      <p class="founder-body">15 yıl boyunca vergi müfettişi olarak çalıştım. Bu sürede gördüm ki aynı kanun maddesi, hazine lehine de mükellef lehine de yorumlanabiliyor. Gelir İdaresi'nin bunu profesyonelce yaptığı gibi, mükelleflerin de kendi haklarını bilmesi gerekiyor.<br><br>Legatis Tax'ı bu boşluğu kapatmak için kurdum. Arkasındaki sistem promptu yılların denetim deneyimiyle yazıldı — mükellef lehine yasal yorum bu platformun DNA'sında var.</p>
+      <p class="founder-body">15 yıl boyunca vergi müfettişi olarak çalıştım. Bu sürede gördüm ki aynı kanun maddesi, hazine lehine de mükellef lehine de yorumlanabiliyor. Gelir İdaresi'nin bunu profesyonelce yaptığı gibi, mükelleflerin de kendi haklarını bilmesi gerekiyor.<br><br>Legatis Tax'ı bu boşluğu kapatmak için kurdum. Arkasındaki sistem yılların denetim deneyimiyle şekillendi — mükellef lehine yasal yorum bu platformun DNA'sında var.</p>
     </div>
   </div>
 </section>
 
 <!-- PRICING -->
-<section class="pricing" id="fiyatlar">
+<section class="pricing-section" id="fiyatlar">
   <div class="pricing-inner">
-    <div class="pricing-header">
-      <span class="section-label reveal">Erişim Planları</span>
-      <h2 class="section-title light reveal reveal-delay-1">İhtiyacınıza göre<br>esnek erişim</h2>
-      <p class="pricing-header-sub reveal reveal-delay-2">Tek bir danışmanlık görüşmesinin maliyetiyle, tüm yıl boyunca 7/24 erişim.</p>
+    <div class="pricing-header sr">
+      <div class="pricing-kicker">Erişim Planları</div>
+      <h2 class="pricing-heading">İhtiyacınıza göre<br><em>esnek erişim</em></h2>
+      <p class="pricing-sub">Tek bir danışmanlık görüşmesinin maliyetiyle, tüm yıl boyunca 7/24 erişim.</p>
     </div>
     <div class="pricing-grid">
-      <div class="pricing-card reveal reveal-delay-1">
-        <div class="pricing-plan">Başlangıç</div>
-        <div class="pricing-price">0<sup>₺</sup></div>
-        <div class="pricing-period">Sonsuza kadar ücretsiz</div>
-        <div class="pricing-features">
-          <div class="pricing-feature"><span class="pricing-feature-check">✓</span>Günde 10 soru hakkı</div>
-          <div class="pricing-feature"><span class="pricing-feature-check">✓</span>Tüm vergi kategorileri</div>
-          <div class="pricing-feature"><span class="pricing-feature-check">✓</span>Kanun maddesi referansları</div>
-          <div class="pricing-feature"><span class="pricing-feature-check">✓</span>Konuşma geçmişi</div>
-          <div class="pricing-feature muted"><span class="pricing-feature-check" style="color:rgba(255,255,255,0.15)">—</span>Belge analizi</div>
-          <div class="pricing-feature muted"><span class="pricing-feature-check" style="color:rgba(255,255,255,0.15)">—</span>Sınırsız soru</div>
+      <div class="pricing-card sr sr-d1">
+        <div class="p-plan">Başlangıç</div>
+        <div class="p-price">0<sup>₺</sup></div>
+        <div class="p-period">Sonsuza kadar ücretsiz</div>
+        <div class="p-features">
+          <div class="p-feature"><span class="p-check">✓</span>Günde 10 soru hakkı</div>
+          <div class="p-feature"><span class="p-check">✓</span>Tüm vergi kategorileri</div>
+          <div class="p-feature"><span class="p-check">✓</span>Kanun maddesi referansları</div>
+          <div class="p-feature"><span class="p-check">✓</span>Konuşma geçmişi</div>
+          <div class="p-feature off"><span class="p-check" style="color:rgba(245,243,238,0.15)">—</span>Belge analizi</div>
+          <div class="p-feature off"><span class="p-check" style="color:rgba(245,243,238,0.15)">—</span>Sınırsız soru</div>
         </div>
-        <a href="/app" class="pricing-btn pricing-btn-free">Ücretsiz Başla</a>
+        <a href="/app" class="p-btn p-btn-free">Ücretsiz Başla</a>
       </div>
-      <div class="pricing-card featured reveal reveal-delay-2">
-        <div class="pricing-badge">En Çok Tercih Edilen</div>
-        <div class="pricing-plan">Profesyonel</div>
-        <div class="pricing-price">299<sup>₺</sup></div>
-        <div class="pricing-period">/ ay · istediğiniz zaman iptal</div>
-        <div class="pricing-features">
-          <div class="pricing-feature"><span class="pricing-feature-check">✓</span>Sınırsız soru</div>
-          <div class="pricing-feature"><span class="pricing-feature-check">✓</span>Belge analizi (PDF, Word, Excel, görsel)</div>
-          <div class="pricing-feature"><span class="pricing-feature-check">✓</span>Tüm vergi kategorileri</div>
-          <div class="pricing-feature"><span class="pricing-feature-check">✓</span>Kanun maddesi referansları</div>
-          <div class="pricing-feature"><span class="pricing-feature-check">✓</span>Konuşma geçmişi</div>
-          <div class="pricing-feature"><span class="pricing-feature-check">✓</span>Yeni özellik öncelikli erişim</div>
+      <div class="pricing-card best sr sr-d2">
+        <div class="p-badge">En Çok Tercih Edilen</div>
+        <div class="p-plan">Profesyonel</div>
+        <div class="p-price">299<sup>₺</sup></div>
+        <div class="p-period">/ ay · istediğiniz zaman iptal</div>
+        <div class="p-features">
+          <div class="p-feature"><span class="p-check">✓</span>Sınırsız soru</div>
+          <div class="p-feature"><span class="p-check">✓</span>Belge analizi (PDF, Word, Excel, görsel)</div>
+          <div class="p-feature"><span class="p-check">✓</span>Tüm vergi kategorileri</div>
+          <div class="p-feature"><span class="p-check">✓</span>Kanun maddesi referansları</div>
+          <div class="p-feature"><span class="p-check">✓</span>Konuşma geçmişi</div>
+          <div class="p-feature"><span class="p-check">✓</span>Yeni özellik öncelikli erişim</div>
         </div>
-        <a href="https://legatis-tax.lemonsqueezy.com/checkout/buy/49780de3-18e9-465b-ae4d-1f6df068b838" target="_blank" class="pricing-btn pricing-btn-premium">Profesyonel'e Geç</a>
+        <a href="https://legatis-tax.lemonsqueezy.com/checkout/buy/49780de3-18e9-465b-ae4d-1f6df068b838" target="_blank" class="p-btn p-btn-gold">Profesyonel'e Geç</a>
       </div>
-      <div class="pricing-card reveal reveal-delay-3">
-        <div class="pricing-plan">Kurumsal</div>
-        <div class="pricing-price" style="font-size:36px;padding-top:10px;">Özel<br>Fiyat</div>
-        <div class="pricing-period">Firma ihtiyacınıza göre</div>
-        <div class="pricing-features">
-          <div class="pricing-feature"><span class="pricing-feature-check">✓</span>Tüm Profesyonel özellikler</div>
-          <div class="pricing-feature"><span class="pricing-feature-check">✓</span>Çoklu kullanıcı erişimi</div>
-          <div class="pricing-feature"><span class="pricing-feature-check">✓</span>Firma bazlı özelleştirme</div>
-          <div class="pricing-feature"><span class="pricing-feature-check">✓</span>Öncelikli destek</div>
-          <div class="pricing-feature"><span class="pricing-feature-check">✓</span>Özel sistem entegrasyonu</div>
-          <div class="pricing-feature"><span class="pricing-feature-check">✓</span>SLA garantisi</div>
+      <div class="pricing-card sr sr-d3">
+        <div class="p-plan">Kurumsal</div>
+        <div class="p-price" style="font-size:40px;padding-top:8px">Özel<br>Fiyat</div>
+        <div class="p-period">Firma ihtiyacınıza göre</div>
+        <div class="p-features">
+          <div class="p-feature"><span class="p-check">✓</span>Tüm Profesyonel özellikler</div>
+          <div class="p-feature"><span class="p-check">✓</span>Çoklu kullanıcı erişimi</div>
+          <div class="p-feature"><span class="p-check">✓</span>Firma bazlı özelleştirme</div>
+          <div class="p-feature"><span class="p-check">✓</span>Öncelikli destek</div>
+          <div class="p-feature"><span class="p-check">✓</span>Özel sistem entegrasyonu</div>
+          <div class="p-feature"><span class="p-check">✓</span>SLA garantisi</div>
         </div>
-        <a href="https://wa.me/90[WHATSAPP_NUMARASI]?text=Legatis%20Tax%20kurumsal%20plan%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum." target="_blank" class="pricing-btn pricing-btn-enterprise">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        <a href="https://wa.me/90[WHATSAPP_NUMARASI]?text=Legatis%20Tax%20kurumsal%20plan%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum." target="_blank" class="p-btn p-btn-wa">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
           WhatsApp ile İletişim
         </a>
       </div>
@@ -506,21 +1099,24 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.05);
   </div>
 </section>
 
-<!-- CTA -->
-<section class="cta-section">
-  <div class="cta-inner reveal">
-    <div class="cta-emblem">L</div>
-    <h2 class="cta-title">Vergi haklarınızı öğrenmeye bugün başlayın.</h2>
-    <p class="cta-desc">Kayıt gerektirmez. Saniyeler içinde ilk sorunuzu sorun.</p>
-    <a href="/app" class="cta-btn">Hemen Dene <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-    <div class="cta-note">Ücretsiz plan · Kredi kartı gerekmez</div>
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="final-inner sr">
+    <div class="final-mark">L</div>
+    <h2 class="final-title">Vergi haklarınızı öğrenmeye<br><em>bugün</em> başlayın.</h2>
+    <p class="final-desc">Kayıt gerektirmez. Saniyeler içinde ilk sorunuzu sorun.</p>
+    <a href="/app" class="final-btn">
+      Hemen Dene
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+    <div class="final-note">Ücretsiz plan · Kredi kartı gerekmez</div>
   </div>
 </section>
 
 <!-- FOOTER -->
 <footer>
   <div class="footer-inner">
-    <div class="footer-logo-text">Legatis Tax</div>
+    <div class="footer-logo">Legatis Tax</div>
     <div class="footer-links">
       <a href="#ozellikler" class="footer-link">Özellikler</a>
       <a href="#fiyatlar" class="footer-link">Planlar</a>
@@ -547,38 +1143,28 @@ document.addEventListener('click', function(e) {
 });
 
 /* SCROLL REVEAL */
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('visible');
-      observer.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+const srObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); srObserver.unobserve(e.target); } });
+}, { threshold: 0.08, rootMargin: '0px 0px -32px 0px' });
+document.querySelectorAll('.sr').forEach(el => srObserver.observe(el));
 
-/* COUNTER ANIMATION */
+/* COUNTER */
 function animateCount(el) {
   const target = parseInt(el.dataset.count);
   const prefix = el.dataset.prefix || '';
   const suffix = el.dataset.suffix || '';
-  const useSep = el.dataset.sep === 'true';
-  const duration = 1400;
-  const start = performance.now();
-  function tick(now) {
-    const p = Math.min((now - start) / duration, 1);
+  const sep = el.dataset.sep === 'true';
+  const dur = 1600; const t0 = performance.now();
+  const tick = (t) => {
+    const p = Math.min((t - t0) / dur, 1);
     const ease = 1 - Math.pow(1 - p, 3);
     const val = Math.round(ease * target);
-    const formatted = useSep ? val.toLocaleString('tr-TR') : val;
-    el.textContent = prefix + formatted + suffix;
+    el.textContent = prefix + (sep ? val.toLocaleString('tr-TR') : val) + suffix;
     if (p < 1) requestAnimationFrame(tick);
-  }
+  };
   requestAnimationFrame(tick);
 }
-/* Sayaçlar hero animasyonu (~0.9s) bittikten sonra başlar */
-setTimeout(() => {
-  document.querySelectorAll('[data-count]').forEach(el => animateCount(el));
-}, 900);
+setTimeout(() => { document.querySelectorAll('[data-count]').forEach(animateCount); }, 800);
 </script>
 </body>
 </html>
