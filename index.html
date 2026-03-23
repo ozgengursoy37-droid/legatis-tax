@@ -111,6 +111,25 @@ html, body { height: 100%; background: var(--off-white); color: var(--black); fo
 .mobile-menu-btn { background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.7); padding: 4px; }
 .mobile-sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; }
 .mobile-sidebar-overlay.open { display: block; }
+
+/* PDF PRINT STİLİ */
+@media print {
+  body { background: white; }
+  .layout { display: block; height: auto; }
+  .sidebar, .topbar, .input-area, .mobile-header, .msg-actions, .upload-btn, .send-btn { display: none !important; }
+  .main { height: auto; overflow: visible; }
+  .chat-area { overflow: visible; }
+  .messages { overflow: visible; padding: 0; }
+  .msg-row { break-inside: avoid; border-bottom: 1px solid #eee; }
+  .print-header { display: block !important; }
+  .print-footer { display: block !important; }
+}
+.print-header { display: none; padding: 24px 0 16px; border-bottom: 2px solid #0D0D0D; margin-bottom: 24px; }
+.print-header-logo { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; color: #0D0D0D; }
+.print-header-sub { font-size: 11px; color: #888; margin-top: 2px; }
+.print-header-date { font-size: 11px; color: #888; margin-top: 4px; }
+.print-footer { display: none; margin-top: 32px; padding-top: 16px; border-top: 1px solid #eee; font-size: 10px; color: #aaa; text-align: center; }
+
 @media (max-width: 768px) {
   .layout { grid-template-columns: 1fr; }
   .sidebar { display: none; position: fixed; left: 0; top: 0; bottom: 0; width: 280px; z-index: 200; transform: translateX(-100%); transition: transform 0.25s; }
@@ -126,6 +145,13 @@ html, body { height: 100%; background: var(--off-white); color: var(--black); fo
 </style>
 </head>
 <body>
+
+<!-- PDF Print Header -->
+<div class="print-header" id="printHeader">
+  <div class="print-header-logo">Legatis Tax</div>
+  <div class="print-header-sub">Legatis Denetim Danışmanlık — Vergi Danışmanlık Raporu</div>
+  <div class="print-header-date" id="printDate"></div>
+</div>
 
 <div class="mobile-sidebar-overlay" id="mobileSidebarOverlay" onclick="closeMobileSidebar()"></div>
 <input type="file" id="fileInput" style="display:none" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.gif,.webp" onchange="handleFileSelect(event)">
@@ -285,6 +311,11 @@ html, body { height: 100%; background: var(--off-white); color: var(--black); fo
   </main>
 </div>
 
+<!-- PDF Print Footer -->
+<div class="print-footer" id="printFooter">
+  Legatis Tax — Legatis Denetim Danışmanlık | Bu rapor genel bilgilendirme amaçlıdır. Uygulamadan önce uzman görüşü alınız.
+</div>
+
 <script>
 const FLOWISE_URL = 'https://flowiseai-railway-production-c71e.up.railway.app';
 const CHATFLOW_ID = 'eeed0f20-21f3-47dd-b931-2a344293c5be';
@@ -298,15 +329,12 @@ let currentUser = null;
 let currentCategory = 'Tüm Sorular';
 let selectedFile = null;
 
-// Test modu: kayıt olmadan direkt kullan
 async function initAuth() {
   const { data: { session } } = await sb.auth.getSession();
   if (session) {
     currentUser = session.user;
     document.getElementById('userEmailDisplay').textContent = session.user.email;
     document.getElementById('logoutBtn').style.display = 'block';
-    document.getElementById('planName').textContent = 'Test Modu';
-    document.getElementById('planLimit').textContent = 'Sınırsız erişim';
   }
 }
 
@@ -315,8 +343,6 @@ async function logout() {
   currentUser = null;
   document.getElementById('userEmailDisplay').textContent = '';
   document.getElementById('logoutBtn').style.display = 'none';
-  document.getElementById('planName').textContent = 'Test Modu';
-  document.getElementById('planLimit').textContent = 'Sınırsız erişim';
 }
 
 function setCategory(name, el) {
@@ -398,6 +424,59 @@ function formatText(text) {
   return result;
 }
 
+function printAsPDF(btn) {
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  document.getElementById('printDate').textContent = 'Rapor Tarihi: ' + dateStr;
+
+  // Sadece bu mesajı yazdır
+  const msgContent = btn.closest('.msg-content');
+  const msgText = msgContent.querySelector('.msg-text').innerHTML;
+
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html lang="tr">
+    <head>
+      <meta charset="UTF-8">
+      <title>Legatis Tax — Vergi Danışmanlık Raporu</title>
+      <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+      <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'DM Sans', sans-serif; font-size: 13px; line-height: 1.7; color: #0D0D0D; padding: 40px 48px; max-width: 800px; margin: 0 auto; }
+        .header { border-bottom: 2px solid #0D0D0D; padding-bottom: 16px; margin-bottom: 28px; }
+        .header-logo { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; color: #0D0D0D; }
+        .header-gold { color: #C9A84C; }
+        .header-sub { font-size: 11px; color: #888; margin-top: 3px; letter-spacing: 0.08em; text-transform: uppercase; }
+        .header-date { font-size: 11px; color: #888; margin-top: 6px; }
+        h2 { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; color: #0D0D0D; margin: 20px 0 10px; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+        h3 { font-size: 12px; font-weight: 600; color: #0D0D0D; margin: 14px 0 6px; text-transform: uppercase; letter-spacing: 0.06em; }
+        p { margin-bottom: 8px; }
+        strong { font-weight: 600; }
+        ul, ol { padding-left: 20px; margin-bottom: 10px; }
+        li { margin-bottom: 4px; }
+        hr { border: none; border-top: 1px solid #eee; margin: 16px 0; }
+        .warning-box { background: #fdf8ee; border-left: 3px solid #C9A84C; padding: 10px 14px; margin-top: 16px; font-size: 12px; color: #666; border-radius: 0 4px 4px 0; }
+        .footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid #eee; font-size: 10px; color: #aaa; text-align: center; }
+        @media print { body { padding: 20px 32px; } }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <div class="header-logo">Legatis<span class="header-gold"> Tax</span></div>
+        <div class="header-sub">Legatis Denetim Danışmanlık — Vergi Danışmanlık Raporu</div>
+        <div class="header-date">Rapor Tarihi: ${dateStr}</div>
+      </div>
+      <div class="content">${msgText}</div>
+      <div class="footer">Bu rapor Legatis Tax yapay zeka sistemi tarafından oluşturulmuştur. Genel bilgilendirme amaçlıdır. Uygulamadan önce uzman görüşü alınız. | legatis-tax-production-142c.up.railway.app</div>
+    </body>
+    </html>
+  `);
+  printWindow.document.close();
+  printWindow.focus();
+  setTimeout(() => { printWindow.print(); }, 500);
+}
+
 function addMessage(role, text, fileInfo) {
   hideWelcome();
   const messages = document.getElementById('messages');
@@ -414,7 +493,7 @@ function addMessage(role, text, fileInfo) {
   const msgText = document.createElement('div');
   msgText.className = 'msg-text';
   if (fileInfo) {
-    msgText.innerHTML = `<div style="display:flex;align-items:center;gap:6px;padding:8px 10px;background:rgba(0,0,0,0.04);border-radius:6px;margin-bottom:8px;font-size:12px;color:var(--mid-gray)"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>${fileInfo}</div>` + (text ? formatText(text) : '');
+    msgText.innerHTML = `<div style="display:flex;align-items:center;gap:6px;padding:8px 10px;background:rgba(0,0,0,0.04);border-radius:6px;margin-bottom:8px;font-size:12px;color:#888"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>${fileInfo}</div>` + (text ? formatText(text) : '');
   } else {
     msgText.innerHTML = formatText(text);
   }
@@ -424,7 +503,7 @@ function addMessage(role, text, fileInfo) {
     const actions = document.createElement('div');
     actions.className = 'msg-actions';
     actions.innerHTML = `
-      <button class="msg-action-btn" onclick="downloadText(this)">
+      <button class="msg-action-btn" onclick="printAsPDF(this)">
         <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M4 13h8M8 3v7M5 7l3 3 3-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
         PDF olarak kaydet
       </button>
@@ -451,15 +530,6 @@ function copyText(btn) {
     btn.textContent = '✓ Kopyalandı';
     setTimeout(() => { btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="8" height="9" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M3 11V3h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg> Kopyala'; }, 2000);
   });
-}
-
-function downloadText(btn) {
-  const msgText = btn.closest('.msg-content').querySelector('.msg-text');
-  const blob = new Blob([msgText.innerText], { type: 'text/plain;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'legatis-tax-yanit.txt'; a.click();
-  URL.revokeObjectURL(url);
 }
 
 function deepenQuestion(btn) {
@@ -525,23 +595,17 @@ async function sendMessage() {
       formData.append('file', fileToSend);
       formData.append('question', questionText || 'Bu belgeyi vergi mevzuatı açısından analiz et. Mükellef lehine yasal avantajları, riskleri ve önerileri belirt.');
       formData.append('user_id', currentUser?.id || 'test-user');
-
       const res = await fetch('/api/analyze', { method: 'POST', body: formData });
       const data = await res.json();
       removeTyping();
-      if (data.ok) {
-        addMessage('bot', data.analysis);
-      } else {
-        addMessage('bot', 'Belge analizi sırasında bir hata oluştu: ' + (data.error || 'Bilinmeyen hata'));
-      }
+      if (data.ok) { addMessage('bot', data.analysis); }
+      else { addMessage('bot', 'Belge analizi sırasında bir hata oluştu: ' + (data.error || 'Bilinmeyen hata')); }
     } else {
-      const res = await fetch('/api/question', {
+      await fetch('/api/question', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: currentUser?.id || 'test-user', category: currentCategory, question_text: questionText })
       });
-      const qData = await res.json();
-
       const flowRes = await fetch(`${FLOWISE_URL}/api/v1/prediction/${CHATFLOW_ID}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
