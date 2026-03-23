@@ -404,7 +404,19 @@ function printAsPDF(btn) {
   const pageWidth = doc.internal.pageSize.getWidth();
   const margin = 20;
   const maxWidth = pageWidth - margin * 2;
+  const pageHeight = doc.internal.pageSize.getHeight();
   let y = margin;
+
+  // Türkçe karakter dönüşümü
+  function fixTR(str) {
+    return str
+      .replace(/ş/g, 's').replace(/Ş/g, 'S')
+      .replace(/ğ/g, 'g').replace(/Ğ/g, 'G')
+      .replace(/ü/g, 'u').replace(/Ü/g, 'U')
+      .replace(/ö/g, 'o').replace(/Ö/g, 'O')
+      .replace(/ç/g, 'c').replace(/Ç/g, 'C')
+      .replace(/ı/g, 'i').replace(/İ/g, 'I');
+  }
 
   doc.setFontSize(22);
   doc.setFont('helvetica', 'bold');
@@ -413,9 +425,9 @@ function printAsPDF(btn) {
   doc.setFontSize(8);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(136, 136, 136);
-  doc.text('LEGATIS DENETİM DANIŞMANLIK — VERGİ DANIŞMANLIK RAPORU', margin, y);
+  doc.text(fixTR('LEGATIS DENETIM DANISMANLIK — VERGI DANISMANLIK RAPORU'), margin, y);
   y += 5;
-  doc.text('Rapor Tarihi: ' + dateStr, margin, y);
+  doc.text(fixTR('Rapor Tarihi: ' + dateStr), margin, y);
   y += 3;
   doc.setDrawColor(13, 13, 13);
   doc.setLineWidth(0.5);
@@ -426,10 +438,9 @@ function printAsPDF(btn) {
   doc.setTextColor(13, 13, 13);
   doc.setFont('helvetica', 'normal');
   const lines = content.split('\n').filter(l => l.trim());
-  const pageHeight = doc.internal.pageSize.getHeight();
 
   for (const line of lines) {
-    const trimmed = line.trim();
+    const trimmed = fixTR(line.trim());
     if (!trimmed) continue;
     let fontSize = 10;
     let isBold = false;
@@ -453,7 +464,7 @@ function printAsPDF(btn) {
   doc.setTextColor(170, 170, 170);
   doc.setFont('helvetica', 'normal');
   doc.line(margin, y - 3, pageWidth - margin, y - 3);
-  doc.text('Bu rapor Legatis Tax yapay zeka sistemi tarafından oluşturulmuştur. Genel bilgilendirme amaçlıdır.', margin, y + 2);
+  doc.text(fixTR('Bu rapor Legatis Tax yapay zeka sistemi tarafindan olusturulmustur. Genel bilgilendirme amaclidir.'), margin, y + 2);
 
   doc.save('legatis-tax-rapor-' + now.toISOString().split('T')[0] + '.pdf');
 }
