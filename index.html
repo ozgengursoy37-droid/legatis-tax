@@ -18,19 +18,34 @@
 html, body { height: 100%; background: var(--off-white); color: var(--black); font-family: 'DM Sans', sans-serif; font-size: 14px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
 .layout { display: grid; grid-template-columns: var(--sidebar-w) 1fr; height: 100vh; overflow: hidden; }
 .sidebar { background: var(--black); display: flex; flex-direction: column; border-right: 1px solid rgba(255,255,255,0.06); overflow-y: auto; }
-.sidebar-top { padding: 32px 28px 28px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.sidebar-top { padding: 32px 28px 20px; border-bottom: 1px solid rgba(255,255,255,0.06); cursor: pointer; }
+.sidebar-top:hover .logo-text { color: var(--gold-lt); }
 .logo { display: flex; align-items: baseline; gap: 3px; margin-bottom: 8px; }
-.logo-text { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; color: #F2EEE4; letter-spacing: -0.02em; }
+.logo-text { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; color: #F2EEE4; letter-spacing: -0.02em; transition: color 0.15s; }
 .logo-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); margin-bottom: 3px; flex-shrink: 0; }
 .logo-sub { font-size: 11px; font-weight: 400; color: var(--gold); letter-spacing: 0.12em; text-transform: uppercase; }
-.sidebar-section { padding: 24px 18px 10px; }
-.sidebar-section-title { font-size: 10px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.25); padding: 0 10px; margin-bottom: 8px; }
+.sidebar-section { padding: 20px 18px 8px; }
+.sidebar-section-title { font-size: 9px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.25); padding: 0 10px; margin-bottom: 6px; }
 .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 8px; cursor: pointer; transition: background 0.15s; color: rgba(255,255,255,0.55); font-size: 14px; font-weight: 400; text-decoration: none; margin-bottom: 2px; }
 .nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); }
 .nav-item.active { background: rgba(201,168,76,0.12); color: var(--gold-lt); }
 .nav-icon { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.7; }
 .nav-item.active .nav-icon { opacity: 1; }
-.sidebar-bottom { margin-top: auto; padding: 20px; border-top: 1px solid rgba(255,255,255,0.06); }
+
+/* Sohbet Geçmişi */
+.history-section { padding: 8px 18px; flex: 1; overflow-y: auto; }
+.history-section-title { font-size: 9px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.25); padding: 0 10px; margin-bottom: 6px; margin-top: 8px; }
+.history-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 7px; cursor: pointer; transition: background 0.15s; margin-bottom: 1px; }
+.history-item:hover { background: rgba(255,255,255,0.06); }
+.history-item.active { background: rgba(255,255,255,0.08); }
+.history-item-icon { font-size: 12px; flex-shrink: 0; opacity: 0.6; }
+.history-item-title { font-size: 12px; color: rgba(255,255,255,0.45); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
+.history-item:hover .history-item-title { color: rgba(255,255,255,0.75); }
+.history-item.active .history-item-title { color: rgba(255,255,255,0.85); }
+.new-chat-btn { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 7px; cursor: pointer; transition: background 0.15s; margin-bottom: 4px; color: rgba(255,255,255,0.35); font-size: 12px; border: 1px dashed rgba(255,255,255,0.1); }
+.new-chat-btn:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.6); border-color: rgba(255,255,255,0.2); }
+
+.sidebar-bottom { padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
 .user-info { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .user-email { font-size: 12px; color: rgba(255,255,255,0.4); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 160px; }
 .logout-btn { font-size: 11px; color: rgba(255,255,255,0.3); background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; padding: 2px 6px; border-radius: 4px; transition: color 0.15s; }
@@ -56,7 +71,6 @@ html, body { height: 100%; background: var(--off-white); color: var(--black); fo
 .welcome-desc { font-size: 14px; color: var(--mid-gray); max-width: 480px; line-height: 1.7; margin-bottom: 14px; }
 .trust-row { display: flex; align-items: center; gap: 24px; margin-bottom: 28px; justify-content: center; flex-wrap: wrap; }
 .trust-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--mid-gray); }
-.trust-item svg { color: var(--gold); opacity: 0.8; }
 .suggestion-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 680px; width: 100%; }
 .suggestion-card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; cursor: pointer; transition: border-color 0.15s, transform 0.1s, box-shadow 0.15s; text-align: left; }
 .suggestion-card:hover { border-color: var(--gold-dk); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
@@ -133,13 +147,14 @@ html, body { height: 100%; background: var(--off-white); color: var(--black); fo
 
 <div class="layout">
   <aside class="sidebar" id="sidebar">
-    <div class="sidebar-top">
+    <div class="sidebar-top" onclick="goHome()">
       <div class="logo">
         <span class="logo-text">Legatis Tax</span>
         <div class="logo-dot"></div>
       </div>
       <div class="logo-sub">Vergi Danışmanlık Asistanı</div>
     </div>
+
     <div class="sidebar-section">
       <div class="sidebar-section-title">Uzmanlık Alanları</div>
       <a class="nav-item active" href="#" onclick="setCategory('Tüm Sorular', this); return false;">
@@ -175,6 +190,16 @@ html, body { height: 100%; background: var(--off-white); color: var(--black); fo
         Belge Analizi
       </a>
     </div>
+
+    <div class="history-section">
+      <div class="new-chat-btn" onclick="goHome()">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Yeni sohbet
+      </div>
+      <div class="history-section-title">Sohbet Geçmişi</div>
+      <div id="chatHistory"></div>
+    </div>
+
     <div class="sidebar-bottom">
       <div class="user-info">
         <span class="user-email" id="userEmailDisplay"></span>
@@ -192,7 +217,7 @@ html, body { height: 100%; background: var(--off-white); color: var(--black); fo
 
   <main class="main">
     <div class="mobile-header">
-      <div class="logo" style="margin:0">
+      <div class="logo" style="margin:0" onclick="goHome()">
         <span class="logo-text" style="font-size:18px">Legatis Tax</span>
         <div class="logo-dot"></div>
       </div>
@@ -201,7 +226,7 @@ html, body { height: 100%; background: var(--off-white); color: var(--black); fo
       </button>
     </div>
     <div class="topbar">
-      <div class="topbar-title">Vergi Danışmanınız</div>
+      <div class="topbar-title" id="topbarTitle">Vergi Danışmanınız</div>
       <div class="topbar-meta">
         <span><span class="status-dot"></span>Çevrimiçi</span>
         <div class="trust-badge">
@@ -299,7 +324,133 @@ let currentUser = null;
 let currentCategory = 'Tüm Sorular';
 let selectedFile = null;
 
+// Sohbet geçmişi
+let chatSessions = []; // [{id, title, messages: [{role, text, fileInfo}]}]
+let currentSessionId = null;
+
+function generateId() { return Math.random().toString(36).substr(2, 9); }
+
+function saveSessions() {
+  try { localStorage.setItem('legatis_sessions', JSON.stringify(chatSessions)); } catch(e) {}
+}
+
+function loadSessions() {
+  try {
+    const saved = localStorage.getItem('legatis_sessions');
+    if (saved) chatSessions = JSON.parse(saved);
+  } catch(e) { chatSessions = []; }
+}
+
+function renderHistory() {
+  const container = document.getElementById('chatHistory');
+  container.innerHTML = '';
+  const recent = chatSessions.slice(-20).reverse();
+  recent.forEach(session => {
+    const item = document.createElement('div');
+    item.className = 'history-item' + (session.id === currentSessionId ? ' active' : '');
+    item.innerHTML = `<span class="history-item-icon">💬</span><span class="history-item-title">${session.title}</span>`;
+    item.onclick = () => loadSession(session.id);
+    container.appendChild(item);
+  });
+}
+
+function loadSession(sessionId) {
+  const session = chatSessions.find(s => s.id === sessionId);
+  if (!session) return;
+  currentSessionId = session.id;
+  const messages = document.getElementById('messages');
+  const welcome = document.getElementById('welcome');
+  if (welcome) welcome.style.display = 'none';
+  // Tüm mesajları temizle ve yeniden yükle
+  messages.innerHTML = '';
+  session.messages.forEach(msg => {
+    renderMessage(msg.role, msg.text, msg.fileInfo);
+  });
+  document.getElementById('topbarTitle').textContent = session.title;
+  renderHistory();
+  closeMobileSidebar();
+}
+
+function renderMessage(role, text, fileInfo) {
+  const messages = document.getElementById('messages');
+  const row = document.createElement('div');
+  row.className = 'msg-row';
+  const avatar = document.createElement('div');
+  avatar.className = 'msg-avatar ' + (role === 'bot' ? 'bot' : 'user');
+  avatar.textContent = role === 'bot' ? 'L' : 'S';
+  const content = document.createElement('div');
+  content.className = 'msg-content';
+  const sender = document.createElement('div');
+  sender.className = 'msg-sender';
+  sender.textContent = role === 'bot' ? 'Legatis Tax' : 'Siz';
+  const msgText = document.createElement('div');
+  msgText.className = 'msg-text';
+  if (fileInfo) {
+    msgText.innerHTML = `<div style="display:flex;align-items:center;gap:6px;padding:8px 10px;background:rgba(0,0,0,0.04);border-radius:6px;margin-bottom:8px;font-size:12px;color:#888"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>${fileInfo}</div>` + (text ? formatText(text) : '');
+  } else {
+    msgText.innerHTML = formatText(text);
+  }
+  content.appendChild(sender);
+  content.appendChild(msgText);
+  if (role === 'bot') {
+    const actions = document.createElement('div');
+    actions.className = 'msg-actions';
+    actions.innerHTML = `
+      <button class="msg-action-btn" onclick="printAsPDF(this)">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M4 13h8M8 3v7M5 7l3 3 3-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        PDF olarak kaydet
+      </button>
+      <button class="msg-action-btn" onclick="copyText(this)">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="8" height="9" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M3 11V3h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        Kopyala
+      </button>
+      <button class="msg-action-btn" onclick="deepenQuestion(this)">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 6v2.5M8 10.5v.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Detaylandır
+      </button>
+    `;
+    content.appendChild(actions);
+  }
+  row.appendChild(avatar);
+  row.appendChild(content);
+  messages.appendChild(row);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+function goHome() {
+  currentSessionId = null;
+  sessionId = 'session_' + Math.random().toString(36).substr(2, 9);
+  const messages = document.getElementById('messages');
+  messages.innerHTML = '';
+  const welcome = document.createElement('div');
+  welcome.className = 'welcome';
+  welcome.id = 'welcome';
+  welcome.innerHTML = `
+    <div class="welcome-emblem"><span class="welcome-emblem-text">L</span></div>
+    <h1 class="welcome-title">Vergi mevzuatında uzman danışmanınız.</h1>
+    <p class="welcome-desc">Mükellef haklarınızı öğrenin. Yasal avantajlarınızı keşfedin. Risklerinizi önceden görün.</p>
+    <div class="trust-row">
+      <div class="trust-item"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 3 3.5.5-2.5 2.5.5 3.5L8 10l-3 1.5.5-3.5L3 5.5 6.5 5z" stroke="currentColor" stroke-width="1.2"/></svg>Deneyimli uzman ekip</div>
+      <div class="trust-item"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="3" y="2" width="10" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M6 6h4M6 9h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Güncel vergi mevzuatı</div>
+      <div class="trust-item"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2a6 6 0 100 12A6 6 0 008 2z" stroke="currentColor" stroke-width="1.2"/><path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>7/24 erişim</div>
+      <div class="trust-item"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 3.5 3.5.5-2.5 2.5.7 3.5L8 10.5 4.8 12l.7-3.5L3 6l3.5-.5z" stroke="currentColor" stroke-width="1.2"/></svg>Mükellef lehine yorum</div>
+    </div>
+    <div class="suggestion-grid">
+      <div class="suggestion-card" onclick="sendSuggestion('Vergi yükümü nasıl azaltabilirim? Yasal optimizasyon yolları nelerdir?')"><div class="suggestion-icon">📊</div><div class="suggestion-title">Vergi yükümü nasıl azaltırım?</div><div class="suggestion-desc">Yasal optimizasyon ve teşvik yolları</div></div>
+      <div class="suggestion-card" onclick="sendSuggestion('Vergi incelemesine nasıl hazırlanmalıyım? Riskli hesaplar hangileri?')"><div class="suggestion-icon">🔍</div><div class="suggestion-title">Vergi incelemesine hazırlık</div><div class="suggestion-desc">Riskli hesaplar ve önlem stratejileri</div></div>
+      <div class="suggestion-card" onclick="sendSuggestion('Şirket ortaklık işlemlerinde vergisel etkiler nelerdir? Kâr dağıtımı nasıl yapılır?')"><div class="suggestion-icon">🏢</div><div class="suggestion-title">Şirket ortaklık işlemleri</div><div class="suggestion-desc">Sermaye, kâr dağıtımı ve vergisel etkileri</div></div>
+      <div class="suggestion-card" onclick="triggerFileUpload()"><div class="suggestion-icon">📄</div><div class="suggestion-title">Belge analizi yap</div><div class="suggestion-desc">PDF, Word, Excel veya görsel yükle</div></div>
+    </div>
+  `;
+  messages.appendChild(welcome);
+  document.getElementById('topbarTitle').textContent = 'Vergi Danışmanınız';
+  renderHistory();
+  closeMobileSidebar();
+}
+
 async function initAuth() {
+  loadSessions();
+  renderHistory();
   const { data: { session } } = await sb.auth.getSession();
   if (session) {
     currentUser = session.user;
@@ -332,9 +483,7 @@ function closeMobileSidebar() {
   document.getElementById('mobileSidebarOverlay').classList.remove('open');
 }
 
-function triggerFileUpload() {
-  document.getElementById('fileInput').click();
-}
+function triggerFileUpload() { document.getElementById('fileInput').click(); }
 
 function handleFileSelect(event) {
   const file = event.target.files[0];
@@ -394,6 +543,16 @@ function formatText(text) {
   return result;
 }
 
+function fixTR(str) {
+  return str
+    .replace(/^#{1,3}\s*/gm, '')
+    .replace(/⚠️/g, '')
+    .replace(/[^\x00-\x7F]/g, c => {
+      const map = {'ş':'s','Ş':'S','ğ':'g','Ğ':'G','ü':'u','Ü':'U','ö':'o','Ö':'O','ç':'c','Ç':'C','ı':'i','İ':'I'};
+      return map[c] || '';
+    });
+}
+
 function printAsPDF(btn) {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
@@ -406,17 +565,6 @@ function printAsPDF(btn) {
   const maxWidth = pageWidth - margin * 2;
   const pageHeight = doc.internal.pageSize.getHeight();
   let y = margin;
-
-  // Türkçe karakter dönüşümü
- function fixTR(str) {
-  return str
-    .replace(/^#{1,3}\s*/gm, '')
-    .replace(/⚠️/g, '')
-    .replace(/[^\x00-\x7F]/g, c => {
-      const map = {'ş':'s','Ş':'S','ğ':'g','Ğ':'G','ü':'u','Ü':'U','ö':'o','Ö':'O','ç':'c','Ç':'C','ı':'i','İ':'I'};
-      return map[c] || '';
-    });
-}
 
   doc.setFontSize(22);
   doc.setFont('helvetica', 'bold');
@@ -445,16 +593,12 @@ function printAsPDF(btn) {
     let fontSize = 10;
     let isBold = false;
     if (trimmed.length < 60 && trimmed === trimmed.toUpperCase() && trimmed.length > 3) {
-      fontSize = 11;
-      isBold = true;
+      fontSize = 11; isBold = true;
     }
     doc.setFontSize(fontSize);
     doc.setFont('helvetica', isBold ? 'bold' : 'normal');
     const wrapped = doc.splitTextToSize(trimmed, maxWidth);
-    if (y + wrapped.length * 5 + 4 > pageHeight - margin) {
-      doc.addPage();
-      y = margin;
-    }
+    if (y + wrapped.length * 5 + 4 > pageHeight - margin) { doc.addPage(); y = margin; }
     doc.text(wrapped, margin, y);
     y += wrapped.length * 5 + 3;
   }
@@ -465,55 +609,17 @@ function printAsPDF(btn) {
   doc.setFont('helvetica', 'normal');
   doc.line(margin, y - 3, pageWidth - margin, y - 3);
   doc.text(fixTR('Bu rapor Legatis Tax yapay zeka sistemi tarafindan olusturulmustur. Genel bilgilendirme amaclidir.'), margin, y + 2);
-
   doc.save('legatis-tax-rapor-' + now.toISOString().split('T')[0] + '.pdf');
 }
 
 function addMessage(role, text, fileInfo) {
   hideWelcome();
-  const messages = document.getElementById('messages');
-  const row = document.createElement('div');
-  row.className = 'msg-row';
-  const avatar = document.createElement('div');
-  avatar.className = 'msg-avatar ' + (role === 'bot' ? 'bot' : 'user');
-  avatar.textContent = role === 'bot' ? 'L' : 'S';
-  const content = document.createElement('div');
-  content.className = 'msg-content';
-  const sender = document.createElement('div');
-  sender.className = 'msg-sender';
-  sender.textContent = role === 'bot' ? 'Legatis Tax' : 'Siz';
-  const msgText = document.createElement('div');
-  msgText.className = 'msg-text';
-  if (fileInfo) {
-    msgText.innerHTML = `<div style="display:flex;align-items:center;gap:6px;padding:8px 10px;background:rgba(0,0,0,0.04);border-radius:6px;margin-bottom:8px;font-size:12px;color:#888"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>${fileInfo}</div>` + (text ? formatText(text) : '');
-  } else {
-    msgText.innerHTML = formatText(text);
+  // Oturuma kaydet
+  if (currentSessionId) {
+    const session = chatSessions.find(s => s.id === currentSessionId);
+    if (session) { session.messages.push({role, text, fileInfo}); saveSessions(); }
   }
-  content.appendChild(sender);
-  content.appendChild(msgText);
-  if (role === 'bot') {
-    const actions = document.createElement('div');
-    actions.className = 'msg-actions';
-    actions.innerHTML = `
-      <button class="msg-action-btn" onclick="printAsPDF(this)">
-        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M4 13h8M8 3v7M5 7l3 3 3-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        PDF olarak kaydet
-      </button>
-      <button class="msg-action-btn" onclick="copyText(this)">
-        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="8" height="9" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M3 11V3h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-        Kopyala
-      </button>
-      <button class="msg-action-btn" onclick="deepenQuestion(this)">
-        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 6v2.5M8 10.5v.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-        Detaylandır
-      </button>
-    `;
-    content.appendChild(actions);
-  }
-  row.appendChild(avatar);
-  row.appendChild(content);
-  messages.appendChild(row);
-  messages.scrollTop = messages.scrollHeight;
+  renderMessage(role, text, fileInfo);
 }
 
 function copyText(btn) {
@@ -566,11 +672,27 @@ async function sendMessage() {
   const text = input.value.trim();
   if (!text && !selectedFile) return;
   if (isLoading) return;
+
+  // Yeni oturum başlat
+  if (!currentSessionId) {
+    const newSession = {
+      id: generateId(),
+      title: text ? (text.substring(0, 40) + (text.length > 40 ? '...' : '')) : (selectedFile ? selectedFile.name : 'Yeni sohbet'),
+      messages: []
+    };
+    chatSessions.push(newSession);
+    currentSessionId = newSession.id;
+    saveSessions();
+    renderHistory();
+    document.getElementById('topbarTitle').textContent = newSession.title;
+  }
+
   const fileToSend = selectedFile;
   const questionText = text;
   input.value = ''; input.style.height = 'auto';
   isLoading = true;
   document.getElementById('sendBtn').disabled = true;
+
   if (fileToSend) {
     addMessage('user', questionText || 'Bu belgeyi analiz edin.', fileToSend.name);
     removeFile();
@@ -578,6 +700,7 @@ async function sendMessage() {
     addMessage('user', questionText);
   }
   addTyping();
+
   try {
     if (fileToSend) {
       const formData = new FormData();
@@ -608,6 +731,7 @@ async function sendMessage() {
     removeTyping();
     addMessage('bot', 'Bağlantı hatası oluştu. Lütfen tekrar deneyin.');
   }
+
   isLoading = false;
   document.getElementById('sendBtn').disabled = false;
   document.getElementById('userInput').focus();
