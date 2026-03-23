@@ -107,25 +107,6 @@ html, body { height: 100%; background: var(--off-white); color: var(--black); fo
 .file-preview-size { font-size: 11px; color: var(--mid-gray); flex-shrink: 0; }
 .file-preview-remove { background: none; border: none; cursor: pointer; color: var(--mid-gray); padding: 2px; border-radius: 4px; display: flex; align-items: center; justify-content: center; }
 .file-preview-remove:hover { color: #e53e3e; }
-.auth-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-.auth-overlay.hidden { display: none; }
-.auth-modal { background: white; border-radius: 16px; padding: 36px 32px; width: 100%; max-width: 380px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
-.auth-logo { display: flex; align-items: center; gap: 8px; margin-bottom: 24px; }
-.auth-logo-emblem { width: 36px; height: 36px; border-radius: 9px; background: var(--black); display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: var(--gold); }
-.auth-logo-text { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; color: var(--black); }
-.auth-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 500; color: var(--black); margin-bottom: 6px; }
-.auth-subtitle { font-size: 12px; color: var(--mid-gray); margin-bottom: 24px; line-height: 1.6; }
-.auth-field { margin-bottom: 14px; }
-.auth-field label { display: block; font-size: 11px; font-weight: 500; color: var(--black); margin-bottom: 6px; letter-spacing: 0.02em; }
-.auth-field input { width: 100%; padding: 10px 14px; border: 1px solid rgba(0,0,0,0.12); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--black); outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
-.auth-field input:focus { border-color: var(--gold-dk); box-shadow: 0 0 0 3px rgba(201,168,76,0.1); }
-.auth-submit { width: 100%; padding: 11px; background: var(--black); color: white; border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 6px; transition: background 0.15s; }
-.auth-submit:hover { background: #2a2a2a; }
-.auth-submit:disabled { background: rgba(0,0,0,0.2); cursor: not-allowed; }
-.auth-toggle { text-align: center; margin-top: 16px; font-size: 12px; color: var(--mid-gray); }
-.auth-toggle a { color: var(--gold-dk); cursor: pointer; text-decoration: none; font-weight: 500; }
-.auth-error { font-size: 12px; color: #e53e3e; margin-top: 10px; text-align: center; min-height: 18px; }
-.auth-success { font-size: 12px; color: #38a169; margin-top: 10px; text-align: center; min-height: 18px; }
 .mobile-header { display: none; padding: 14px 16px; background: var(--black); align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.06); }
 .mobile-menu-btn { background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.7); padding: 4px; }
 .mobile-sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; }
@@ -145,32 +126,6 @@ html, body { height: 100%; background: var(--off-white); color: var(--black); fo
 </style>
 </head>
 <body>
-
-<div class="auth-overlay" id="authOverlay">
-  <div class="auth-modal">
-    <div class="auth-logo">
-      <div class="auth-logo-emblem">L</div>
-      <div class="auth-logo-text">Legatis Tax</div>
-    </div>
-    <h2 class="auth-title" id="authTitle">Hoş geldiniz</h2>
-    <p class="auth-subtitle" id="authSubtitle">Devam etmek için giriş yapın veya ücretsiz hesap oluşturun.</p>
-    <div class="auth-field">
-      <label>E-posta</label>
-      <input type="email" id="authEmail" placeholder="ornek@email.com" />
-    </div>
-    <div class="auth-field">
-      <label>Şifre</label>
-      <input type="password" id="authPassword" placeholder="En az 6 karakter" />
-    </div>
-    <button class="auth-submit" id="authSubmit" onclick="handleAuth()">Giriş Yap</button>
-    <div class="auth-error" id="authError"></div>
-    <div class="auth-success" id="authSuccess"></div>
-    <div class="auth-toggle">
-      <span id="authToggleText">Hesabınız yok mu?</span>
-      <a onclick="toggleAuthMode()"> <span id="authToggleLink">Kayıt ol</span></a>
-    </div>
-  </div>
-</div>
 
 <div class="mobile-sidebar-overlay" id="mobileSidebarOverlay" onclick="closeMobileSidebar()"></div>
 <input type="file" id="fileInput" style="display:none" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.gif,.webp" onchange="handleFileSelect(event)">
@@ -222,14 +177,14 @@ html, body { height: 100%; background: var(--off-white); color: var(--black); fo
     <div class="sidebar-bottom">
       <div class="user-info">
         <span class="user-email" id="userEmailDisplay"></span>
-        <button class="logout-btn" onclick="logout()">Çıkış</button>
+        <button class="logout-btn" id="logoutBtn" onclick="logout()" style="display:none">Çıkış</button>
       </div>
       <div class="plan-badge">
         <div>
-          <div class="plan-name" id="planName">Ücretsiz Plan</div>
-          <div class="plan-limit" id="planLimit">10 soru / gün</div>
+          <div class="plan-name" id="planName">Test Modu</div>
+          <div class="plan-limit" id="planLimit">Sınırsız erişim</div>
         </div>
-        <button class="upgrade-btn" onclick="window.open('https://legatis-tax.lemonsqueezy.com/checkout/buy/49780de3-18e9-465b-ae4d-1f6df068b838', '_blank')">Yükselt</button>
+        <button class="upgrade-btn" onclick="window.open('https://legatis-tax.lemonsqueezy.com/checkout/buy/49780de3-18e9-465b-ae4d-1f6df068b838', '_blank')">Premium</button>
       </div>
     </div>
   </aside>
@@ -341,73 +296,27 @@ let sessionId = 'session_' + Math.random().toString(36).substr(2, 9);
 let isLoading = false;
 let currentUser = null;
 let currentCategory = 'Tüm Sorular';
-let remainingQuestions = 10;
-let isLoginMode = true;
 let selectedFile = null;
 
+// Test modu: kayıt olmadan direkt kullan
 async function initAuth() {
   const { data: { session } } = await sb.auth.getSession();
-  if (session) { await onLogin(session.user); }
-  else { document.getElementById('authOverlay').classList.remove('hidden'); }
-}
-
-async function onLogin(user) {
-  currentUser = user;
-  document.getElementById('authOverlay').classList.add('hidden');
-  document.getElementById('userEmailDisplay').textContent = user.email;
-  await loadProfile();
-}
-
-async function loadProfile() {
-  const { data: profile } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
-  if (profile) {
-    const today = new Date().toISOString().split('T')[0];
-    const isNewDay = profile.last_question_date !== today;
-    const used = isNewDay ? 0 : profile.daily_question_count;
-    remainingQuestions = profile.is_premium ? 999 : Math.max(0, 10 - used);
-    document.getElementById('planName').textContent = profile.is_premium ? 'Premium Plan' : 'Ücretsiz Plan';
-    document.getElementById('planLimit').textContent = profile.is_premium ? 'Sınırsız soru' : `${remainingQuestions} soru / gün kaldı`;
-  }
-}
-
-function toggleAuthMode() {
-  isLoginMode = !isLoginMode;
-  document.getElementById('authTitle').textContent = isLoginMode ? 'Hoş geldiniz' : 'Hesap oluştur';
-  document.getElementById('authSubtitle').textContent = isLoginMode ? 'Devam etmek için giriş yapın veya ücretsiz hesap oluşturun.' : 'Ücretsiz hesabınızla günde 10 soru hakkı kazanın.';
-  document.getElementById('authSubmit').textContent = isLoginMode ? 'Giriş Yap' : 'Kayıt Ol';
-  document.getElementById('authToggleText').textContent = isLoginMode ? 'Hesabınız yok mu?' : 'Zaten hesabınız var mı?';
-  document.getElementById('authToggleLink').textContent = isLoginMode ? 'Kayıt ol' : 'Giriş yap';
-  document.getElementById('authError').textContent = '';
-  document.getElementById('authSuccess').textContent = '';
-}
-
-async function handleAuth() {
-  const email = document.getElementById('authEmail').value.trim();
-  const password = document.getElementById('authPassword').value;
-  const btn = document.getElementById('authSubmit');
-  const errEl = document.getElementById('authError');
-  const successEl = document.getElementById('authSuccess');
-  errEl.textContent = ''; successEl.textContent = '';
-  if (!email || !password) { errEl.textContent = 'E-posta ve şifre gereklidir.'; return; }
-  if (password.length < 6) { errEl.textContent = 'Şifre en az 6 karakter olmalıdır.'; return; }
-  btn.disabled = true; btn.textContent = 'Lütfen bekleyin...';
-  if (isLoginMode) {
-    const { data, error } = await sb.auth.signInWithPassword({ email, password });
-    if (error) { errEl.textContent = 'E-posta veya şifre hatalı.'; btn.disabled = false; btn.textContent = 'Giriş Yap'; }
-    else { await onLogin(data.user); }
-  } else {
-    const { data, error } = await sb.auth.signUp({ email, password });
-    if (error) { errEl.textContent = 'Kayıt başarısız: ' + error.message; btn.disabled = false; btn.textContent = 'Kayıt Ol'; }
-    else { successEl.textContent = 'Hesabınız oluşturuldu! E-postanızı doğrulayın.'; btn.disabled = false; btn.textContent = 'Kayıt Ol'; }
+  if (session) {
+    currentUser = session.user;
+    document.getElementById('userEmailDisplay').textContent = session.user.email;
+    document.getElementById('logoutBtn').style.display = 'block';
+    document.getElementById('planName').textContent = 'Test Modu';
+    document.getElementById('planLimit').textContent = 'Sınırsız erişim';
   }
 }
 
 async function logout() {
   await sb.auth.signOut();
   currentUser = null;
-  document.getElementById('authOverlay').classList.remove('hidden');
-  document.getElementById('authEmail').value = '';
-  document.getElementById('authPassword').value = '';
+  document.getElementById('userEmailDisplay').textContent = '';
+  document.getElementById('logoutBtn').style.display = 'none';
+  document.getElementById('planName').textContent = 'Test Modu';
+  document.getElementById('planLimit').textContent = 'Sınırsız erişim';
 }
 
 function setCategory(name, el) {
@@ -428,23 +337,17 @@ function closeMobileSidebar() {
 }
 
 function triggerFileUpload() {
-  if (!currentUser) { document.getElementById('authOverlay').classList.remove('hidden'); return; }
   document.getElementById('fileInput').click();
 }
 
 function handleFileSelect(event) {
   const file = event.target.files[0];
   if (!file) return;
-  const maxSize = 10 * 1024 * 1024; // 10MB
-  if (file.size > maxSize) {
-    alert('Dosya boyutu 10MB\'dan büyük olamaz.');
-    return;
-  }
+  if (file.size > 10 * 1024 * 1024) { alert('Dosya boyutu 10MB\'dan büyük olamaz.'); return; }
   selectedFile = file;
-  const preview = document.getElementById('filePreview');
   document.getElementById('filePreviewName').textContent = file.name;
   document.getElementById('filePreviewSize').textContent = (file.size / 1024).toFixed(0) + ' KB';
-  preview.style.display = 'flex';
+  document.getElementById('filePreview').style.display = 'flex';
   document.getElementById('userInput').placeholder = 'Bu belge hakkında sormak istediğinizi yazın... (veya boş bırakın)';
 }
 
@@ -552,8 +455,7 @@ function copyText(btn) {
 
 function downloadText(btn) {
   const msgText = btn.closest('.msg-content').querySelector('.msg-text');
-  const content = msgText.innerText;
-  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  const blob = new Blob([msgText.innerText], { type: 'text/plain;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url; a.download = 'legatis-tax-yanit.txt'; a.click();
@@ -602,11 +504,6 @@ async function sendMessage() {
   const text = input.value.trim();
   if (!text && !selectedFile) return;
   if (isLoading) return;
-  if (!currentUser) { document.getElementById('authOverlay').classList.remove('hidden'); return; }
-  if (remainingQuestions <= 0) {
-    addMessage('bot', 'Günlük soru limitinize ulaştınız. Premium plana geçerek sınırsız soru sorabilirsiniz.');
-    return;
-  }
 
   const fileToSend = selectedFile;
   const questionText = text;
@@ -624,40 +521,26 @@ async function sendMessage() {
 
   try {
     if (fileToSend) {
-      // Belge analizi
       const formData = new FormData();
       formData.append('file', fileToSend);
       formData.append('question', questionText || 'Bu belgeyi vergi mevzuatı açısından analiz et. Mükellef lehine yasal avantajları, riskleri ve önerileri belirt.');
-      formData.append('user_id', currentUser.id);
+      formData.append('user_id', currentUser?.id || 'test-user');
 
       const res = await fetch('/api/analyze', { method: 'POST', body: formData });
       const data = await res.json();
       removeTyping();
-
       if (data.ok) {
-        remainingQuestions = Math.max(0, remainingQuestions - 1);
-        document.getElementById('planLimit').textContent = remainingQuestions === 999 ? 'Sınırsız soru' : `${remainingQuestions} soru / gün kaldı`;
         addMessage('bot', data.analysis);
       } else {
         addMessage('bot', 'Belge analizi sırasında bir hata oluştu: ' + (data.error || 'Bilinmeyen hata'));
       }
     } else {
-      // Normal soru
       const res = await fetch('/api/question', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: currentUser.id, category: currentCategory, question_text: questionText })
+        body: JSON.stringify({ user_id: currentUser?.id || 'test-user', category: currentCategory, question_text: questionText })
       });
       const qData = await res.json();
-      if (qData.error === 'LIMIT_REACHED') {
-        removeTyping();
-        addMessage('bot', 'Günlük soru limitinize ulaştınız. Premium plana geçerek sınırsız soru sorabilirsiniz.');
-        isLoading = false;
-        document.getElementById('sendBtn').disabled = false;
-        return;
-      }
-      remainingQuestions = qData.remaining;
-      document.getElementById('planLimit').textContent = remainingQuestions === 999 ? 'Sınırsız soru' : `${remainingQuestions} soru / gün kaldı`;
 
       const flowRes = await fetch(`${FLOWISE_URL}/api/v1/prediction/${CHATFLOW_ID}`, {
         method: 'POST',
