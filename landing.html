@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legatis Tax — Türkiye'nin Yapay Zeka Destekli Vergi Danışmanı</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --gold: #C9A84C; --gold-lt: #E8D49A; --gold-dk: #8B6B2A;
+  --black: #0D0D0D; --off-white: #F7F6F2; --mid-gray: #888580;
+  --border: rgba(0,0,0,0.08);
+}
+html { scroll-behavior: smooth; }
+body { font-family: 'DM Sans', sans-serif; font-size: 15px; line-height: 1.6; color: var(--black); background: var(--off-white); -webkit-font-smoothing: antialiased; }
+
+/* NAV */
+nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(13,13,13,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.06); }
+.nav-inner { max-width: 1160px; margin: 0 auto; padding: 0 32px; height: 64px; display: flex; align-items: center; justify-content: space-between; }
+.nav-logo { display: flex; align-items: baseline; gap: 4px; text-decoration: none; }
+.nav-logo-text { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: #F2EEE4; letter-spacing: -0.02em; }
+.nav-logo-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); margin-bottom: 2px; flex-shrink: 0; }
+.nav-links { display: flex; align-items: center; gap: 32px; }
+.nav-link { color: rgba(255,255,255,0.55); text-decoration: none; font-size: 14px; font-weight: 400; transition: color 0.15s; }
+.nav-link:hover { color: rgba(255,255,255,0.9); }
+.nav-cta { background: var(--gold); color: var(--black); text-decoration: none; font-size: 13px; font-weight: 600; padding: 9px 20px; border-radius: 8px; transition: all 0.15s; letter-spacing: 0.02em; }
+.nav-cta:hover { background: var(--gold-lt); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(201,168,76,0.3); }
+
+/* HERO */
+.hero { min-height: 100vh; background: var(--black); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 120px 32px 80px; position: relative; overflow: hidden; }
+.hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 50% 30%, rgba(201,168,76,0.08) 0%, transparent 70%); pointer-events: none; }
+.hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.25); border-radius: 100px; padding: 6px 16px; margin-bottom: 32px; }
+.hero-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); animation: pulse 2s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.hero-badge-text { font-size: 12px; font-weight: 500; color: var(--gold-lt); letter-spacing: 0.06em; text-transform: uppercase; }
+.hero-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(42px, 7vw, 80px); font-weight: 600; color: #F2EEE4; line-height: 1.08; letter-spacing: -0.02em; max-width: 820px; margin-bottom: 24px; }
+.hero-title span { color: var(--gold); }
+.hero-desc { font-size: 18px; color: rgba(255,255,255,0.45); max-width: 520px; line-height: 1.7; margin-bottom: 48px; font-weight: 300; }
+.hero-cta-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: center; margin-bottom: 64px; }
+.btn-primary { background: var(--gold); color: var(--black); text-decoration: none; font-size: 15px; font-weight: 600; padding: 14px 32px; border-radius: 10px; transition: all 0.15s; display: inline-flex; align-items: center; gap: 8px; }
+.btn-primary:hover { background: var(--gold-lt); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,168,76,0.35); }
+.btn-secondary { color: rgba(255,255,255,0.6); text-decoration: none; font-size: 15px; font-weight: 400; display: inline-flex; align-items: center; gap: 6px; transition: color 0.15s; }
+.btn-secondary:hover { color: rgba(255,255,255,0.9); }
+.hero-stats { display: flex; align-items: center; gap: 48px; flex-wrap: wrap; justify-content: center; }
+.hero-stat { text-align: center; }
+.hero-stat-num { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 600; color: var(--gold-lt); line-height: 1; }
+.hero-stat-label { font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 4px; letter-spacing: 0.04em; text-transform: uppercase; }
+.hero-stat-divider { width: 1px; height: 40px; background: rgba(255,255,255,0.08); }
+
+/* SCREENSHOT */
+.screenshot-section { background: var(--black); padding: 0 32px 100px; display: flex; justify-content: center; }
+.screenshot-wrapper { max-width: 960px; width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; overflow: hidden; box-shadow: 0 40px 80px rgba(0,0,0,0.6); }
+.screenshot-bar { background: rgba(255,255,255,0.04); padding: 12px 16px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.screenshot-dot { width: 10px; height: 10px; border-radius: 50%; }
+.screenshot-url { flex: 1; text-align: center; font-size: 12px; color: rgba(255,255,255,0.2); }
+.screenshot-preview { display: grid; grid-template-columns: 220px 1fr; min-height: 420px; }
+.sp-sidebar { background: #0D0D0D; padding: 20px 16px; border-right: 1px solid rgba(255,255,255,0.06); }
+.sp-logo { font-family: 'Cormorant Garamond', serif; font-size: 18px; color: #F2EEE4; margin-bottom: 4px; }
+.sp-sub { font-size: 9px; color: var(--gold); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 20px; }
+.sp-cat { font-size: 9px; color: rgba(255,255,255,0.2); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px; margin-top: 16px; }
+.sp-item { font-size: 11px; color: rgba(255,255,255,0.4); padding: 6px 8px; border-radius: 5px; margin-bottom: 2px; }
+.sp-item.active { background: rgba(201,168,76,0.12); color: var(--gold-lt); }
+.sp-main { background: #F7F6F2; padding: 24px 28px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.sp-emblem { width: 56px; height: 56px; background: #0D0D0D; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 28px; color: var(--gold); margin-bottom: 14px; }
+.sp-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; color: #0D0D0D; margin-bottom: 6px; text-align: center; }
+.sp-desc { font-size: 11px; color: #888; text-align: center; margin-bottom: 20px; }
+.sp-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; max-width: 380px; }
+.sp-card { background: white; border: 1px solid rgba(0,0,0,0.08); border-radius: 8px; padding: 12px; font-size: 11px; }
+.sp-card-title { font-weight: 500; color: #0D0D0D; margin-bottom: 3px; }
+.sp-card-desc { color: #888; font-size: 10px; }
+
+/* FEATURES */
+.features { padding: 100px 32px; background: var(--off-white); }
+.section-label { font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold-dk); margin-bottom: 12px; }
+.section-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(32px, 4vw, 52px); font-weight: 500; color: var(--black); line-height: 1.1; margin-bottom: 16px; }
+.section-desc { font-size: 16px; color: var(--mid-gray); max-width: 480px; line-height: 1.7; }
+.features-inner { max-width: 1160px; margin: 0 auto; }
+.features-header { margin-bottom: 64px; }
+.features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.feature-card { background: white; border: 1px solid var(--border); border-radius: 16px; padding: 32px; transition: box-shadow 0.2s, transform 0.2s; }
+.feature-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.08); transform: translateY(-2px); }
+.feature-icon { width: 48px; height: 48px; background: rgba(201,168,76,0.08); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; font-size: 22px; }
+.feature-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: var(--black); margin-bottom: 10px; }
+.feature-desc { font-size: 14px; color: var(--mid-gray); line-height: 1.7; }
+
+/* HOW IT WORKS */
+.how { padding: 100px 32px; background: var(--black); }
+.how-inner { max-width: 1160px; margin: 0 auto; }
+.how-header { margin-bottom: 64px; }
+.how-header .section-title { color: #F2EEE4; }
+.how-header .section-desc { color: rgba(255,255,255,0.4); }
+.how-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; position: relative; }
+.how-steps::before { content: ''; position: absolute; top: 24px; left: calc(12.5% + 24px); right: calc(12.5% + 24px); height: 1px; background: linear-gradient(90deg, var(--gold-dk), rgba(201,168,76,0.2)); }
+.how-step { text-align: center; }
+.how-step-num { width: 48px; height: 48px; border-radius: 50%; background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.3); display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: var(--gold); margin: 0 auto 20px; position: relative; z-index: 1; }
+.how-step-title { font-size: 15px; font-weight: 500; color: #F2EEE4; margin-bottom: 8px; }
+.how-step-desc { font-size: 13px; color: rgba(255,255,255,0.35); line-height: 1.6; }
+
+/* DIFFERENCE */
+.difference { padding: 100px 32px; background: var(--off-white); }
+.difference-inner { max-width: 1160px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+.diff-content .section-label { display: block; margin-bottom: 12px; }
+.diff-list { margin-top: 32px; display: flex; flex-direction: column; gap: 20px; }
+.diff-item { display: flex; gap: 16px; }
+.diff-icon { width: 36px; height: 36px; border-radius: 8px; background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px; }
+.diff-item-title { font-size: 15px; font-weight: 500; color: var(--black); margin-bottom: 4px; }
+.diff-item-desc { font-size: 13px; color: var(--mid-gray); line-height: 1.6; }
+.diff-card { background: var(--black); border-radius: 20px; padding: 40px; }
+.diff-card-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--gold-lt); margin-bottom: 24px; }
+.diff-quote { font-size: 15px; color: rgba(255,255,255,0.6); line-height: 1.8; font-style: italic; border-left: 2px solid var(--gold); padding-left: 20px; margin-bottom: 24px; }
+.diff-examples { display: flex; flex-direction: column; gap: 10px; }
+.diff-example { background: rgba(255,255,255,0.04); border-radius: 8px; padding: 12px 16px; font-size: 13px; color: rgba(255,255,255,0.5); display: flex; align-items: center; gap: 10px; }
+.diff-example::before { content: '→'; color: var(--gold); font-size: 14px; }
+
+/* PRICING */
+.pricing { padding: 100px 32px; background: var(--black); }
+.pricing-inner { max-width: 900px; margin: 0 auto; text-align: center; }
+.pricing-header { margin-bottom: 56px; }
+.pricing-header .section-title { color: #F2EEE4; }
+.pricing-header .section-desc { color: rgba(255,255,255,0.4); margin: 0 auto; }
+.pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; text-align: left; }
+.pricing-card { border-radius: 16px; padding: 36px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.03); }
+.pricing-card.featured { background: rgba(201,168,76,0.06); border-color: rgba(201,168,76,0.3); position: relative; }
+.pricing-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--gold); color: var(--black); font-size: 11px; font-weight: 600; padding: 4px 14px; border-radius: 100px; letter-spacing: 0.04em; white-space: nowrap; }
+.pricing-plan { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.4); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 12px; }
+.pricing-price { font-family: 'Cormorant Garamond', serif; font-size: 52px; font-weight: 600; color: #F2EEE4; line-height: 1; margin-bottom: 4px; }
+.pricing-price span { font-size: 20px; font-weight: 400; color: rgba(255,255,255,0.4); }
+.pricing-period { font-size: 13px; color: rgba(255,255,255,0.3); margin-bottom: 28px; }
+.pricing-features { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
+.pricing-feature { display: flex; align-items: center; gap: 10px; font-size: 14px; color: rgba(255,255,255,0.6); }
+.pricing-feature-check { width: 18px; height: 18px; border-radius: 50%; background: rgba(201,168,76,0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 10px; color: var(--gold); }
+.pricing-btn { display: block; text-align: center; padding: 13px; border-radius: 8px; font-size: 14px; font-weight: 500; text-decoration: none; transition: all 0.15s; }
+.pricing-btn-free { border: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.6); }
+.pricing-btn-free:hover { border-color: rgba(255,255,255,0.3); color: white; }
+.pricing-btn-premium { background: var(--gold); color: var(--black); font-weight: 600; }
+.pricing-btn-premium:hover { background: var(--gold-lt); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(201,168,76,0.3); }
+
+/* CTA */
+.cta-section { padding: 100px 32px; background: var(--off-white); text-align: center; }
+.cta-inner { max-width: 640px; margin: 0 auto; }
+.cta-emblem { width: 72px; height: 72px; background: var(--black); border-radius: 18px; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 36px; color: var(--gold); margin: 0 auto 32px; }
+.cta-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(32px, 4vw, 48px); font-weight: 500; color: var(--black); margin-bottom: 16px; line-height: 1.15; }
+.cta-desc { font-size: 16px; color: var(--mid-gray); margin-bottom: 40px; line-height: 1.7; }
+.cta-btn { display: inline-flex; align-items: center; gap: 8px; background: var(--black); color: white; text-decoration: none; font-size: 15px; font-weight: 500; padding: 15px 36px; border-radius: 10px; transition: all 0.15s; }
+.cta-btn:hover { background: #1a1a1a; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+.cta-note { font-size: 12px; color: rgba(0,0,0,0.3); margin-top: 16px; }
+
+/* FOOTER */
+footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.06); padding: 48px 32px; }
+.footer-inner { max-width: 1160px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 24px; }
+.footer-logo-text { font-family: 'Cormorant Garamond', serif; font-size: 18px; color: rgba(255,255,255,0.6); }
+.footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
+.footer-link { font-size: 13px; color: rgba(255,255,255,0.3); text-decoration: none; transition: color 0.15s; }
+.footer-link:hover { color: rgba(255,255,255,0.7); }
+.footer-copy { font-size: 12px; color: rgba(255,255,255,0.2); }
+
+/* MOBILE */
+@media (max-width: 900px) {
+  .nav-links { display: none; }
+  .nav-cta { display: inline-flex; }
+  .features-grid { grid-template-columns: 1fr; }
+  .how-steps { grid-template-columns: 1fr 1fr; }
+  .how-steps::before { display: none; }
+  .difference-inner { grid-template-columns: 1fr; }
+  .pricing-grid { grid-template-columns: 1fr; }
+  .screenshot-preview { grid-template-columns: 1fr; }
+  .sp-sidebar { display: none; }
+  .hero-stats { gap: 24px; }
+  .hero-stat-divider { display: none; }
+}
+@media (max-width: 600px) {
+  .nav-inner { padding: 0 16px; }
+  .hero { padding: 100px 20px 60px; }
+  .features, .how, .difference, .pricing, .cta-section { padding: 60px 20px; }
+  .how-steps { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <span class="nav-logo-text">Legatis Tax</span>
+      <div class="nav-logo-dot"></div>
+    </a>
+    <div class="nav-links">
+      <a href="#ozellikler" class="nav-link">Özellikler</a>
+      <a href="#nasil-calisir" class="nav-link">Nasıl Çalışır</a>
+      <a href="#fark" class="nav-link">Neden Legatis</a>
+      <a href="#fiyatlar" class="nav-link">Fiyatlar</a>
+    </div>
+    <a href="/app" class="nav-cta">Hemen Dene →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">
+    <div class="hero-badge-dot"></div>
+    <span class="hero-badge-text">Türkiye'nin İlk Mükellef Odaklı Vergi AI'ı</span>
+  </div>
+  <h1 class="hero-title">
+    Vergi mevzuatı artık<br><span>sizin lehinize</span> çalışıyor.
+  </h1>
+  <p class="hero-desc">
+    Legatis Tax, vergi danışmanlık deneyimini yapay zeka ile birleştirerek haklarınızı, avantajlarınızı ve risklerinizi anında görmenizi sağlar.
+  </p>
+  <div class="hero-cta-row">
+    <a href="/app" class="btn-primary">
+      Ücretsiz Dene
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+    <a href="#ozellikler" class="btn-secondary">
+      Nasıl çalışır?
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M4 9l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-num">14+</div>
+      <div class="hero-stat-label">Vergi Kanunu</div>
+    </div>
+    <div class="hero-stat-divider"></div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">7.000+</div>
+      <div class="hero-stat-label">Mevzuat Chunk</div>
+    </div>
+    <div class="hero-stat-divider"></div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">7/24</div>
+      <div class="hero-stat-label">Erişim</div>
+    </div>
+    <div class="hero-stat-divider"></div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">%100</div>
+      <div class="hero-stat-label">Mükellef Odaklı</div>
+    </div>
+  </div>
+</section>
+
+<!-- SCREENSHOT -->
+<section class="screenshot-section">
+  <div class="screenshot-wrapper">
+    <div class="screenshot-bar">
+      <div class="screenshot-dot" style="background:#FF5F57"></div>
+      <div class="screenshot-dot" style="background:#FFBD2E"></div>
+      <div class="screenshot-dot" style="background:#28C840"></div>
+      <div class="screenshot-url">legatis-tax-production-142c.up.railway.app/app</div>
+    </div>
+    <div class="screenshot-preview">
+      <div class="sp-sidebar">
+        <div class="sp-logo">Legatis Tax<span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#C9A84C;margin-left:3px;margin-bottom:2px;vertical-align:middle"></span></div>
+        <div class="sp-sub">Vergi Danışmanlık Asistanı</div>
+        <div class="sp-cat">Uzmanlık Alanları</div>
+        <div class="sp-item active">Tüm Sorular</div>
+        <div class="sp-item">Katma Değer Vergisi</div>
+        <div class="sp-item">Kurumlar Vergisi</div>
+        <div class="sp-item">Gelir Vergisi</div>
+        <div class="sp-item">Teşvik & Avantajlar</div>
+        <div class="sp-item">Belge Analizi</div>
+      </div>
+      <div class="sp-main">
+        <div class="sp-emblem">L</div>
+        <div class="sp-title">Vergi mevzuatında uzman danışmanınız.</div>
+        <div class="sp-desc">Mükellef haklarınızı öğrenin. Yasal avantajlarınızı keşfedin.</div>
+        <div class="sp-cards">
+          <div class="sp-card"><div class="sp-card-title">📊 Vergi yükümü nasıl azaltırım?</div><div class="sp-card-desc">Yasal optimizasyon yolları</div></div>
+          <div class="sp-card"><div class="sp-card-title">🔍 Vergi incelemesine hazırlık</div><div class="sp-card-desc">Riskler ve stratejiler</div></div>
+          <div class="sp-card"><div class="sp-card-title">🏢 Şirket ortaklık işlemleri</div><div class="sp-card-desc">Kâr dağıtımı ve vergi</div></div>
+          <div class="sp-card"><div class="sp-card-title">📄 Belge analizi yap</div><div class="sp-card-desc">PDF ve görsel yükle</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="ozellikler">
+  <div class="features-inner">
+    <div class="features-header">
+      <div class="section-label">Özellikler</div>
+      <h2 class="section-title">Tek platformda ihtiyacınız olan her şey</h2>
+      <p class="section-desc">Vergi sorularından belge analizine, kanun maddelerinden pratik adımlara kadar kapsamlı danışmanlık.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">⚖️</div>
+        <h3 class="feature-title">Mükellef Lehine Yorum</h3>
+        <p class="feature-desc">Aynı mevzuatı Gelir İdaresi hazine lehine yorumlar. Biz mükellef lehine yorumluyoruz. Her ikisi de yasaldır — siz sadece haklarınızı bilmiyordunuz.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📄</div>
+        <h3 class="feature-title">Belge Analizi</h3>
+        <p class="feature-desc">Vergi levhası, sözleşme, fatura veya VDK yazısını yükleyin. AI belgeyi vergi mevzuatı açısından analiz eder, risklerinizi ve avantajlarınızı gösterir.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📚</div>
+        <h3 class="feature-title">Güncel Mevzuat</h3>
+        <p class="feature-desc">GVK, KVK, KDV Kanunu, VUK, TTK, ÖTV, SGK, AR-GE ve 14'ten fazla kanun yüklü. Her cevap kanun maddesi ile desteklenir.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3 class="feature-title">PDF Rapor</h3>
+        <p class="feature-desc">Her yanıtı Legatis Tax logolu, tarihli, profesyonel PDF rapor olarak indirin. Müşavirinizle paylaşın veya arşivleyin.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💬</div>
+        <h3 class="feature-title">Sohbet Geçmişi</h3>
+        <p class="feature-desc">Tüm sorularınız ve yanıtlarınız kayıtlı. Eski konuşmalarınıza geri dönün, kaldığınız yerden devam edin.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h3 class="feature-title">Güvenli & Gizli</h3>
+        <p class="feature-desc">Sorularınız ve belgeleriniz güvenle işlenir. Legatis Denetim Danışmanlık'ın kurumsal güvencesiyle desteklenir.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="nasil-calisir">
+  <div class="how-inner">
+    <div class="how-header">
+      <div class="section-label" style="color:var(--gold)">Nasıl Çalışır</div>
+      <h2 class="section-title">Saniyeler içinde uzman cevabı</h2>
+      <p class="section-desc">Karmaşık vergi sorularına dakikalar değil, saniyeler içinde yanıt alın.</p>
+    </div>
+    <div class="how-steps">
+      <div class="how-step">
+        <div class="how-step-num">1</div>
+        <div class="how-step-title">Sorunuzu yazın</div>
+        <p class="how-step-desc">Vergi sorunuzu serbest metin olarak yazın ya da belgenizi yükleyin.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-step-num">2</div>
+        <div class="how-step-title">AI analiz eder</div>
+        <p class="how-step-desc">7.000+ mevzuat chunk'ı taranır, ilgili kanun maddeleri bulunur.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-step-num">3</div>
+        <div class="how-step-title">Yanıt gelir</div>
+        <p class="how-step-desc">Mükellef lehine yasal alternatifler, kanun maddeleri ve pratik adımlar.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-step-num">4</div>
+        <div class="how-step-title">PDF indirin</div>
+        <p class="how-step-desc">Yanıtı profesyonel PDF rapor olarak kaydedin, paylaşın.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DIFFERENCE -->
+<section class="difference" id="fark">
+  <div class="difference-inner">
+    <div class="diff-content">
+      <span class="section-label">Neden Legatis Tax</span>
+      <h2 class="section-title">Sadece cevap değil,<br>mükellef savunuculuğu</h2>
+      <div class="diff-list">
+        <div class="diff-item">
+          <div class="diff-icon">⚖️</div>
+          <div>
+            <div class="diff-item-title">Taraflı değil, sizin tarafınızda</div>
+            <p class="diff-item-desc">Genel AI araçları tarafsız cevap verir. Biz açıkça mükellef lehine yorumluyoruz — bu yasal ve meşrudur.</p>
+          </div>
+        </div>
+        <div class="diff-item">
+          <div class="diff-icon">📋</div>
+          <div>
+            <div class="diff-item-title">Kanun maddesiyle desteklenen her yanıt</div>
+            <p class="diff-item-desc">Her cevabın altında hangi kanunun hangi maddesine dayandığı belirtilir. Kaynağı doğrulayabilirsiniz.</p>
+          </div>
+        </div>
+        <div class="diff-item">
+          <div class="diff-icon">🏛️</div>
+          <div>
+            <div class="diff-item-title">Gerçek danışmanlık firması güvencesi</div>
+            <p class="diff-item-desc">Legatis Denetim Danışmanlık'ın uzmanlık birikimi ve denetim deneyimiyle desteklenmektedir.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="diff-card">
+      <div class="diff-card-title">Örnek: Vergi inceleme yazısı geldi</div>
+      <div class="diff-quote">"Sayın mükellefimiz, Yüksek Gelir Grupları Gözetim ve Uyum Programı kapsamında bilgilendirme yazısı gönderilmiştir..."</div>
+      <div class="diff-examples">
+        <div class="diff-example">Bu henüz vergi incelemesi değil, gönüllü uyum aşaması</div>
+        <div class="diff-example">Görüşmeye katılmak veya yazılı izahat vermek hakkınız</div>
+        <div class="diff-example">Vekil tayini ile mali müşaviriniz katılabilir</div>
+        <div class="diff-example">Risk seviyesi: Orta-Yüksek — 13 gün içinde aksiyon alın</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="fiyatlar">
+  <div class="pricing-inner">
+    <div class="pricing-header">
+      <div class="section-label" style="color:var(--gold)">Fiyatlandırma</div>
+      <h2 class="section-title">Şeffaf ve adil fiyatlandırma</h2>
+      <p class="section-desc">Bir vergi danışmanının aylık ücretinin çok altında, 7/24 erişim.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="pricing-plan">Ücretsiz</div>
+        <div class="pricing-price">0 <span>₺</span></div>
+        <div class="pricing-period">sonsuza kadar ücretsiz</div>
+        <div class="pricing-features">
+          <div class="pricing-feature"><div class="pricing-feature-check">✓</div>Günde 10 soru hakkı</div>
+          <div class="pricing-feature"><div class="pricing-feature-check">✓</div>Tüm vergi kategorileri</div>
+          <div class="pricing-feature"><div class="pricing-feature-check">✓</div>Kanun maddesi referansları</div>
+          <div class="pricing-feature"><div class="pricing-feature-check">✓</div>PDF rapor indirme</div>
+          <div class="pricing-feature"><div class="pricing-feature-check">✓</div>Sohbet geçmişi</div>
+        </div>
+        <a href="/app" class="pricing-btn pricing-btn-free">Ücretsiz Başla</a>
+      </div>
+      <div class="pricing-card featured">
+        <div class="pricing-badge">EN POPÜLER</div>
+        <div class="pricing-plan">Premium</div>
+        <div class="pricing-price">299 <span>₺</span></div>
+        <div class="pricing-period">/ ay · istediğiniz zaman iptal</div>
+        <div class="pricing-features">
+          <div class="pricing-feature"><div class="pricing-feature-check">✓</div>Sınırsız soru</div>
+          <div class="pricing-feature"><div class="pricing-feature-check">✓</div>Belge analizi (PDF, Word, Excel)</div>
+          <div class="pricing-feature"><div class="pricing-feature-check">✓</div>Öncelikli yanıt</div>
+          <div class="pricing-feature"><div class="pricing-feature-check">✓</div>Tüm ücretsiz özellikler</div>
+          <div class="pricing-feature"><div class="pricing-feature-check">✓</div>Yeni özellik öncelikli erişim</div>
+        </div>
+        <a href="https://legatis-tax.lemonsqueezy.com/checkout/buy/49780de3-18e9-465b-ae4d-1f6df068b838" target="_blank" class="pricing-btn pricing-btn-premium">Premium'a Geç</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-inner">
+    <div class="cta-emblem">L</div>
+    <h2 class="cta-title">Vergi haklarınızı öğrenmeye bugün başlayın.</h2>
+    <p class="cta-desc">Kayıt gerektirmez. Saniyeler içinde ilk sorunuzu sorun.</p>
+    <a href="/app" class="cta-btn">
+      Hemen Dene
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+    <div class="cta-note">Ücretsiz plan — kredi kartı gerekmez</div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo-text">Legatis Tax</div>
+    <div class="footer-links">
+      <a href="#ozellikler" class="footer-link">Özellikler</a>
+      <a href="#fiyatlar" class="footer-link">Fiyatlar</a>
+      <a href="/app" class="footer-link">Uygulamayı Aç</a>
+    </div>
+    <div class="footer-copy">© 2026 Legatis Denetim Danışmanlık</div>
+  </div>
+</footer>
+
+</body>
+</html>
