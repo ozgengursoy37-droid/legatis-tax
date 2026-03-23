@@ -409,10 +409,13 @@ function printAsPDF(btn) {
 
   // Türkçe karakter dönüşümü
  function fixTR(str) {
-  return str.replace(/⚠️/g, '').replace(/[^\x00-\x7F]/g, c => {
-    const map = {'ş':'s','Ş':'S','ğ':'g','Ğ':'G','ü':'u','Ü':'U','ö':'o','Ö':'O','ç':'c','Ç':'C','ı':'i','İ':'I'};
-    return map[c] || '';
-  });
+  return str
+    .replace(/^#{1,3}\s*/gm, '')
+    .replace(/⚠️/g, '')
+    .replace(/[^\x00-\x7F]/g, c => {
+      const map = {'ş':'s','Ş':'S','ğ':'g','Ğ':'G','ü':'u','Ü':'U','ö':'o','Ö':'O','ç':'c','Ç':'C','ı':'i','İ':'I'};
+      return map[c] || '';
+    });
 }
 
   doc.setFontSize(22);
