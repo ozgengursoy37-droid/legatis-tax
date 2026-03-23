@@ -408,15 +408,12 @@ function printAsPDF(btn) {
   let y = margin;
 
   // Türkçe karakter dönüşümü
-  function fixTR(str) {
-    return str
-      .replace(/ş/g, 's').replace(/Ş/g, 'S')
-      .replace(/ğ/g, 'g').replace(/Ğ/g, 'G')
-      .replace(/ü/g, 'u').replace(/Ü/g, 'U')
-      .replace(/ö/g, 'o').replace(/Ö/g, 'O')
-      .replace(/ç/g, 'c').replace(/Ç/g, 'C')
-      .replace(/ı/g, 'i').replace(/İ/g, 'I');
-  }
+ function fixTR(str) {
+  return str.replace(/⚠️/g, '').replace(/[^\x00-\x7F]/g, c => {
+    const map = {'ş':'s','Ş':'S','ğ':'g','Ğ':'G','ü':'u','Ü':'U','ö':'o','Ö':'O','ç':'c','Ç':'C','ı':'i','İ':'I'};
+    return map[c] || '';
+  });
+}
 
   doc.setFontSize(22);
   doc.setFont('helvetica', 'bold');
