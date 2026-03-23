@@ -25,8 +25,21 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba
 .nav-links { display: flex; align-items: center; gap: 32px; }
 .nav-link { color: rgba(255,255,255,0.45); text-decoration: none; font-size: 13px; font-weight: 400; transition: color 0.15s; }
 .nav-link:hover { color: rgba(255,255,255,0.85); }
+.nav-right { display: flex; align-items: center; gap: 12px; }
 .nav-cta { background: var(--gold); color: var(--black); text-decoration: none; font-size: 13px; font-weight: 600; padding: 9px 20px; border-radius: 8px; transition: all 0.15s; letter-spacing: 0.02em; }
 .nav-cta:hover { background: var(--gold-lt); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(201,168,76,0.3); }
+
+/* MOBILE HAMBURGER */
+.hamburger { display: none; background: none; border: none; cursor: pointer; padding: 6px; color: rgba(255,255,255,0.7); flex-direction: column; gap: 4px; align-items: center; justify-content: center; }
+.hamburger span { display: block; width: 20px; height: 1.5px; background: currentColor; border-radius: 2px; transition: transform 0.2s, opacity 0.2s; }
+.hamburger.open span:nth-child(1) { transform: translateY(5.5px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-5.5px) rotate(-45deg); }
+.mobile-drawer { display: none; position: fixed; top: 64px; left: 0; right: 0; background: rgba(13,13,13,0.98); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,0.08); padding: 20px 24px 28px; z-index: 99; flex-direction: column; gap: 4px; }
+.mobile-drawer.open { display: flex; }
+.mobile-drawer .nav-link { font-size: 15px; padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,0.05); color: rgba(255,255,255,0.5); }
+.mobile-drawer .nav-link:last-of-type { border-bottom: none; }
+.mobile-drawer .nav-cta { margin-top: 12px; text-align: center; padding: 13px; font-size: 14px; }
 
 /* HERO */
 .hero { min-height: 100vh; background: var(--black); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 120px 32px 100px; position: relative; overflow: hidden; }
@@ -36,9 +49,11 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba
 .hero-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); animation: pulse 2s infinite; }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 .hero-badge-text { font-size: 11px; font-weight: 500; color: var(--gold-lt); letter-spacing: 0.08em; text-transform: uppercase; }
+
+/* HERO TITLE — yeni tek cümle yapısı */
 .hero-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(44px, 7vw, 84px); font-weight: 600; color: #F2EEE4; line-height: 1.05; letter-spacing: -0.025em; max-width: 860px; margin-bottom: 28px; }
-.hero-title span { color: var(--gold); font-style: italic; }
-.hero-title em { color: rgba(255,255,255,0.35); font-style: normal; display: block; font-size: 0.55em; font-weight: 300; letter-spacing: 0.02em; margin-bottom: 8px; font-family: 'DM Sans', sans-serif; text-transform: uppercase; }
+.hero-title .accent { color: var(--gold); font-style: italic; }
+
 .hero-desc { font-size: 17px; color: rgba(255,255,255,0.38); max-width: 480px; line-height: 1.8; margin-bottom: 52px; font-weight: 300; letter-spacing: 0.01em; }
 .hero-cta-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: center; margin-bottom: 72px; }
 .btn-primary { background: var(--gold); color: var(--black); text-decoration: none; font-size: 14px; font-weight: 600; padding: 14px 32px; border-radius: 8px; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; letter-spacing: 0.02em; }
@@ -120,8 +135,22 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba
 .diff-example { background: rgba(255,255,255,0.03); border-radius: 8px; padding: 11px 14px; font-size: 12px; color: rgba(255,255,255,0.45); display: flex; align-items: flex-start; gap: 10px; line-height: 1.5; }
 .diff-example-arrow { color: var(--gold); font-size: 12px; flex-shrink: 0; margin-top: 1px; }
 
+/* FOUNDER */
+.founder { padding: 100px 32px; background: var(--black); }
+.founder-inner { max-width: 1160px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+.founder-visual { display: flex; flex-direction: column; align-items: flex-start; gap: 24px; }
+.founder-avatar { width: 96px; height: 96px; border-radius: 20px; background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.2); display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 40px; font-weight: 600; color: var(--gold); }
+.founder-name { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; color: #F2EEE4; margin-bottom: 4px; }
+.founder-role { font-size: 12px; color: rgba(255,255,255,0.3); letter-spacing: 0.06em; text-transform: uppercase; }
+.founder-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.founder-badge { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 5px 12px; font-size: 11px; color: rgba(255,255,255,0.4); }
+.founder-text { }
+.founder-quote { font-family: 'Cormorant Garamond', serif; font-size: clamp(22px, 3vw, 34px); font-weight: 500; color: #F2EEE4; line-height: 1.3; margin-bottom: 24px; font-style: italic; }
+.founder-quote span { color: var(--gold); }
+.founder-body { font-size: 14px; color: rgba(255,255,255,0.38); line-height: 1.85; }
+
 /* PRICING */
-.pricing { padding: 100px 32px; background: var(--black); }
+.pricing { padding: 100px 32px; background: var(--dark); }
 .pricing-inner { max-width: 1060px; margin: 0 auto; }
 .pricing-header { margin-bottom: 56px; }
 .pricing-header-sub { font-size: 15px; color: rgba(255,255,255,0.32); margin-top: 12px; max-width: 440px; line-height: 1.7; }
@@ -142,11 +171,11 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba
 .pricing-btn-free:hover { border-color: rgba(255,255,255,0.25); color: rgba(255,255,255,0.8); }
 .pricing-btn-premium { background: var(--gold); color: var(--black); font-weight: 600; }
 .pricing-btn-premium:hover { background: var(--gold-lt); box-shadow: 0 4px 20px rgba(201,168,76,0.25); }
-.pricing-btn-enterprise { border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.35); }
-.pricing-btn-enterprise:hover { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.7); }
+.pricing-btn-enterprise { background: rgba(37,211,102,0.08); border: 1px solid rgba(37,211,102,0.2); color: rgba(37,211,102,0.7); display: flex; align-items: center; justify-content: center; gap: 7px; }
+.pricing-btn-enterprise:hover { background: rgba(37,211,102,0.14); color: rgba(37,211,102,0.95); border-color: rgba(37,211,102,0.4); }
 
 /* CTA */
-.cta-section { padding: 120px 32px; background: var(--dark); text-align: center; position: relative; overflow: hidden; }
+.cta-section { padding: 120px 32px; background: var(--black); text-align: center; position: relative; overflow: hidden; }
 .cta-section::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(201,168,76,0.05) 0%, transparent 70%); pointer-events: none; }
 .cta-inner { max-width: 600px; margin: 0 auto; position: relative; z-index: 1; }
 .cta-emblem { width: 64px; height: 64px; background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.2); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 32px; color: var(--gold); margin: 0 auto 32px; }
@@ -168,18 +197,21 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.05);
 /* MOBILE */
 @media (max-width: 900px) {
   .nav-links { display: none; }
+  .hamburger { display: flex; }
   .features-grid, .how-steps, .pricing-grid { grid-template-columns: 1fr; }
   .difference-inner { grid-template-columns: 1fr; gap: 48px; }
   .diff-card { position: static; }
+  .founder-inner { grid-template-columns: 1fr; gap: 40px; }
   .screenshot-preview { grid-template-columns: 1fr; }
   .sp-sidebar { display: none; }
   .hero-stats { gap: 28px; }
   .hero-stat-divider { display: none; }
 }
 @media (max-width: 600px) {
-  .nav-inner, .features, .how, .difference, .pricing, .cta-section { padding-left: 20px; padding-right: 20px; }
+  .nav-inner { padding: 0 20px; }
+  .features, .how, .difference, .founder, .pricing, .cta-section { padding-left: 20px; padding-right: 20px; }
   .hero { padding: 100px 20px 80px; }
-  .features, .how, .difference, .pricing, .cta-section { padding-top: 60px; padding-bottom: 60px; }
+  .features, .how, .difference, .founder, .pricing, .cta-section { padding-top: 60px; padding-bottom: 60px; }
 }
 </style>
 </head>
@@ -197,9 +229,22 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.05);
       <a href="#fark" class="nav-link">Neden Legatis</a>
       <a href="#fiyatlar" class="nav-link">Fiyatlar</a>
     </div>
-    <a href="/app" class="nav-cta">Hemen Dene →</a>
+    <div class="nav-right">
+      <a href="/app" class="nav-cta">Hemen Dene →</a>
+      <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menü">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
   </div>
 </nav>
+
+<div class="mobile-drawer" id="mobileDrawer">
+  <a href="#ozellikler" class="nav-link" onclick="closeMenu()">Özellikler</a>
+  <a href="#nasil-calisir" class="nav-link" onclick="closeMenu()">Nasıl Çalışır</a>
+  <a href="#fark" class="nav-link" onclick="closeMenu()">Neden Legatis</a>
+  <a href="#fiyatlar" class="nav-link" onclick="closeMenu()">Fiyatlar</a>
+  <a href="/app" class="nav-cta" onclick="closeMenu()">Hemen Dene →</a>
+</div>
 
 <!-- HERO -->
 <section class="hero">
@@ -208,8 +253,7 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.05);
     <span class="hero-badge-text">Mükellef Odaklı Vergi Zekası</span>
   </div>
   <h1 class="hero-title">
-    <em>Vergi mevzuatı</em>
-    Artık sizin için<br><span>çalışıyor.</span>
+    Vergi mevzuatı<br>sizin <span class="accent">lehinize</span> çalışmalı.
   </h1>
   <p class="hero-desc">
     Haklarınızı bilin. Risklerinizi önceden görün.<br>Yasal avantajlarınızı kaçırmayın.
@@ -396,6 +440,34 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.05);
   </div>
 </section>
 
+<!-- FOUNDER -->
+<section class="founder" id="kurucu">
+  <div class="founder-inner">
+    <div class="founder-visual">
+      <div class="founder-avatar"><!-- FOTOĞRAF: Buraya <img> etiketi eklenecek, şimdilik monogram -->[AD_BASKIM]</div>
+      <div>
+        <div class="founder-name">[Kurucu Adı Soyadı]</div>
+        <div class="founder-role">Kurucu & Baş Danışman</div>
+      </div>
+      <div class="founder-badges">
+        <span class="founder-badge">15 Yıl Vergi Müfettişliği</span>
+        <span class="founder-badge">Legatis Denetim Danışmanlık</span>
+        <span class="founder-badge">Özel Sektör Danışmanlığı</span>
+      </div>
+    </div>
+    <div class="founder-text">
+      <span class="section-label">Platformun Arkasındaki İnsan</span>
+      <blockquote class="founder-quote">
+        "Mevzuat her iki taraf için de aynı. Fark, <span>nasıl yorumlandığında.</span>"
+      </blockquote>
+      <p class="founder-body">
+        15 yıl boyunca vergi müfettişi olarak çalıştım. Bu sürede gördüm ki aynı kanun maddesi, hazine lehine de mükellef lehine de yorumlanabiliyor. Gelir İdaresi'nin bunu profesyonelce yaptığı gibi, mükelleflerin de kendi haklarını bilmesi gerekiyor.<br><br>
+        Legatis Tax'ı bu boşluğu kapatmak için kurdum. Arkasındaki sistem promptu yılların denetim deneyimiyle yazıldı — mükellef lehine yasal yorum bu platformun DNA'sında var.
+      </p>
+    </div>
+  </div>
+</section>
+
 <!-- PRICING -->
 <section class="pricing" id="fiyatlar">
   <div class="pricing-inner">
@@ -446,7 +518,11 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.05);
           <div class="pricing-feature"><span class="pricing-feature-check">✓</span>Özel sistem entegrasyonu</div>
           <div class="pricing-feature"><span class="pricing-feature-check">✓</span>SLA garantisi</div>
         </div>
-        <a href="mailto:info@legatisdenetim.com" class="pricing-btn pricing-btn-enterprise">İletişime Geçin</a>
+        <!-- WhatsApp: numara [WHATSAPP_NUMARASI] olarak işaretlendi, senin numaranla değiştir -->
+        <a href="https://wa.me/90[WHATSAPP_NUMARASI]?text=Legatis%20Tax%20kurumsal%20plan%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum." target="_blank" class="pricing-btn pricing-btn-enterprise">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          WhatsApp ile İletişim
+        </a>
       </div>
     </div>
   </div>
@@ -478,6 +554,27 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.05);
     <div class="footer-copy">© 2026 Legatis Denetim Danışmanlık</div>
   </div>
 </footer>
+
+<script>
+function toggleMenu() {
+  const h = document.getElementById('hamburger');
+  const d = document.getElementById('mobileDrawer');
+  h.classList.toggle('open');
+  d.classList.toggle('open');
+}
+function closeMenu() {
+  document.getElementById('hamburger').classList.remove('open');
+  document.getElementById('mobileDrawer').classList.remove('open');
+}
+// Drawer dışına tıklanınca kapat
+document.addEventListener('click', function(e) {
+  const nav = document.querySelector('nav');
+  const drawer = document.getElementById('mobileDrawer');
+  if (!nav.contains(e.target) && !drawer.contains(e.target)) {
+    closeMenu();
+  }
+});
+</script>
 
 </body>
 </html>
