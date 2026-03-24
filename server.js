@@ -32,6 +32,7 @@ function parseMultipart(buffer, boundary) {
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
+  console.log('Files in dir:', fs.readdirSync(__dirname).join(', '));
 
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
