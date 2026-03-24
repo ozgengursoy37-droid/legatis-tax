@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<!-- v2 -->
+<!-- v3 — Premium Rebuild -->
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Legatis Tax — Türkiye'nin Yapay Zeka Destekli Vergi Danışmanı</title>
+<meta name="description" content="Legatis Tax, Türk vergi mevzuatını mükellef lehine yorumlar. Haklarınızı, avantajlarınızı ve risklerinizi anında öğrenin.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -18,7 +19,7 @@
 html { scroll-behavior: smooth; }
 body { font-family: 'DM Sans', sans-serif; color: #F2EEE4; background: var(--black); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
 
-/* REVEAL ANİMASYONLARI */
+/* REVEAL */
 .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
 .reveal.visible { opacity: 1; transform: none; }
 .reveal-delay-1 { transition-delay: 0.1s; }
@@ -53,7 +54,7 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; background: rgba
 
 /* HERO */
 .hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 140px 40px 100px; position: relative; overflow: hidden; }
-.hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(201,168,76,0.06) 0%, transparent 60%); pointer-events: none; }
+.hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(201,168,76,0.07) 0%, transparent 60%); pointer-events: none; }
 .hero-badge { display: inline-flex; align-items: center; gap: 8px; border: 1px solid rgba(201,168,76,0.2); border-radius: 100px; padding: 5px 14px; margin-bottom: 40px; opacity: 0; animation: fadeUp 0.8s ease 0.1s forwards; }
 .hero-badge-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); animation: pulse 2s infinite; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
@@ -61,8 +62,8 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; background: rgba
 .hero-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(52px, 9vw, 110px); font-weight: 300; color: #F2EEE4; line-height: 1.0; letter-spacing: -0.03em; margin-bottom: 32px; opacity: 0; animation: fadeUp 0.9s ease 0.2s forwards; }
 .hero-title strong { font-weight: 600; }
 .hero-title em { font-style: italic; color: var(--gold); }
-.hero-desc { font-size: 17px; color: var(--mid); max-width: 440px; line-height: 1.8; margin-bottom: 48px; font-weight: 300; opacity: 0; animation: fadeUp 0.9s ease 0.35s forwards; }
-.hero-cta-row { display: flex; align-items: center; gap: 14px; justify-content: center; margin-bottom: 80px; opacity: 0; animation: fadeUp 0.9s ease 0.45s forwards; }
+.hero-desc { font-size: 17px; color: var(--mid); max-width: 460px; line-height: 1.8; margin-bottom: 48px; font-weight: 300; opacity: 0; animation: fadeUp 0.9s ease 0.35s forwards; }
+.hero-cta-row { display: flex; align-items: center; gap: 14px; justify-content: center; margin-bottom: 80px; opacity: 0; animation: fadeUp 0.9s ease 0.45s forwards; flex-wrap: wrap; }
 .btn-gold { background: var(--gold); color: #080808; text-decoration: none; font-size: 14px; font-weight: 600; padding: 13px 30px; border-radius: 7px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; }
 .btn-gold:hover { background: var(--gold-lt); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,168,76,0.25); }
 .btn-ghost { color: var(--dim); text-decoration: none; font-size: 14px; border: 1px solid var(--line); padding: 13px 24px; border-radius: 7px; transition: all 0.15s; }
@@ -74,8 +75,19 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; background: rgba
 .hero-stat-label { font-size: 10px; color: var(--dim); margin-top: 4px; letter-spacing: 0.08em; text-transform: uppercase; }
 @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:none} }
 
+/* KANUN GÜVEN BARI */
+.trust-bar { padding: 0 40px; background: var(--black); margin-bottom: 0; }
+.trust-bar-inner { max-width: 1200px; margin: 0 auto; border: 1px solid var(--line); border-radius: 12px; padding: 24px 40px; display: flex; align-items: center; gap: 0; flex-wrap: wrap; }
+.trust-bar-label { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); padding-right: 32px; border-right: 1px solid var(--line); white-space: nowrap; flex-shrink: 0; }
+.trust-bar-laws { display: flex; flex-wrap: wrap; gap: 8px; padding-left: 32px; flex: 1; }
+.trust-law { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.04); border: 1px solid var(--line); border-radius: 4px; padding: 4px 10px; letter-spacing: 0.06em; transition: color 0.15s, border-color 0.15s; }
+.trust-law:hover { color: var(--gold-lt); border-color: rgba(201,168,76,0.2); }
+.trust-bar-stat { padding-left: 32px; border-left: 1px solid var(--line); text-align: right; flex-shrink: 0; white-space: nowrap; }
+.trust-bar-stat-num { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: #F2EEE4; font-weight: 600; }
+.trust-bar-stat-label { font-size: 9px; color: var(--dim); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 2px; }
+
 /* APP PREVIEW */
-.preview-section { padding: 0 40px 100px; display: flex; justify-content: center; background: var(--black); }
+.preview-section { padding: 60px 40px 100px; display: flex; justify-content: center; background: var(--black); }
 .preview-wrap { max-width: 1000px; width: 100%; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
 .preview-bar { background: var(--surface); padding: 11px 16px; display: flex; align-items: center; gap: 7px; border-bottom: 1px solid var(--line); }
 .pd { width: 10px; height: 10px; border-radius: 50%; }
@@ -97,8 +109,52 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; background: rgba
 .pv-card-t { font-size: 10px; font-weight: 500; color: #0D0D0D; margin-bottom: 3px; }
 .pv-card-d { font-size: 9px; color: #888; }
 
+/* CANLI DEMO */
+.demo-section { padding: 80px 40px; background: var(--surface); border-top: 1px solid var(--line); }
+.demo-inner { max-width: 800px; margin: 0 auto; }
+.demo-header { text-align: center; margin-bottom: 40px; }
+.demo-kicker { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; display: block; }
+.demo-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 4vw, 44px); font-weight: 400; color: #F2EEE4; line-height: 1.15; }
+.demo-title em { font-style: italic; color: var(--gold); }
+.demo-subtitle { font-size: 14px; color: var(--mid); margin-top: 12px; }
+.demo-box { background: var(--surface2); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.demo-box-bar { background: var(--surface); padding: 14px 20px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; }
+.demo-box-bar-label { font-size: 11px; color: var(--dim); letter-spacing: 0.06em; }
+.demo-live-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; color: var(--gold); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; }
+.demo-live-dot { width: 5px; height: 5px; border-radius: 50%; background: #4CAF50; animation: pulse 2s infinite; }
+.demo-suggestions { display: flex; flex-wrap: wrap; gap: 8px; padding: 20px 20px 0; }
+.demo-suggestion { font-size: 12px; color: rgba(255,255,255,0.45); background: rgba(255,255,255,0.04); border: 1px solid var(--line); border-radius: 6px; padding: 7px 12px; cursor: pointer; transition: all 0.15s; line-height: 1.4; }
+.demo-suggestion:hover { color: var(--gold-lt); border-color: rgba(201,168,76,0.2); background: rgba(201,168,76,0.04); }
+.demo-messages { min-height: 160px; max-height: 320px; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+.demo-messages::-webkit-scrollbar { width: 4px; }
+.demo-messages::-webkit-scrollbar-track { background: transparent; }
+.demo-messages::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+.demo-msg { display: flex; gap: 10px; animation: msgIn 0.3s ease; }
+@keyframes msgIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+.demo-msg-user { flex-direction: row-reverse; }
+.demo-msg-avatar { width: 28px; height: 28px; border-radius: 7px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
+.demo-msg-avatar-ai { background: rgba(201,168,76,0.12); color: var(--gold); font-family: 'Cormorant Garamond', serif; font-size: 14px; border: 1px solid rgba(201,168,76,0.2); }
+.demo-msg-avatar-user { background: rgba(255,255,255,0.07); color: var(--mid); }
+.demo-msg-bubble { max-width: 88%; }
+.demo-msg-bubble-user { background: rgba(255,255,255,0.06); border: 1px solid var(--line); border-radius: 10px 10px 3px 10px; padding: 10px 14px; font-size: 13px; color: rgba(255,255,255,0.8); line-height: 1.6; }
+.demo-msg-bubble-ai { background: rgba(201,168,76,0.04); border: 1px solid rgba(201,168,76,0.12); border-radius: 10px 10px 10px 3px; padding: 10px 14px; font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.7; }
+.demo-msg-bubble-ai strong { color: var(--gold-lt); font-weight: 500; }
+.demo-typing { display: flex; gap: 4px; padding: 4px 0; }
+.demo-typing span { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); opacity: 0.4; animation: typing 1.2s infinite; }
+.demo-typing span:nth-child(2) { animation-delay: 0.2s; }
+.demo-typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typing { 0%,60%,100%{opacity:0.2;transform:none} 30%{opacity:1;transform:translateY(-3px)} }
+.demo-input-row { padding: 16px 20px; border-top: 1px solid var(--line); display: flex; gap: 10px; }
+.demo-input { flex: 1; background: rgba(255,255,255,0.04); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #F2EEE4; font-family: 'DM Sans', sans-serif; outline: none; transition: border-color 0.15s; }
+.demo-input::placeholder { color: var(--dim); }
+.demo-input:focus { border-color: rgba(201,168,76,0.25); }
+.demo-send { background: var(--gold); border: none; border-radius: 8px; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.15s; }
+.demo-send:hover { background: var(--gold-lt); }
+.demo-send:disabled { opacity: 0.4; cursor: not-allowed; }
+.demo-disclaimer { text-align: center; font-size: 11px; color: var(--dim); margin-top: 14px; letter-spacing: 0.03em; }
+
 /* FEATURES */
-.features { padding: 120px 40px; background: var(--surface); border-top: 1px solid var(--line); }
+.features { padding: 120px 40px; background: var(--black); border-top: 1px solid var(--line); }
 .section-wrap { max-width: 1200px; margin: 0 auto; }
 .section-header { margin-bottom: 64px; }
 .section-kicker { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; display: block; }
@@ -120,7 +176,7 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; background: rgba
 .section-cta-link:hover { gap: 10px; }
 
 /* HOW */
-.how { padding: 120px 40px; background: var(--black); border-top: 1px solid var(--line); }
+.how { padding: 120px 40px; background: var(--surface); border-top: 1px solid var(--line); }
 .how-grid { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; margin-top: 64px; }
 .how-step { padding: 40px 36px; border-right: 1px solid var(--line); position: relative; }
 .how-step:last-child { border-right: none; }
@@ -129,7 +185,7 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; background: rgba
 .how-step-desc { font-size: 13px; color: var(--mid); line-height: 1.75; }
 
 /* DIFFERENCE */
-.difference { padding: 120px 40px; background: var(--surface); border-top: 1px solid var(--line); }
+.difference { padding: 120px 40px; background: var(--black); border-top: 1px solid var(--line); }
 .diff-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: start; }
 .diff-list { margin-top: 48px; }
 .diff-item { padding: 28px 0; border-bottom: 1px solid var(--line); display: flex; gap: 24px; }
@@ -145,9 +201,36 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; background: rgba
 .diff-row { background: rgba(255,255,255,0.02); border: 1px solid var(--line); border-radius: 7px; padding: 11px 14px; font-size: 12px; color: rgba(255,255,255,0.45); display: flex; align-items: flex-start; gap: 10px; line-height: 1.5; }
 .diff-row-arrow { color: var(--gold); flex-shrink: 0; }
 
+/* FOUNDER */
+.founder { padding: 120px 40px; background: var(--surface); border-top: 1px solid var(--line); }
+.founder-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+.founder-text {}
+.founder-kicker { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; display: block; }
+.founder-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 3vw, 44px); font-weight: 400; color: #F2EEE4; line-height: 1.15; margin-bottom: 20px; }
+.founder-title em { font-style: italic; color: var(--gold); }
+.founder-desc { font-size: 14px; color: var(--mid); line-height: 1.8; margin-bottom: 32px; }
+.founder-credentials { display: flex; flex-direction: column; gap: 12px; }
+.founder-cred { display: flex; align-items: flex-start; gap: 12px; }
+.founder-cred-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); flex-shrink: 0; margin-top: 7px; }
+.founder-cred-text { font-size: 13px; color: var(--mid); line-height: 1.6; }
+.founder-cards { display: flex; flex-direction: column; gap: 16px; }
+.founder-card { background: var(--surface2); border: 1px solid var(--line); border-radius: 14px; padding: 28px; display: flex; gap: 20px; align-items: center; transition: border-color 0.2s; }
+.founder-card:hover { border-color: rgba(201,168,76,0.2); }
+.founder-avatar { width: 64px; height: 64px; border-radius: 10px; background: rgba(201,168,76,0.06); border: 1px solid rgba(201,168,76,0.15); flex-shrink: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.founder-avatar-placeholder { font-family: 'Cormorant Garamond', serif; font-size: 26px; color: rgba(201,168,76,0.3); }
+.founder-info {}
+.founder-name { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; color: #F2EEE4; margin-bottom: 3px; }
+.founder-role { font-size: 11px; color: var(--gold); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
+.founder-bio { font-size: 12px; color: var(--mid); line-height: 1.6; }
+.founder-coming-soon { font-size: 11px; color: var(--dim); text-align: center; margin-top: 4px; letter-spacing: 0.06em; }
+
 /* PRICING */
 .pricing { padding: 120px 40px; background: var(--black); border-top: 1px solid var(--line); }
-.pricing-sub { font-size: 15px; color: var(--mid); margin-top: 12px; max-width: 400px; line-height: 1.7; }
+.pricing-sub { font-size: 15px; color: var(--mid); margin-top: 12px; max-width: 520px; line-height: 1.7; }
+.pricing-anchor { display: inline-flex; align-items: center; gap: 12px; margin-top: 20px; padding: 12px 20px; background: rgba(201,168,76,0.04); border: 1px solid rgba(201,168,76,0.12); border-radius: 8px; }
+.pricing-anchor-old { font-size: 13px; color: rgba(255,255,255,0.25); text-decoration: line-through; }
+.pricing-anchor-arrow { color: var(--gold); font-size: 14px; }
+.pricing-anchor-new { font-size: 13px; color: var(--gold-lt); font-weight: 500; }
 .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; margin-top: 56px; }
 .p-card { padding: 40px 32px; border-right: 1px solid var(--line); display: flex; flex-direction: column; }
 .p-card:last-child { border-right: none; }
@@ -181,13 +264,27 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; background: rgba
 .cta-note { font-size: 11px; color: var(--dim); margin-top: 14px; letter-spacing: 0.04em; }
 
 /* FOOTER */
-footer { background: var(--black); border-top: 1px solid var(--line); padding: 40px; }
-.footer-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; }
-.footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 16px; color: rgba(255,255,255,0.3); }
-.footer-links { display: flex; gap: 24px; }
-.footer-link { font-size: 12px; color: var(--dim); text-decoration: none; transition: color 0.15s; }
-.footer-link:hover { color: rgba(255,255,255,0.6); }
+footer { background: var(--black); border-top: 1px solid var(--line); padding: 60px 40px 40px; }
+.footer-top { max-width: 1200px; margin: 0 auto 40px; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 60px; }
+.footer-brand {}
+.footer-logo-row { display: flex; align-items: baseline; gap: 5px; margin-bottom: 12px; }
+.footer-logo-text { font-family: 'Cormorant Garamond', serif; font-size: 18px; color: #F2EEE4; font-weight: 600; }
+.footer-logo-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); }
+.footer-brand-desc { font-size: 12px; color: var(--dim); line-height: 1.7; max-width: 220px; margin-bottom: 16px; }
+.footer-address { font-size: 11px; color: rgba(255,255,255,0.15); line-height: 1.7; }
+.footer-col-title { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
+.footer-col-links { display: flex; flex-direction: column; gap: 10px; }
+.footer-col-link { font-size: 12px; color: var(--dim); text-decoration: none; transition: color 0.15s; }
+.footer-col-link:hover { color: rgba(255,255,255,0.7); }
+.footer-trust-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+.footer-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.03); border: 1px solid var(--line); border-radius: 4px; padding: 4px 8px; }
+.footer-badge svg { width: 11px; height: 11px; opacity: 0.5; }
+.footer-bottom { max-width: 1200px; margin: 0 auto; padding-top: 24px; border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
 .footer-copy { font-size: 11px; color: rgba(255,255,255,0.15); }
+.footer-legal-links { display: flex; gap: 20px; }
+.footer-legal-link { font-size: 11px; color: rgba(255,255,255,0.2); text-decoration: none; transition: color 0.15s; }
+.footer-legal-link:hover { color: rgba(255,255,255,0.5); }
+.footer-disclaimer { max-width: 1200px; margin: 20px auto 0; font-size: 10px; color: rgba(255,255,255,0.1); line-height: 1.6; }
 
 /* RESPONSIVE */
 @media (max-width: 960px) {
@@ -207,11 +304,26 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 4
   .hero-stats { flex-direction: column; gap: 0; }
   .hero-stat { border-right: none; border-bottom: 1px solid var(--line); width: 100%; }
   .hero-stat:last-child { border-bottom: none; }
+  .trust-bar-inner { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .trust-bar-label { border-right: none; padding-right: 0; }
+  .trust-bar-laws { padding-left: 0; }
+  .trust-bar-stat { padding-left: 0; border-left: none; text-align: left; }
+  .founder-inner { grid-template-columns: 1fr; gap: 48px; }
+  .footer-top { grid-template-columns: 1fr 1fr; gap: 40px; }
 }
 @media (max-width: 600px) {
-  .nav-inner, .hero, .preview-section, .features, .how, .difference, .pricing, .cta-section, footer { padding-left: 20px; padding-right: 20px; }
-  .hero { padding-top: 110px; padding-bottom: 60px; }
-  .features, .how, .difference, .pricing, .cta-section { padding-top: 80px; padding-bottom: 80px; }
+  .nav-inner { padding: 0 20px; }
+  .hero { padding: 110px 20px 60px; }
+  .trust-bar, .preview-section, .demo-section, .features, .how, .difference, .founder, .pricing, .cta-section { padding-left: 20px; padding-right: 20px; }
+  .features, .how, .difference, .founder, .pricing, .cta-section { padding-top: 80px; padding-bottom: 80px; }
+  .demo-section { padding-top: 60px; padding-bottom: 60px; }
+  .hero-cta-row { flex-direction: column; align-items: stretch; text-align: center; }
+  .btn-gold, .btn-ghost { justify-content: center; }
+  .hero-stats { width: 100%; }
+  .hero-stat { padding: 16px 20px; }
+  .footer-top { grid-template-columns: 1fr; gap: 32px; }
+  footer { padding: 40px 20px 32px; }
+  .demo-suggestions { flex-direction: column; }
 }
 </style>
 </head>
@@ -231,7 +343,7 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 4
       <a href="#fiyatlar" class="nav-link">Fiyatlar</a>
     </div>
     <div class="nav-right">
-      <a href="/app" class="nav-cta">Hemen Dene →</a>
+      <a href="/app" class="nav-cta">Şimdi Dene →</a>
       <button class="hamburger" onclick="openDrawer()">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
       </button>
@@ -248,7 +360,7 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 4
     <a href="#nasil-calisir" class="drawer-link" onclick="closeDrawer()">Nasıl Çalışır</a>
     <a href="#fark" class="drawer-link" onclick="closeDrawer()">Neden Legatis</a>
     <a href="#fiyatlar" class="drawer-link" onclick="closeDrawer()">Fiyatlar</a>
-    <a href="/app" class="drawer-cta">Hemen Dene →</a>
+    <a href="/app" class="drawer-cta">Şimdi Dene →</a>
   </div>
 </div>
 
@@ -256,18 +368,18 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 4
 <section class="hero">
   <div class="hero-badge">
     <div class="hero-badge-dot"></div>
-    <span class="hero-badge-text">Mükellef Odaklı Vergi Zekası</span>
+    <span class="hero-badge-text">Yapay Zeka Destekli Vergi Danışmanlığı</span>
   </div>
   <h1 class="hero-title">
-    Vergi mevzuatı<br><em>sizin için</em><br><strong>çalışmalı.</strong>
+    Vergi mevzuatı<br><em>karmaşık.</em><br><strong>Doğru rehberlik,<br>farkı yaratır.</strong>
   </h1>
-  <p class="hero-desc">Haklarınızı bilin. Risklerinizi önceden görün. Yasal avantajlarınızı kaçırmayın.</p>
+  <p class="hero-desc">Legatis Tax, vergi sorularınızı mevzuata dayalı, mükellef odaklı yorumla yanıtlar. Haklarınızı, avantajlarınızı ve risklerinizi — anında.</p>
   <div class="hero-cta-row">
     <a href="/app" class="btn-gold">
-      Ücretsiz Başlayın
+      Şimdi Soru Sor — Ücretsiz
       <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </a>
-    <a href="#ozellikler" class="btn-ghost">Keşfedin</a>
+    <a href="#demo" class="btn-ghost">Canlı Demo Gör</a>
   </div>
   <div class="hero-stats">
     <div class="hero-stat">
@@ -275,19 +387,43 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 4
       <div class="hero-stat-label">Vergi Kanunu</div>
     </div>
     <div class="hero-stat">
-      <div class="hero-stat-num" data-count="7000" data-suffix="+" data-prefix="">0</div>
+      <div class="hero-stat-num" data-count="7000" data-suffix="+">0</div>
       <div class="hero-stat-label">Mevzuat Bölümü</div>
     </div>
     <div class="hero-stat">
       <div class="hero-stat-num">7/24</div>
-      <div class="hero-stat-label">Erişim</div>
+      <div class="hero-stat-label">Kesintisiz Erişim</div>
     </div>
     <div class="hero-stat">
-      <div class="hero-stat-num" data-count="100" data-suffix="%" data-prefix="%">0</div>
-      <div class="hero-stat-label">Mükellef Odaklı</div>
+      <div class="hero-stat-num" data-count="0" data-suffix="₺" data-zero="true">0₺</div>
+      <div class="hero-stat-label">Başlangıç</div>
     </div>
   </div>
 </section>
+
+<!-- KANUN GÜVEN BARI -->
+<div class="trust-bar reveal">
+  <div class="trust-bar-inner">
+    <div class="trust-bar-label">Mevzuat Kapsamı</div>
+    <div class="trust-bar-laws">
+      <span class="trust-law">GVK</span>
+      <span class="trust-law">KVK</span>
+      <span class="trust-law">KDV Kanunu</span>
+      <span class="trust-law">VUK</span>
+      <span class="trust-law">TTK</span>
+      <span class="trust-law">ÖTV Kanunu</span>
+      <span class="trust-law">SGK Mevzuatı</span>
+      <span class="trust-law">AR-GE Teşvikleri</span>
+      <span class="trust-law">İndirimli Kurumlar Vergisi</span>
+      <span class="trust-law">Serbest Bölge Mevzuatı</span>
+      <span class="trust-law">+ Daha Fazlası</span>
+    </div>
+    <div class="trust-bar-stat">
+      <div class="trust-bar-stat-num" data-count="1200" data-suffix="+">1.200+</div>
+      <div class="trust-bar-stat-label">Yanıtlanan Soru</div>
+    </div>
+  </div>
+</div>
 
 <!-- APP PREVIEW -->
 <section class="preview-section">
@@ -296,7 +432,7 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 4
       <div class="pd" style="background:#FF5F57"></div>
       <div class="pd" style="background:#FFBD2E"></div>
       <div class="pd" style="background:#28C840"></div>
-      <div class="preview-url">Legatis Tax — Vergi Danışmanlık Asistanı</div>
+      <div class="preview-url">legatis-tax.app — Vergi Danışmanlık Asistanı</div>
     </div>
     <div class="preview-body">
       <div class="pv-sidebar">
@@ -313,15 +449,46 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 4
       <div class="pv-main">
         <div class="pv-emblem">L</div>
         <div class="pv-title">Vergi mevzuatında uzman danışmanınız.</div>
-        <div class="pv-desc">Mükellef haklarınızı öğrenin. Yasal avantajlarınızı keşfedin.</div>
+        <div class="pv-desc">Haklarınızı öğrenin. Avantajlarınızı kaçırmayın. Risklerinizi önceden görün.</div>
         <div class="pv-grid">
-          <div class="pv-card"><div class="pv-card-t">📊 Vergi yükümü nasıl azaltırım?</div><div class="pv-card-d">Yasal optimizasyon yolları</div></div>
-          <div class="pv-card"><div class="pv-card-t">🔍 Vergi incelemesine hazırlık</div><div class="pv-card-d">Riskler ve stratejiler</div></div>
-          <div class="pv-card"><div class="pv-card-t">🏢 Şirket ortaklık işlemleri</div><div class="pv-card-d">Kâr dağıtımı ve vergi</div></div>
-          <div class="pv-card"><div class="pv-card-t">📄 Belge analizi yap</div><div class="pv-card-d">PDF ve görsel yükle</div></div>
+          <div class="pv-card"><div class="pv-card-t">Vergi yükümü nasıl azaltırım?</div><div class="pv-card-d">Yasal optimizasyon yolları</div></div>
+          <div class="pv-card"><div class="pv-card-t">Vergi incelemesine hazırlık</div><div class="pv-card-d">Riskler ve stratejiler</div></div>
+          <div class="pv-card"><div class="pv-card-t">Şirket ortaklık işlemleri</div><div class="pv-card-d">Kâr dağıtımı ve vergi</div></div>
+          <div class="pv-card"><div class="pv-card-t">Belge analizi yap</div><div class="pv-card-d">PDF ve görsel yükle</div></div>
         </div>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- CANLI DEMO -->
+<section class="demo-section" id="demo">
+  <div class="demo-inner">
+    <div class="demo-header reveal">
+      <span class="demo-kicker">Canlı Demo</span>
+      <h2 class="demo-title">Bir soru sorun,<br><em>farkı görün.</em></h2>
+      <p class="demo-subtitle">Şimdi gerçek bir vergi sorusu sorun — kayıt gerektirmez.</p>
+    </div>
+    <div class="demo-box reveal reveal-delay-1">
+      <div class="demo-box-bar">
+        <span class="demo-box-bar-label">Legatis Tax — Canlı Bağlantı</span>
+        <span class="demo-live-badge"><span class="demo-live-dot"></span>Canlı</span>
+      </div>
+      <div class="demo-suggestions" id="demoSuggestions">
+        <button class="demo-suggestion" onclick="sendDemoQ(this)">KDV iadesi nasıl alınır?</button>
+        <button class="demo-suggestion" onclick="sendDemoQ(this)">Vergi inceleme yazısı aldım, ne yapmalıyım?</button>
+        <button class="demo-suggestion" onclick="sendDemoQ(this)">AR-GE teşviği hangi şirketlere uygulanır?</button>
+        <button class="demo-suggestion" onclick="sendDemoQ(this)">Kâr dağıtımında stopaj oranı nedir?</button>
+      </div>
+      <div class="demo-messages" id="demoMessages"></div>
+      <div class="demo-input-row">
+        <input class="demo-input" id="demoInput" type="text" placeholder="Bir vergi sorusu yazın..." maxlength="300" onkeydown="if(event.key==='Enter')sendDemo()">
+        <button class="demo-send" id="demoSendBtn" onclick="sendDemo()">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h12M8 2l6 6-6 6" stroke="#080808" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+    <p class="demo-disclaimer">Yanıtlar genel bilgilendirme amaçlıdır. Spesifik durumunuz için mali müşavir görüşü alın.</p>
   </div>
 </section>
 
@@ -330,38 +497,38 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 4
   <div class="section-wrap">
     <div class="section-header reveal">
       <span class="section-kicker">Özellikler</span>
-      <h2 class="section-title">Tek platformda<br>kapsamlı vergi <em>zekası</em></h2>
+      <h2 class="section-title">Tek platformda<br><em>kapsamlı vergi danışmanlığı</em></h2>
     </div>
     <div class="feat-grid">
       <div class="feat-card reveal reveal-delay-1">
         <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z"/></svg>
         <h3 class="feat-title">Mükellef Lehine Yorum</h3>
-        <p class="feat-desc">Gelir İdaresi mevzuatı hazine lehine yorumlar. Biz aynı mevzuatı mükellef lehine yorumluyoruz. Her ikisi de yasaldır — siz sadece haklarınızı bilmiyordunuz.</p>
+        <p class="feat-desc">Gelir İdaresi mevzuatı hazine lehine yorumlar. Biz aynı mevzuatı mükellef lehine yorumluyoruz. Her ikisi de yasaldır — fark, kimin tarafında durduğundur.</p>
       </div>
       <div class="feat-card reveal reveal-delay-2">
-        <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         <h3 class="feat-title">Belge Analizi</h3>
-        <p class="feat-desc">VDK yazısı, sözleşme, fatura veya beyanname yükleyin. AI belgeyi mevzuat çerçevesinde analiz eder, risk ve avantajlarınızı raporlar.</p>
+        <p class="feat-desc">VDK yazısı, sözleşme, fatura, beyanname — yükleyin. AI belgeyi mevzuat çerçevesinde analiz eder, risk ve avantajlarınızı somut olarak ortaya koyar.</p>
       </div>
       <div class="feat-card reveal reveal-delay-3">
         <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
-        <h3 class="feat-title">Güncel Mevzuat Tabanı</h3>
-        <p class="feat-desc">GVK, KVK, KDV, VUK, TTK, ÖTV, SGK, AR-GE ve daha fazlası. Her yanıt kanun adı ve madde numarasıyla desteklenir.</p>
+        <h3 class="feat-title">Her Yanıt Kanun Maddesinden</h3>
+        <p class="feat-desc">GVK, KVK, KDV, VUK, TTK, ÖTV, SGK, AR-GE ve 14'ten fazla kanun. Her yanıt kanun adı ve madde numarasıyla desteklenir — doğrulayabilirsiniz.</p>
       </div>
       <div class="feat-card reveal reveal-delay-1">
-        <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>
-        <h3 class="feat-title">Kategorili Danışmanlık</h3>
-        <p class="feat-desc">KDV, Kurumlar Vergisi, Gelir Vergisi, Teşvik & Avantajlar, Vergi İncelemeleri — her konu için özelleştirilmiş yanıt alın.</p>
+        <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <h3 class="feat-title">Kategorili Uzmanlık</h3>
+        <p class="feat-desc">KDV, Kurumlar Vergisi, Gelir Vergisi, Teşvik & Avantajlar, Vergi İncelemeleri — her konu için özelleştirilmiş derin analiz, genel bir chatbot değil.</p>
       </div>
       <div class="feat-card reveal reveal-delay-2">
-        <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-        <h3 class="feat-title">Konuşma Geçmişi</h3>
-        <p class="feat-desc">Tüm danışmanlık oturumlarınız kayıtlı ve erişilebilir. Eski konularınıza geri dönün, sorularınızı derinleştirin.</p>
+        <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <h3 class="feat-title">PDF Rapor</h3>
+        <p class="feat-desc">Her yanıtı Legatis Tax logolu, kanun maddeleriyle desteklenmiş, profesyonel PDF rapor olarak indirin. Mali müşavirinizle paylaşın, arşivleyin.</p>
       </div>
       <div class="feat-card reveal reveal-delay-3">
-        <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        <h3 class="feat-title">Kurumsal Güvence</h3>
-        <p class="feat-desc">Legatis Denetim Danışmanlık'ın yıllarca süren denetim ve danışmanlık deneyimiyle desteklenen platform. Sorularınız güvende.</p>
+        <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        <h3 class="feat-title">Sohbet Geçmişi</h3>
+        <p class="feat-desc">Tüm danışmanlık oturumlarınız kayıtlı ve erişilebilir. Eski konularınıza geri dönün, süregelen durumları takip edin, sorularınızı derinleştirin.</p>
       </div>
     </div>
     <div class="section-cta reveal">
@@ -379,7 +546,7 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 4
   <div class="section-wrap">
     <div class="section-header reveal">
       <span class="section-kicker">Nasıl Çalışır</span>
-      <h2 class="section-title">Vergi danışmanınız<br><em>her an yanınızda</em></h2>
+      <h2 class="section-title">3 adımda<br><em>uzman yanıt</em></h2>
     </div>
     <div class="how-grid">
       <div class="how-step reveal reveal-delay-1">
@@ -389,13 +556,13 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 4
       </div>
       <div class="how-step reveal reveal-delay-2">
         <span class="how-step-kicker">Adım 02</span>
-        <h3 class="how-step-title">Mevzuat taranır, kanun maddeleri bulunur</h3>
-        <p class="how-step-desc">7.000'den fazla mevzuat bölümü içinde sorunuzla ilgili kanun maddeleri, tebliğler ve kararlar anında taranır ve eşleştirilir.</p>
+        <h3 class="how-step-title">7.000+ mevzuat bölümü taranır</h3>
+        <p class="how-step-desc">Sorunuzla ilgili kanun maddeleri, tebliğler ve muktezalar anında taranır, eşleştirilir ve yorumlanır. Saniyeler içinde.</p>
       </div>
       <div class="how-step reveal reveal-delay-3">
         <span class="how-step-kicker">Adım 03</span>
-        <h3 class="how-step-title">Mükellef lehine analiz ve strateji</h3>
-        <p class="how-step-desc">Yasal alternatifler, vergisel etkiler, riskler ve önerilen adımlar — kanun maddesiyle desteklenerek, açık ve uygulanabilir biçimde sunulur.</p>
+        <h3 class="how-step-title">Mükellef lehine analiz gelir</h3>
+        <p class="how-step-desc">Yasal alternatifler, vergisel etkiler, riskler ve önerilen adımlar — kanun maddesiyle desteklenerek, uygulanabilir biçimde.</p>
       </div>
     </div>
     <div class="section-cta reveal">
@@ -415,42 +582,73 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 4
       <div>
         <div class="reveal">
           <span class="section-kicker">Neden Legatis Tax</span>
-          <h2 class="section-title">Sadece cevap değil,<br><em>mükellef savunuculuğu</em></h2>
+          <h2 class="section-title">Her an yanınızda olan,<br><em>deneyimli bir vergi<br>danışmanı.</em></h2>
         </div>
         <div class="diff-list">
           <div class="diff-item reveal reveal-delay-1">
             <div class="diff-num">01</div>
             <div>
-              <div class="diff-item-title">Sizin tarafınızda duruyoruz</div>
-              <p class="diff-item-desc">Genel AI araçları tarafsız yanıt verir. Biz açıkça mükellef lehine yorumluyoruz — aynı mevzuatın iki farklı yasal yorumu var ve biz sizin lehinize olanı gösteriyoruz.</p>
+              <div class="diff-item-title">Açıkça sizin tarafınızdayız</div>
+              <p class="diff-item-desc">Genel AI araçları tarafsız yanıt verir. Legatis Tax mükellef odaklı yorumlar — aynı mevzuatın size en uygun, yasal yorumunu gösterir.</p>
             </div>
           </div>
           <div class="diff-item reveal reveal-delay-2">
             <div class="diff-num">02</div>
             <div>
-              <div class="diff-item-title">Her yanıt kanun maddesiyle desteklenir</div>
-              <p class="diff-item-desc">Boş tavsiye değil, kaynağı olan bilgi. Her yanıtta hangi kanunun hangi maddesine dayandığı belirtilir. Müşavirinizle doğrulayabilirsiniz.</p>
+              <div class="diff-item-title">Kanun maddesi olmayan bilgi vermeyiz</div>
+              <p class="diff-item-desc">Her yanıtta hangi kanunun hangi maddesine dayandığı açıkça belirtilir. "Sanırım bu şekilde" değil, "GVK Madde 89/1'e göre" — kaynağıyla.</p>
             </div>
           </div>
           <div class="diff-item reveal reveal-delay-3">
             <div class="diff-num">03</div>
             <div>
               <div class="diff-item-title">Denetim deneyimiyle şekillendirilmiş</div>
-              <p class="diff-item-desc">Platformun arkasında yıllarca vergi denetimi ve özel sektör danışmanlığı yapmış bir ekip var. Bu deneyim, AI'ın nasıl yorum yapacağını doğrudan belirliyor.</p>
+              <p class="diff-item-desc">Platformun arkasında yıllarca vergi denetimi ve özel sektör danışmanlığı yapan Legatis Denetim Danışmanlık var. Bu deneyim AI'ın nasıl yorum yaptığını doğrudan belirler.</p>
             </div>
           </div>
         </div>
       </div>
       <div class="diff-card reveal">
         <div class="diff-card-kicker">Gerçek Örnek</div>
-        <div class="diff-card-title">VDK'dan bilgilendirme yazısı geldi. Ne yapmalısınız?</div>
-        <div class="diff-quote">"Yüksek Gelir Grupları Gözetim ve Uyum Programı kapsamında bilgilendirme yazısı gönderilmiştir..."</div>
+        <div class="diff-card-title">Vergi incelemesine davet edildiniz. Ne yapmalısınız?</div>
+        <div class="diff-quote">"Sayın mükellef, aşağıda belirtilen konularda izahat vermenizi rica ederiz..."</div>
         <div class="diff-rows">
-          <div class="diff-row"><span class="diff-row-arrow">→</span>Bu henüz vergi incelemesi değil — gönüllü uyum aşaması</div>
-          <div class="diff-row"><span class="diff-row-arrow">→</span>Görüşmeye katılma veya yazılı izahat verme hakkınız var</div>
-          <div class="diff-row"><span class="diff-row-arrow">→</span>Mali müşaviriniz vekil olarak katılabilir</div>
-          <div class="diff-row"><span class="diff-row-arrow">→</span>Risk seviyesi: Orta-Yüksek — 15 gün içinde aksiyon alın</div>
+          <div class="diff-row"><span class="diff-row-arrow">→</span>Bu aşamada henüz resmi inceleme başlamış değil</div>
+          <div class="diff-row"><span class="diff-row-arrow">→</span>Yazılı izahat verme veya görüşmeye katılma hakkınız var</div>
+          <div class="diff-row"><span class="diff-row-arrow">→</span>Mali müşaviriniz sizin adınıza katılabilir (VUK Mad. 8)</div>
+          <div class="diff-row"><span class="diff-row-arrow">→</span>Yanıt süresi ve dikkat edilmesi gerekenler analiz edilir</div>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOUNDER / EKİP -->
+<section class="founder" id="ekip">
+  <div class="section-wrap">
+    <div class="founder-inner">
+      <div class="reveal">
+        <span class="founder-kicker">Arkamızdaki Ekip</span>
+        <h2 class="founder-title">Uzmanlık birikimini<br>teknolojiyle<br><em>buluşturduk.</em></h2>
+        <p class="founder-desc">Legatis Tax, bir teknoloji girişimi ile köklü bir vergi danışmanlık firmasının birleşiminden doğdu. Yapay zekanın gücünü, yıllarca VDK denetimlerinde ve özel sektörde birikmiş vergi uzmanlığıyla birleştiriyoruz.</p>
+        <div class="founder-credentials">
+          <div class="founder-cred"><div class="founder-cred-dot"></div><div class="founder-cred-text">Legatis Denetim Danışmanlık — Kurumsal vergi danışmanlığı ve denetim deneyimi</div></div>
+          <div class="founder-cred"><div class="founder-cred-dot"></div><div class="founder-cred-text">GVK, KVK, VUK ve uluslararası vergi mevzuatında uzmanlaşmış ekip</div></div>
+          <div class="founder-cred"><div class="founder-cred-dot"></div><div class="founder-cred-text">AI destekli vergi analizi — Türkiye'de bir ilk</div></div>
+        </div>
+      </div>
+      <div class="reveal reveal-delay-2">
+        <div class="founder-cards">
+          <div class="founder-card">
+            <div class="founder-avatar"><div class="founder-avatar-placeholder">L</div></div>
+            <div class="founder-info">
+              <div class="founder-name">Yakında</div>
+              <div class="founder-role">Kurucu / Vergi Danışmanı</div>
+              <div class="founder-bio">Ekip tanıtımı yakında paylaşılacak.</div>
+            </div>
+          </div>
+        </div>
+        <p class="founder-coming-soon">Ekip profilleri piyasaya çıkış öncesinde tamamlanacak</p>
       </div>
     </div>
   </div>
@@ -461,8 +659,8 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 4
   <div class="section-wrap">
     <div class="section-header reveal">
       <span class="section-kicker">Erişim Planları</span>
-      <h2 class="section-title">İhtiyacınıza göre<br><em>esnek erişim</em></h2>
-      <p class="pricing-sub">Tek bir danışmanlık görüşmesinin maliyetiyle, tüm yıl boyunca 7/24 erişim.</p>
+      <h2 class="section-title">Şeffaf,<br><em>erişilebilir fiyatlandırma</em></h2>
+      <p class="pricing-sub">Kredi kartı gerekmez. Dilediğiniz zaman iptal. İlk gün ücretsiz başlayın.</p>
     </div>
     <div class="pricing-grid">
       <div class="p-card reveal reveal-delay-1">
@@ -473,8 +671,9 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 4
           <div class="p-feat"><span class="p-feat-check">✓</span>Günde 10 soru hakkı</div>
           <div class="p-feat"><span class="p-feat-check">✓</span>Tüm vergi kategorileri</div>
           <div class="p-feat"><span class="p-feat-check">✓</span>Kanun maddesi referansları</div>
-          <div class="p-feat"><span class="p-feat-check">✓</span>Konuşma geçmişi</div>
+          <div class="p-feat"><span class="p-feat-check">✓</span>Sohbet geçmişi</div>
           <div class="p-feat off"><span class="p-feat-check">—</span>Belge analizi</div>
+          <div class="p-feat off"><span class="p-feat-check">—</span>PDF rapor indirme</div>
           <div class="p-feat off"><span class="p-feat-check">—</span>Sınırsız soru</div>
         </div>
         <a href="/app" class="p-btn p-btn-free">Ücretsiz Başla</a>
@@ -487,9 +686,10 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 4
         <div class="p-features">
           <div class="p-feat"><span class="p-feat-check">✓</span>Sınırsız soru</div>
           <div class="p-feat"><span class="p-feat-check">✓</span>Belge analizi (PDF, Word, Excel, görsel)</div>
+          <div class="p-feat"><span class="p-feat-check">✓</span>PDF rapor indirme</div>
           <div class="p-feat"><span class="p-feat-check">✓</span>Tüm vergi kategorileri</div>
           <div class="p-feat"><span class="p-feat-check">✓</span>Kanun maddesi referansları</div>
-          <div class="p-feat"><span class="p-feat-check">✓</span>Konuşma geçmişi</div>
+          <div class="p-feat"><span class="p-feat-check">✓</span>Sohbet geçmişi</div>
           <div class="p-feat"><span class="p-feat-check">✓</span>Yeni özellik öncelikli erişim</div>
         </div>
         <a href="https://legatis-tax.lemonsqueezy.com/checkout/buy/49780de3-18e9-465b-ae4d-1f6df068b838" target="_blank" class="p-btn p-btn-gold">Profesyonel'e Geç</a>
@@ -497,16 +697,16 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 4
       <div class="p-card reveal reveal-delay-3">
         <div class="p-plan">Kurumsal</div>
         <div class="p-price-custom">Firmana<br>özel fiyat</div>
-        <div class="p-period">İhtiyacınıza göre şekillenir</div>
+        <div class="p-period">Muhasebe firmaları ve KOBİ'ler için</div>
         <div class="p-features">
           <div class="p-feat"><span class="p-feat-check">✓</span>Tüm Profesyonel özellikler</div>
           <div class="p-feat"><span class="p-feat-check">✓</span>Çoklu kullanıcı erişimi</div>
           <div class="p-feat"><span class="p-feat-check">✓</span>Firma bazlı özelleştirme</div>
-          <div class="p-feat"><span class="p-feat-check">✓</span>Öncelikli destek</div>
+          <div class="p-feat"><span class="p-feat-check">✓</span>Öncelikli destek hattı</div>
           <div class="p-feat"><span class="p-feat-check">✓</span>Özel sistem entegrasyonu</div>
           <div class="p-feat"><span class="p-feat-check">✓</span>SLA garantisi</div>
         </div>
-        <a href="https://wa.me/905304145946?text=Kurumsal%20plan%20hakkında%20bilgi%20almak%20istiyorum" target="_blank" class="p-btn p-btn-ent">WhatsApp ile Görüşün</a>
+        <a href="https://wa.me/905304145946?text=Kurumsal%20plan%20hakkında%20bilgi%20almak%20istiyorum" target="_blank" class="p-btn p-btn-ent">WhatsApp ile Görüşün →</a>
       </div>
     </div>
   </div>
@@ -516,27 +716,79 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 4
 <section class="cta-section">
   <div class="cta-inner reveal">
     <div class="cta-emblem">L</div>
-    <h2 class="cta-title">Vergi haklarınızı öğrenmeye<br><em>bugün başlayın.</em></h2>
-    <p class="cta-desc">Kayıt gerektirmez. Saniyeler içinde ilk sorunuzu sorun.</p>
+    <h2 class="cta-title">Vergi sorularınız için<br><em>7/24 uzman danışmanlık.</em></h2>
+    <p class="cta-desc">Kayıt gerektirmez. Kredi kartı gerekmez. İlk sorunuzu şimdi sorun.</p>
     <a href="/app" class="btn-gold">
-      Hemen Dene
+      Şimdi Ücretsiz Başlayın
       <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </a>
-    <div class="cta-note">Ücretsiz plan · Kredi kartı gerekmez</div>
+    <div class="cta-note">Ücretsiz plan · Kredi kartı gerekmez · İstediğiniz zaman iptal</div>
   </div>
 </section>
 
 <!-- FOOTER -->
 <footer>
-  <div class="footer-inner">
-    <div class="footer-logo">Legatis Tax</div>
-    <div class="footer-links">
-      <a href="#ozellikler" class="footer-link">Özellikler</a>
-      <a href="#fiyatlar" class="footer-link">Planlar</a>
-      <a href="/app" class="footer-link">Uygulamayı Aç</a>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="footer-logo-row">
+        <span class="footer-logo-text">Legatis Tax</span>
+        <div class="footer-logo-dot"></div>
+      </div>
+      <p class="footer-brand-desc">Türkiye'nin ilk mükellef taraflı yapay zeka vergi danışmanı. Legatis Denetim Danışmanlık tarafından desteklenmektedir.</p>
+      <p class="footer-address">Legatis Denetim Danışmanlık A.Ş.<br>İstanbul, Türkiye</p>
+      <div class="footer-trust-badges" style="margin-top:16px;">
+        <span class="footer-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          SSL Şifrelemeli
+        </span>
+        <span class="footer-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          KVKK Uyumlu
+        </span>
+        <span class="footer-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          7/24 Erişim
+        </span>
+      </div>
     </div>
-    <div class="footer-copy">© 2026 Legatis Denetim Danışmanlık</div>
+    <div>
+      <div class="footer-col-title">Ürün</div>
+      <div class="footer-col-links">
+        <a href="#ozellikler" class="footer-col-link">Özellikler</a>
+        <a href="#nasil-calisir" class="footer-col-link">Nasıl Çalışır</a>
+        <a href="#fiyatlar" class="footer-col-link">Planlar ve Fiyatlar</a>
+        <a href="#demo" class="footer-col-link">Canlı Demo</a>
+        <a href="/app" class="footer-col-link">Uygulamayı Aç</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Firma</div>
+      <div class="footer-col-links">
+        <a href="#ekip" class="footer-col-link">Ekibimiz</a>
+        <a href="#fark" class="footer-col-link">Neden Legatis</a>
+        <a href="https://wa.me/905304145946" target="_blank" class="footer-col-link">İletişim</a>
+        <a href="https://wa.me/905304145946?text=Kurumsal%20plan%20hakkında%20bilgi%20almak%20istiyorum" target="_blank" class="footer-col-link">Kurumsal</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Hukuki</div>
+      <div class="footer-col-links">
+        <a href="/kvkk" class="footer-col-link">KVKK Aydınlatma Metni</a>
+        <a href="/gizlilik" class="footer-col-link">Gizlilik Politikası</a>
+        <a href="/kullanim-kosullari" class="footer-col-link">Kullanım Koşulları</a>
+        <a href="/cerez-politikasi" class="footer-col-link">Çerez Politikası</a>
+      </div>
+    </div>
   </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2026 Legatis Denetim Danışmanlık A.Ş. Tüm hakları saklıdır.</div>
+    <div class="footer-legal-links">
+      <a href="/kvkk" class="footer-legal-link">KVKK</a>
+      <a href="/gizlilik" class="footer-legal-link">Gizlilik</a>
+      <a href="/kullanim-kosullari" class="footer-legal-link">Kullanım Koşulları</a>
+    </div>
+  </div>
+  <p class="footer-disclaimer">Legatis Tax tarafından sunulan içerikler genel bilgilendirme amaçlıdır ve hukuki/mali danışmanlık niteliği taşımaz. Spesifik durumunuz için lütfen yetkili bir mali müşavir veya vergi danışmanına başvurun.</p>
 </footer>
 
 <script>
@@ -547,14 +799,14 @@ function closeDrawer() { document.getElementById('drawer').classList.remove('ope
 // Scroll reveal
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
-}, { threshold: 0.12 });
+}, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
 // Sayaç animasyonu
 function animateCount(el) {
+  if (el.dataset.zero === 'true') return;
   const target = parseInt(el.dataset.count);
   const suffix = el.dataset.suffix || '';
-  const prefix = el.dataset.prefix || '';
   const duration = 1600;
   const start = performance.now();
   const easeOut = t => 1 - Math.pow(1 - t, 3);
@@ -571,6 +823,91 @@ const countObserver = new IntersectionObserver((entries) => {
   entries.forEach(e => { if (e.isIntersecting) { animateCount(e.target); countObserver.unobserve(e.target); } });
 }, { threshold: 0.5 });
 countEls.forEach(el => countObserver.observe(el));
+
+// CANLI DEMO
+const FLOWISE_API = 'https://flowiseai-railway-production-c71e.up.railway.app/api/v1/prediction/eeed0f20-21f3-47dd-b931-2a344293c5be';
+let demoSessionId = 'demo_' + Math.random().toString(36).substr(2, 9);
+let demoLoading = false;
+
+function sendDemoQ(btn) {
+  const q = btn.textContent;
+  document.getElementById('demoInput').value = q;
+  document.getElementById('demoSuggestions').style.display = 'none';
+  sendDemo();
+}
+
+function sendDemo() {
+  if (demoLoading) return;
+  const input = document.getElementById('demoInput');
+  const q = input.value.trim();
+  if (!q) return;
+  input.value = '';
+  demoLoading = true;
+  document.getElementById('demoSendBtn').disabled = true;
+  document.getElementById('demoSuggestions').style.display = 'none';
+
+  const msgs = document.getElementById('demoMessages');
+
+  // Kullanıcı mesajı
+  msgs.innerHTML += `
+    <div class="demo-msg demo-msg-user">
+      <div class="demo-msg-avatar demo-msg-avatar-user">S</div>
+      <div class="demo-msg-bubble"><div class="demo-msg-bubble-user">${escHtml(q)}</div></div>
+    </div>`;
+
+  // Typing
+  const typingId = 'typing_' + Date.now();
+  msgs.innerHTML += `
+    <div class="demo-msg" id="${typingId}">
+      <div class="demo-msg-avatar demo-msg-avatar-ai">L</div>
+      <div class="demo-msg-bubble"><div class="demo-msg-bubble-ai"><div class="demo-typing"><span></span><span></span><span></span></div></div></div>
+    </div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+
+  fetch(FLOWISE_API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ question: q, sessionId: demoSessionId })
+  })
+  .then(r => r.json())
+  .then(data => {
+    const answer = data.text || data.answer || (data.choices && data.choices[0]?.message?.content) || 'Yanıt alınamadı.';
+    const typing = document.getElementById(typingId);
+    if (typing) typing.remove();
+    msgs.innerHTML += `
+      <div class="demo-msg">
+        <div class="demo-msg-avatar demo-msg-avatar-ai">L</div>
+        <div class="demo-msg-bubble"><div class="demo-msg-bubble-ai">${formatAnswer(answer)}</div></div>
+      </div>`;
+    msgs.scrollTop = msgs.scrollHeight;
+  })
+  .catch(() => {
+    const typing = document.getElementById(typingId);
+    if (typing) typing.remove();
+    msgs.innerHTML += `
+      <div class="demo-msg">
+        <div class="demo-msg-avatar demo-msg-avatar-ai">L</div>
+        <div class="demo-msg-bubble"><div class="demo-msg-bubble-ai">Bağlantı hatası oluştu. Lütfen tekrar deneyin veya <a href="/app" style="color:var(--gold)">uygulamayı açın</a>.</div></div>
+      </div>`;
+    msgs.scrollTop = msgs.scrollHeight;
+  })
+  .finally(() => {
+    demoLoading = false;
+    document.getElementById('demoSendBtn').disabled = false;
+  });
+}
+
+function escHtml(t) {
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function formatAnswer(text) {
+  // Kalın metinler (**text**)
+  text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  // Satır sonları
+  text = text.replace(/\n/g, '<br>');
+  return text;
+}
 </script>
 </body>
 </html>
