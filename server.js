@@ -32,28 +32,32 @@ function parseMultipart(buffer, boundary) {
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
-  console.log('Files in dir:', fs.readdirSync(__dirname).join(', '));
 
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
 
-  // Landing page
   if (req.method === 'GET' && url.pathname === '/') {
-    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-    fs.createReadStream(path.join(__dirname, 'landing.html')).pipe(res);
+    const filePath = path.join(__dirname, 'landing.html');
+    fs.readFile(filePath, 'utf8', (err, data) => {
+      if (err) { res.writeHead(500); res.end('landing.html okunamadi'); return; }
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' });
+      res.end(data);
+    });
     return;
   }
 
-  // Chat uygulaması
   if (req.method === 'GET' && url.pathname === '/app') {
-    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-    fs.createReadStream(path.join(__dirname, 'index.html')).pipe(res);
+    const filePath = path.join(__dirname, 'index.html');
+    fs.readFile(filePath, 'utf8', (err, data) => {
+      if (err) { res.writeHead(500); res.end('index.html okunamadi'); return; }
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' });
+      res.end(data);
+    });
     return;
   }
 
-  // Soru kaydet + sayaç kontrol
   if (req.method === 'POST' && url.pathname === '/api/question') {
     let body = '';
     req.on('data', chunk => body += chunk);
@@ -67,7 +71,7 @@ const server = http.createServer(async (req, res) => {
         }
         if (!profile) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ error: 'Profil oluşturulamadı' }));
+          res.end(JSON.stringify({ error: 'Profil olusturulamadi' }));
           return;
         }
         const today = new Date().toISOString().split('T')[0];
@@ -79,18 +83,17 @@ const server = http.createServer(async (req, res) => {
           return;
         }
         await supabase.from('profiles').update({ daily_question_count: count + 1, last_question_date: today }).eq('id', user_id);
-        await supabase.from('user_questions').insert({ user_id, category: category || 'Tüm Sorular', question_text });
+        await supabase.from('user_questions').insert({ user_id, category: category || 'Tum Sorular', question_text });
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ok: true, remaining: profile.is_premium ? 999 : (9 - count) }));
       } catch (err) {
         res.writeHead(500, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'Sunucu hatası' }));
+        res.end(JSON.stringify({ error: 'Sunucu hatasi' }));
       }
     });
     return;
   }
 
-  // Belge analizi
   if (req.method === 'POST' && url.pathname === '/api/analyze') {
     const chunks = [];
     req.on('data', chunk => chunks.push(chunk));
@@ -101,13 +104,13 @@ const server = http.createServer(async (req, res) => {
         const boundaryMatch = contentType.match(/boundary=(.+)/);
         if (!boundaryMatch) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ error: 'Boundary bulunamadı' }));
+          res.end(JSON.stringify({ error: 'Boundary bulunamadi' }));
           return;
         }
         const boundary = boundaryMatch[1];
         const parts = parseMultipart(buffer, boundary);
         let fileData = null, fileMimeType = null, fileName = null;
-        let question = 'Bu belgeyi vergi mevzuatı açısından analiz et. Mükellef lehine yasal avantajları, riskleri ve önerileri belirt.';
+        let question = 'Bu belgeyi vergi mevzuati acisindan analiz et.';
         let userId = null;
         for (const part of parts) {
           const nameMatch = part.header.match(/name="([^"]+)"/);
@@ -119,7 +122,7 @@ const server = http.createServer(async (req, res) => {
         }
         if (!fileData) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ error: 'Dosya bulunamadı' }));
+          res.end(JSON.stringify({ error: 'Dosya bulunamadi' }));
           return;
         }
         const base64Data = fileData.toString('base64');
@@ -131,7 +134,7 @@ const server = http.createServer(async (req, res) => {
           const mediaType = validImageTypes.includes(fileMimeType) ? fileMimeType : 'image/jpeg';
           messageContent = [{ type: 'image', source: { type: 'base64', media_type: mediaType, data: base64Data } }, { type: 'text', text: question }];
         } else {
-          messageContent = [{ type: 'text', text: `Kullanıcı bir belge yükledi (${fileName}). ${question}` }];
+          messageContent = [{ type: 'text', text: `Kullanici bir belge yukledi (${fileName}). ${question}` }];
         }
         const anthropicResponse = await fetch('https://api.anthropic.com/v1/messages', {
           method: 'POST',
@@ -139,12 +142,12 @@ const server = http.createServer(async (req, res) => {
           body: JSON.stringify({
             model: 'claude-sonnet-4-5',
             max_tokens: 2000,
-            system: `Sen Legatis Tax adlı bir Türk vergi danışmanlık asistanısın. Arkandaki ekip vergi mevzuatı ve özel sektör danışmanlığında derin uzmanlığa sahiptir. Yüklenen belgeleri vergi mevzuatı açısından analiz ederek mükellef lehine yasal avantajları, riskleri ve pratik önerileri belirtirsin.`,
+            system: 'Sen Legatis Tax adli bir Turk vergi danismanlik asistanisin. Yuklenen belgeleri vergi mevzuati acisindan analiz ederek mukellef lehine yasal avantajlari, riskleri ve pratik onerileri belirtirsin.',
             messages: [{ role: 'user', content: messageContent }]
           })
         });
         const anthropicData = await anthropicResponse.json();
-        const analysisText = anthropicData.content?.[0]?.text || 'Analiz yapılamadı.';
+        const analysisText = anthropicData.content?.[0]?.text || 'Analiz yapilamadi.';
         if (userId) {
           await supabase.from('user_questions').insert({ user_id: userId, category: 'Belge Analizi', question_text: `[Belge: ${fileName}] ${question}` });
         }
@@ -152,13 +155,12 @@ const server = http.createServer(async (req, res) => {
         res.end(JSON.stringify({ ok: true, analysis: analysisText }));
       } catch (err) {
         res.writeHead(500, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'Analiz hatası: ' + err.message }));
+        res.end(JSON.stringify({ error: 'Analiz hatasi: ' + err.message }));
       }
     });
     return;
   }
 
-  // Lemon Squeezy Webhook
   if (req.method === 'POST' && url.pathname === '/api/webhook') {
     let body = '';
     req.on('data', chunk => body += chunk);
