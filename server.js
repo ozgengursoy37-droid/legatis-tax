@@ -30,6 +30,15 @@ function parseMultipart(buffer, boundary) {
   return parts;
 }
 
+function serveHtmlFile(res, filename) {
+  const filePath = path.join(__dirname, filename);
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) { res.writeHead(500); res.end(filename + ' okunamadi'); return; }
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' });
+    res.end(data);
+  });
+}
+
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
 
@@ -39,23 +48,27 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
 
   if (req.method === 'GET' && url.pathname === '/') {
-    const filePath = path.join(__dirname, 'landing.html');
-    fs.readFile(filePath, 'utf8', (err, data) => {
-      if (err) { res.writeHead(500); res.end('landing.html okunamadi'); return; }
-      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' });
-      res.end(data);
-    });
-    return;
+    serveHtmlFile(res, 'landing.html'); return;
   }
 
   if (req.method === 'GET' && url.pathname === '/app') {
-    const filePath = path.join(__dirname, 'index.html');
-    fs.readFile(filePath, 'utf8', (err, data) => {
-      if (err) { res.writeHead(500); res.end('index.html okunamadi'); return; }
-      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' });
-      res.end(data);
-    });
-    return;
+    serveHtmlFile(res, 'index.html'); return;
+  }
+
+  if (req.method === 'GET' && url.pathname === '/kvkk') {
+    serveHtmlFile(res, 'kvkk.html'); return;
+  }
+
+  if (req.method === 'GET' && url.pathname === '/gizlilik') {
+    serveHtmlFile(res, 'gizlilik.html'); return;
+  }
+
+  if (req.method === 'GET' && url.pathname === '/kullanim-kosullari') {
+    serveHtmlFile(res, 'kullanim-kosullari.html'); return;
+  }
+
+  if (req.method === 'GET' && url.pathname === '/cerez-politikasi') {
+    serveHtmlFile(res, 'cerez-politikasi.html'); return;
   }
 
   if (req.method === 'POST' && url.pathname === '/api/question') {
