@@ -86,7 +86,7 @@ CEVAP YAPISI — HER CEVAP BU SIRALAMAYI TAKİP ETSİN:
 2. ## Yasal Alternatifler (mükellef lehine tüm seçenekler, rakamsal etkisiyle)
 3. ## Yasal Dayanak (kanun adı ve madde numarası)
 4. ## Önerilen Adımlar (pratik, uygulanabilir adımlar)
-5. ⚠️ Bu bilgiler genel bilgilendirme amaçlıdır. Şirketinizin özel koşulları farklı sonuçlar doğurabilir. Uygulamadan önce durumunuzu bir vergi uzmanıyla değerlendirmenizi öneririz.
+5. ⚠️ Bu bilgiler genel bilgilendirme amaçlıdır. Şirketinizin özel koşulları farklı sonuçlar doğurabilir. Daha detaylı ve kişiselleştirilmiş analiz için **Legatis Tax uzmanlarıyla görüşmenizi** öneririz.
 
 HALÜSİNASYON KURALI — KESİNLİKLE UYULMASI ZORUNLU:
 - Yalnızca aşağıda sağlanan BAĞLAM bölümündeki bilgilere dayanarak yanıt ver.
