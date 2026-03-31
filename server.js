@@ -39,6 +39,69 @@ function serveHtmlFile(res, filename) {
   });
 }
 
+async function getEmbedding(text) {
+  const response = await fetch('https://api.openai.com/v1/embeddings', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+    },
+    body: JSON.stringify({
+      model: 'text-embedding-ada-002',
+      input: text
+    })
+  });
+  const data = await response.json();
+  return data.data[0].embedding;
+}
+
+async function searchDocuments(embedding, matchCount = 8) {
+  const { data, error } = await supabase.rpc('match_documents', {
+    query_embedding: embedding,
+    match_threshold: 0.75,
+    match_count: matchCount
+  });
+  if (error) throw new Error('Supabase arama hatasi: ' + error.message);
+  return data || [];
+}
+
+const SYSTEM_PROMPT = `KAPSAMLI ANALİZ ZORUNLULUĞU:
+Verilen soruyu yanıtlarken ilgili olabilecek TÜM vergi boyutlarını ele al. Bir taşıt işleminde KDV + ÖTV + gelir vergisi + amortisman boyutlarını; bir işletme giderinde KDV + kurumlar vergisi + stopaj boyutlarını; bir gayrimenkul işleminde KDV + tapu harcı + değer artış kazancı boyutlarını mutlaka kontrol et ve ilgili olanları cevaba dahil et. Hiçbir zaman "atladım" veya "bahsetmedim" durumuna düşme — soruyla ilgili tüm vergi boyutlarını tek cevabında tamamla.
+
+Sen Legatis Tax adlı bir Türk vergi danışmanlık asistanısın. Arkandaki ekip vergi mevzuatı ve özel sektör danışmanlığında derin uzmanlığa sahiptir.
+
+TEMEL BAKIŞ AÇIN:
+Gelir İdaresi Başkanlığı vergi mevzuatını hazine lehine yorumlar. Sen aynı mevzuatı mükellef lehine yorumlarsın. Her ikisi de yasaldır — sen mükellefi kendi lehine olan yasal seçeneklerden haberdar edersin.
+
+CEVAP FORMATI — MUTLAKA UYGULA:
+- Başlıklar için ## kullan
+- Alt başlıklar için ### kullan
+- Madde listeleri için - kullan
+- Önemli kavramları **kalın** yaz
+- Bölümleri birbirinden ayırmak için --- kullan
+- Kanun maddelerini her zaman **Kanun Adı Madde X** formatında yaz
+
+CEVAP YAPISI — HER CEVAP BU SIRALAMAYI TAKİP ETSİN:
+1. Kısa özet (2-3 cümle, sorunun özü)
+2. ## Yasal Alternatifler (mükellef lehine tüm seçenekler, rakamsal etkisiyle)
+3. ## Yasal Dayanak (kanun adı ve madde numarası)
+4. ## Önerilen Adımlar (pratik, uygulanabilir adımlar)
+5. ⚠️ Bu bilgiler genel bilgilendirme amaçlıdır. Şirketinizin özel koşulları farklı sonuçlar doğurabilir. Uygulamadan önce durumunuzu bir vergi uzmanıyla değerlendirmenizi öneririz.
+
+HALÜSİNASYON KURALI — KESİNLİKLE UYULMASI ZORUNLU:
+- Yalnızca aşağıda sağlanan BAĞLAM bölümündeki bilgilere dayanarak yanıt ver.
+- Bağlamda bilgi yoksa şunu söyle: "Bu konuda bilgi tabanımda yeterli mevzuat kaynağı bulunamadı. Güncel bilgi için vergi danışmanınıza başvurun." Başka hiçbir şey ekleme.
+- Kanun maddesi numarası veremiyorsan o konuda yanıt verme.
+- Tahmin, varsayım veya genel bilginden yanıt üretme. Hiçbir koşulda.
+- Rakam, oran veya tutar verirken mutlaka hangi kanunun hangi maddesinden geldiğini belirt. Madde gösteremiyorsan o rakamı yazma.
+- "Genellikle", "muhtemelen", "olabilir", "sanırım" gibi ifadeler kullanma.
+
+YAPAMAYACAKLARIN:
+- Vergi kaçakçılığına yönlendirecek hiçbir tavsiye verme.
+- Bilgi tabanında olmayan konularda yorum yapma.
+- Kanuni dayanağı olmayan hiçbir bilgi verme.
+- Varsayıma dayalı hiçbir yorumda bulunma.`;
+
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
 
@@ -69,6 +132,71 @@ const server = http.createServer(async (req, res) => {
 
   if (req.method === 'GET' && url.pathname === '/cerez-politikasi') {
     serveHtmlFile(res, 'cerez-politikasi.html'); return;
+  }
+
+  if (req.method === 'POST' && url.pathname === '/api/chat') {
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', async () => {
+      try {
+        const { question, sessionId } = JSON.parse(body);
+        if (!question || !question.trim()) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Soru boş olamaz' }));
+          return;
+        }
+
+        // 1. Soruyu embed et
+        const embedding = await getEmbedding(question);
+
+        // 2. Supabase'den ilgili chunk'ları çek
+        const documents = await searchDocuments(embedding, 8);
+
+        // 3. Context boşsa bilmiyorum de, Claude'a gönderme
+        if (!documents || documents.length === 0) {
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({
+            text: 'Bu konuda bilgi tabanımda yeterli mevzuat kaynağı bulunamadı. Güncel bilgi için vergi danışmanınıza başvurun.'
+          }));
+          return;
+        }
+
+        // 4. Context'i oluştur
+        const context = documents.map(doc =>
+          `[Kaynak: ${doc.metadata?.source || 'Bilinmiyor'}]\n${doc.content}`
+        ).join('\n\n---\n\n');
+
+        // 5. Claude'a gönder — sadece context ile
+        const anthropicResponse = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': process.env.ANTHROPIC_API_KEY,
+            'anthropic-version': '2023-06-01'
+          },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-5',
+            max_tokens: 4000,
+            system: SYSTEM_PROMPT,
+            messages: [{
+              role: 'user',
+              content: `BAĞLAM:\n${context}\n\nSORU: ${question}`
+            }]
+          })
+        });
+
+        const anthropicData = await anthropicResponse.json();
+        const answerText = anthropicData.content?.[0]?.text || 'Yanıt alınamadı.';
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ text: answerText }));
+
+      } catch (err) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Chat hatası: ' + err.message }));
+      }
+    });
+    return;
   }
 
   if (req.method === 'POST' && url.pathname === '/api/question') {
