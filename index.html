@@ -298,8 +298,6 @@ html, body { height: 100%; background: var(--off-white); color: var(--black); fo
 </div>
 
 <script>
-const FLOWISE_URL = 'https://flowiseai-railway-production-c71e.up.railway.app';
-const CHATFLOW_ID = '9d22a006-2ddb-4bb3-8de1-7dc050078299';
 const SUPABASE_URL = 'https://tqwsqfedasmizwijedpc.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_0vktgY22QNJRZ8yGXz7VMA_V6S_tfZf';
 
@@ -577,9 +575,9 @@ async function sendMessage() {
       else { addMessage('bot', 'Belge analizi sırasında bir hata oluştu: ' + (data.error || 'Bilinmeyen hata')); }
     } else {
       await fetch('/api/question', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: currentUser?.id || 'test-user', category: currentCategory, question_text: questionText }) });
-      const flowRes = await fetch(`${FLOWISE_URL}/api/v1/prediction/${CHATFLOW_ID}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question: questionText, sessionId: sessionId }) });
-      const flowData = await flowRes.json(); removeTyping();
-      addMessage('bot', flowData.text || flowData.answer || flowData.output || 'Yanıt alınamadı.');
+      const chatRes = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question: questionText, sessionId: sessionId }) });
+      const chatData = await chatRes.json(); removeTyping();
+      addMessage('bot', chatData.text || 'Yanıt alınamadı.');
     }
   } catch(err) { removeTyping(); addMessage('bot', 'Bağlantı hatası oluştu. Lütfen tekrar deneyin.'); }
   isLoading = false; document.getElementById('sendBtn').disabled = false;
