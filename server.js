@@ -4,6 +4,9 @@ const path = require('path');
 const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
 
+const PORT = process.env.PORT || 8080;
+const ANTHROPIC_MODEL = 'claude-sonnet-4-20250514';
+
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_KEY
@@ -33,8 +36,15 @@ function parseMultipart(buffer, boundary) {
 function serveHtmlFile(res, filename) {
   const filePath = path.join(__dirname, filename);
   fs.readFile(filePath, 'utf8', (err, data) => {
-    if (err) { res.writeHead(500); res.end(filename + ' okunamadi'); return; }
-    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' });
+    if (err) {
+      res.writeHead(500);
+      res.end(filename + ' okunamadi');
+      return;
+    }
+    res.writeHead(200, {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Cache-Control': 'no-store'
+    });
     res.end(data);
   });
 }
@@ -51,7 +61,18 @@ async function getEmbedding(text) {
       input: text
     })
   });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`OpenAI embedding hatasi (${response.status}): ${errorText}`);
+  }
+
   const data = await response.json();
+
+  if (!data?.data?.[0]?.embedding) {
+    throw new Error('OpenAI embedding verisi donmedi');
+  }
+
   return data.data[0].embedding;
 }
 
@@ -61,7 +82,11 @@ async function searchDocuments(embedding, matchCount = 8) {
     match_threshold: 0.75,
     match_count: matchCount
   });
-  if (error) throw new Error('Supabase arama hatasi: ' + error.message);
+
+  if (error) {
+    throw new Error('Supabase arama hatasi: ' + error.message);
+  }
+
   return data || [];
 }
 
@@ -108,30 +133,41 @@ const server = http.createServer(async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
+
+  if (req.method === 'OPTIONS') {
+    res.writeHead(204);
+    res.end();
+    return;
+  }
 
   if (req.method === 'GET' && url.pathname === '/') {
-    serveHtmlFile(res, 'landing.html'); return;
+    serveHtmlFile(res, 'landing.html');
+    return;
   }
 
   if (req.method === 'GET' && url.pathname === '/app') {
-    serveHtmlFile(res, 'index.html'); return;
+    serveHtmlFile(res, 'index.html');
+    return;
   }
 
   if (req.method === 'GET' && url.pathname === '/kvkk') {
-    serveHtmlFile(res, 'kvkk.html'); return;
+    serveHtmlFile(res, 'kvkk.html');
+    return;
   }
 
   if (req.method === 'GET' && url.pathname === '/gizlilik') {
-    serveHtmlFile(res, 'gizlilik.html'); return;
+    serveHtmlFile(res, 'gizlilik.html');
+    return;
   }
 
   if (req.method === 'GET' && url.pathname === '/kullanim-kosullari') {
-    serveHtmlFile(res, 'kullanim-kosullari.html'); return;
+    serveHtmlFile(res, 'kullanim-kosullari.html');
+    return;
   }
 
   if (req.method === 'GET' && url.pathname === '/cerez-politikasi') {
-    serveHtmlFile(res, 'cerez-politikasi.html'); return;
+    serveHtmlFile(res, 'cerez-politikasi.html');
+    return;
   }
 
   if (req.method === 'POST' && url.pathname === '/api/chat') {
@@ -139,20 +175,17 @@ const server = http.createServer(async (req, res) => {
     req.on('data', chunk => body += chunk);
     req.on('end', async () => {
       try {
-        const { question, sessionId } = JSON.parse(body);
+        const { question } = JSON.parse(body);
+
         if (!question || !question.trim()) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: 'Soru boş olamaz' }));
           return;
         }
 
-        // 1. Soruyu embed et
         const embedding = await getEmbedding(question);
-
-        // 2. Supabase'den ilgili chunk'ları çek
         const documents = await searchDocuments(embedding, 8);
 
-        // 3. Context boşsa bilmiyorum de, Claude'a gönderme
         if (!documents || documents.length === 0) {
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({
@@ -161,12 +194,10 @@ const server = http.createServer(async (req, res) => {
           return;
         }
 
-        // 4. Context'i oluştur
         const context = documents.map(doc =>
           `[Kaynak: ${doc.metadata?.source || 'Bilinmiyor'}]\n${doc.content}`
         ).join('\n\n---\n\n');
 
-        // 5. Claude'a gönder — sadece context ile
         const anthropicResponse = await fetch('https://api.anthropic.com/v1/messages', {
           method: 'POST',
           headers: {
@@ -175,7 +206,7 @@ const server = http.createServer(async (req, res) => {
             'anthropic-version': '2023-06-01'
           },
           body: JSON.stringify({
-            model: 'claude-sonnet-4-5',
+            model: ANTHROPIC_MODEL,
             max_tokens: 4000,
             system: SYSTEM_PROMPT,
             messages: [{
@@ -185,13 +216,22 @@ const server = http.createServer(async (req, res) => {
           })
         });
 
+        if (!anthropicResponse.ok) {
+          const errorText = await anthropicResponse.text();
+          throw new Error(`Anthropic chat hatasi (${anthropicResponse.status}): ${errorText}`);
+        }
+
         const anthropicData = await anthropicResponse.json();
-        const answerText = anthropicData.content?.[0]?.text || 'Yanıt alınamadı.';
+        const answerText = anthropicData?.content?.[0]?.text;
+
+        if (!answerText) {
+          throw new Error('Anthropic chat yanit metni bos dondu');
+        }
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ text: answerText }));
-
       } catch (err) {
+        console.error('/api/chat hatasi:', err);
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Chat hatası: ' + err.message }));
       }
@@ -206,28 +246,46 @@ const server = http.createServer(async (req, res) => {
       try {
         const { user_id, category, question_text } = JSON.parse(body);
         let { data: profile } = await supabase.from('profiles').select('*').eq('id', user_id).single();
+
         if (!profile) {
           const { data: newProfile } = await supabase.from('profiles').insert({ id: user_id }).select().single();
           profile = newProfile;
         }
+
         if (!profile) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: 'Profil olusturulamadi' }));
           return;
         }
+
         const today = new Date().toISOString().split('T')[0];
         const isNewDay = profile.last_question_date !== today;
         const count = isNewDay ? 0 : profile.daily_question_count;
+
         if (!profile.is_premium && count >= 10) {
           res.writeHead(429, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: 'LIMIT_REACHED' }));
           return;
         }
-        await supabase.from('profiles').update({ daily_question_count: count + 1, last_question_date: today }).eq('id', user_id);
-        await supabase.from('user_questions').insert({ user_id, category: category || 'Tum Sorular', question_text });
+
+        await supabase.from('profiles').update({
+          daily_question_count: count + 1,
+          last_question_date: today
+        }).eq('id', user_id);
+
+        await supabase.from('user_questions').insert({
+          user_id,
+          category: category || 'Tum Sorular',
+          question_text
+        });
+
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ ok: true, remaining: profile.is_premium ? 999 : (9 - count) }));
+        res.end(JSON.stringify({
+          ok: true,
+          remaining: profile.is_premium ? 999 : (9 - count)
+        }));
       } catch (err) {
+        console.error('/api/question hatasi:', err);
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Sunucu hatasi' }));
       }
@@ -243,58 +301,129 @@ const server = http.createServer(async (req, res) => {
         const buffer = Buffer.concat(chunks);
         const contentType = req.headers['content-type'] || '';
         const boundaryMatch = contentType.match(/boundary=(.+)/);
+
         if (!boundaryMatch) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: 'Boundary bulunamadi' }));
           return;
         }
+
         const boundary = boundaryMatch[1];
         const parts = parseMultipart(buffer, boundary);
-        let fileData = null, fileMimeType = null, fileName = null;
+
+        let fileData = null;
+        let fileMimeType = null;
+        let fileName = null;
         let question = 'Bu belgeyi vergi mevzuati acisindan analiz et.';
         let userId = null;
+
         for (const part of parts) {
           const nameMatch = part.header.match(/name="([^"]+)"/);
           const filenameMatch = part.header.match(/filename="([^"]+)"/);
           const mimeMatch = part.header.match(/Content-Type: ([^\r\n]+)/);
-          if (nameMatch && nameMatch[1] === 'question') { question = part.data.toString().trim() || question; }
-          else if (nameMatch && nameMatch[1] === 'user_id') { userId = part.data.toString().trim(); }
-          else if (filenameMatch) { fileData = part.data; fileName = filenameMatch[1]; fileMimeType = mimeMatch ? mimeMatch[1].trim() : 'application/octet-stream'; }
+
+          if (nameMatch && nameMatch[1] === 'question') {
+            question = part.data.toString().trim() || question;
+          } else if (nameMatch && nameMatch[1] === 'user_id') {
+            userId = part.data.toString().trim();
+          } else if (filenameMatch) {
+            fileData = part.data;
+            fileName = filenameMatch[1];
+            fileMimeType = mimeMatch ? mimeMatch[1].trim() : 'application/octet-stream';
+          }
         }
+
         if (!fileData) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: 'Dosya bulunamadi' }));
           return;
         }
+
         const base64Data = fileData.toString('base64');
         let messageContent = [];
+
         if (fileMimeType === 'application/pdf') {
-          messageContent = [{ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64Data } }, { type: 'text', text: question }];
+          messageContent = [
+            {
+              type: 'document',
+              source: {
+                type: 'base64',
+                media_type: 'application/pdf',
+                data: base64Data
+              }
+            },
+            {
+              type: 'text',
+              text: question
+            }
+          ];
         } else if (fileMimeType.startsWith('image/')) {
           const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
           const mediaType = validImageTypes.includes(fileMimeType) ? fileMimeType : 'image/jpeg';
-          messageContent = [{ type: 'image', source: { type: 'base64', media_type: mediaType, data: base64Data } }, { type: 'text', text: question }];
+
+          messageContent = [
+            {
+              type: 'image',
+              source: {
+                type: 'base64',
+                media_type: mediaType,
+                data: base64Data
+              }
+            },
+            {
+              type: 'text',
+              text: question
+            }
+          ];
         } else {
-          messageContent = [{ type: 'text', text: `Kullanici bir belge yukledi (${fileName}). ${question}` }];
+          messageContent = [{
+            type: 'text',
+            text: `Kullanici bir belge yukledi (${fileName}). ${question}`
+          }];
         }
+
         const anthropicResponse = await fetch('https://api.anthropic.com/v1/messages', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-api-key': process.env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': process.env.ANTHROPIC_API_KEY,
+            'anthropic-version': '2023-06-01'
+          },
           body: JSON.stringify({
-            model: 'claude-sonnet-4-5',
+            model: ANTHROPIC_MODEL,
             max_tokens: 2000,
             system: 'Sen Legatis Tax adli bir Turk vergi danismanlik asistanisin. Yuklenen belgeleri vergi mevzuati acisindan analiz ederek mukellef lehine yasal avantajlari, riskleri ve pratik onerileri belirtirsin.',
-            messages: [{ role: 'user', content: messageContent }]
+            messages: [{
+              role: 'user',
+              content: messageContent
+            }]
           })
         });
-        const anthropicData = await anthropicResponse.json();
-        const analysisText = anthropicData.content?.[0]?.text || 'Analiz yapilamadi.';
-        if (userId) {
-          await supabase.from('user_questions').insert({ user_id: userId, category: 'Belge Analizi', question_text: `[Belge: ${fileName}] ${question}` });
+
+        if (!anthropicResponse.ok) {
+          const errorText = await anthropicResponse.text();
+          throw new Error(`Anthropic analyze hatasi (${anthropicResponse.status}): ${errorText}`);
         }
+
+        const anthropicData = await anthropicResponse.json();
+        const analysisText = anthropicData?.content?.[0]?.text;
+
+        if (!analysisText) {
+          throw new Error('Anthropic analyze yanit metni bos dondu');
+        }
+
+        if (userId) {
+          await supabase.from('user_questions').insert({
+            user_id: userId,
+            category: 'Belge Analizi',
+            question_text: `[Belge: ${fileName}] ${question}`
+          });
+        }
+
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ok: true, analysis: analysisText }));
       } catch (err) {
+        console.error('/api/analyze hatasi:', err);
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Analiz hatasi: ' + err.message }));
       }
@@ -312,21 +441,45 @@ const server = http.createServer(async (req, res) => {
         const hmac = crypto.createHmac('sha256', secret);
         hmac.update(body);
         const digest = hmac.digest('hex');
-        if (digest !== signature) { res.writeHead(401); res.end('Unauthorized'); return; }
+
+        if (digest !== signature) {
+          res.writeHead(401);
+          res.end('Unauthorized');
+          return;
+        }
+
         const event = JSON.parse(body);
         const eventName = event.meta?.event_name;
         const userEmail = event.data?.attributes?.user_email;
-        if (!userEmail) { res.writeHead(200); res.end('OK'); return; }
+
+        if (!userEmail) {
+          res.writeHead(200);
+          res.end('OK');
+          return;
+        }
+
         const { data: users } = await supabase.auth.admin.listUsers();
         const user = users?.users?.find(u => u.email === userEmail);
-        if (!user) { res.writeHead(200); res.end('OK'); return; }
+
+        if (!user) {
+          res.writeHead(200);
+          res.end('OK');
+          return;
+        }
+
         if (eventName === 'subscription_created' || eventName === 'subscription_payment_success') {
           await supabase.from('profiles').update({ is_premium: true }).eq('id', user.id);
         } else if (['subscription_cancelled', 'subscription_expired', 'subscription_payment_failed'].includes(eventName)) {
           await supabase.from('profiles').update({ is_premium: false }).eq('id', user.id);
         }
-        res.writeHead(200); res.end('OK');
-      } catch (err) { res.writeHead(500); res.end('Error'); }
+
+        res.writeHead(200);
+        res.end('OK');
+      } catch (err) {
+        console.error('/api/webhook hatasi:', err);
+        res.writeHead(500);
+        res.end('Error');
+      }
     });
     return;
   }
@@ -335,4 +488,6 @@ const server = http.createServer(async (req, res) => {
   res.end('Not found');
 });
 
-server.listen(process.env.PORT || 8080);
+server.listen(PORT, () => {
+  console.log(`Legatis Tax server ${PORT} portunda calisiyor`);
+});
