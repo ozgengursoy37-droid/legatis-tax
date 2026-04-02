@@ -7,11 +7,14 @@ const { createClient } = require('@supabase/supabase-js');
 const PORT = process.env.PORT || 8080;
 const ANTHROPIC_MODEL = 'claude-sonnet-4-20250514';
 
-const RETRIEVAL_THRESHOLD = 0.72;
-const RETRIEVAL_TOP_K = 12;
-const MAX_SUBQUERIES = 6;
-const MAX_CONTEXT_DOCS = 18;
-const MAX_CONTEXT_CHARS = 26000;
+const RETRIEVAL_THRESHOLD = 0.70;
+const RETRIEVAL_TOP_K = 14;
+const MAX_SUBQUERIES = 8;
+const MAX_CANDIDATE_DOCS = 28;
+const MAX_PRIMARY_DOCS = 12;
+const MAX_CONDITIONAL_DOCS = 4;
+const MAX_CONTEXT_CHARS = 22000;
+const DOC_PREVIEW_CHARS = 700;
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -69,6 +72,12 @@ function uniqueStrings(items) {
   return [...new Set(items.map(item => normalizeWhitespace(item)).filter(Boolean))];
 }
 
+function truncateText(text, max = DOC_PREVIEW_CHARS) {
+  const clean = normalizeWhitespace(text);
+  if (clean.length <= max) return clean;
+  return clean.slice(0, max) + '...';
+}
+
 function getSourceName(doc) {
   return normalizeWhitespace(doc?.metadata?.source || 'Bilinmiyor');
 }
@@ -97,16 +106,41 @@ function extractQuestionFacts(question) {
     hasKV: /(kurumlar vergisi|kvk)/i.test(lower),
     hasGV: /(gelir vergisi|gvk)/i.test(lower),
     hasStopaj: /(stopaj|tevkifat)/i.test(lower),
-    hasIade: /(iade)/i.test(lower),
-    hasInsaat: /(inşaat|konut|arsa|müteahhit|taahhüt)/i.test(lower),
+    hasIade: /\biade\b/i.test(lower),
+    hasInsaat: /(inşaat|konut|arsa|müteahhit|taahhüt|şantiye)/i.test(lower),
+    hasNakitAkisi: /(nakit|nakit akışı|ödeme güçlüğü|finansman baskısı)/i.test(lower),
     saysHighMonthlyKDV: /(her ay).*(kdv).*(yüksek|fazla|çok)/i.test(lower) || /(yüksek).*(kdv)/i.test(lower),
-    mentionsKonut: /(konut)/i.test(lower),
-    mentionsArsa: /(arsa)/i.test(lower),
+    mentionsKonut: /\bkonut\b/i.test(lower),
+    mentionsArsa: /\barsa\b/i.test(lower),
     mentionsTicari: /(ticari|işyeri|ofis|dükkan|avm)/i.test(lower),
     mentionsRestorasyon: /(restorasyon|kültür varlığı|2863)/i.test(lower),
-    mentions150m2: /(150\s*m²|150\s*m2|150 m²|150 m2)/i.test(lower),
-    mentionsFinansman: /(finansman|kredi faizi|faiz gideri|faiz|banka kredisi)/i.test(lower)
+    mentions150m2: /(150\s*m²|150\s*m2|150 m²|150 m2|150m²|150m2)/i.test(lower),
+    mentionsFinansman: /(finansman|kredi faizi|faiz gideri|banka kredisi|faiz)/i.test(lower),
+    mentionsTesvik: /(teşvik|yatırım teşvik|yatırım teşvik belgesi|32\/a|32a)/i.test(lower),
+    asksSolution: /(çözüm|öner|öneri|ne yapabiliriz|yol|yol haritası|nasıl azalt)/i.test(lower)
   };
+}
+
+function inferSpecialTags(doc) {
+  const text = normalizeWhitespace(doc.content).toLowerCase();
+  const source = getSourceName(doc).toLowerCase();
+  const tags = [];
+
+  if (text.includes('150 m²') || text.includes('150 m2') || text.includes('150m²') || text.includes('150m2')) tags.push('konut_150m2');
+  if (text.includes('arsa karşılığı') || text.includes('arsa payı')) tags.push('arsa_karsiligi');
+  if (text.includes('restorasyon') || text.includes('kültür varlığı') || text.includes('2863')) tags.push('restorasyon');
+  if (text.includes('yatırım teşvik') || text.includes('teşvik belgesi') || text.includes('32/a') || text.includes('32a')) tags.push('tesvik');
+  if (text.includes('indirimli oran')) tags.push('indirimli_oran');
+  if (text.includes('iade')) tags.push('iade');
+  if (text.includes('finansman') || text.includes('kredi faizi') || text.includes('faiz gideri')) tags.push('finansman');
+  if (text.includes('konut')) tags.push('konut');
+  if (text.includes('ticari') || text.includes('işyeri') || text.includes('dükkan') || text.includes('ofis')) tags.push('ticari_yapi');
+  if (source.includes('beyanname düzenleme kılavuzu') || source.includes('beyanname düzenleme klavuzu')) tags.push('beyanname_kilavuzu');
+  if (source.includes('genel uygulama tebli')) tags.push('uygulama_tebligi');
+  if (source.includes('kanun')) tags.push('kanun');
+  if (source.includes('genel muhasebe') || text.includes('maliyet unsuru') || text.includes('gider olarak dikkate')) tags.push('muhasebe');
+
+  return uniqueStrings(tags);
 }
 
 function buildDeterministicSubqueries(question) {
@@ -124,76 +158,74 @@ function buildDeterministicSubqueries(question) {
     add(
       `${q} kdv uygulama genel tebliği`,
       `${q} kdv beyanname düzenleme kılavuzu`,
-      `${q} indirim konusu kdv iade matrah`
+      `${q} indirim konusu kdv`,
+      `${q} hesaplanan kdv indirilecek kdv`
+    );
+  }
+
+  if (facts.hasInsaat) {
+    add(
+      `${q} inşaat sektöründe kdv uygulaması`,
+      `${q} inşaat kdv beyanname düzenleme kılavuzu`,
+      `${q} inşaat sektöründe indirilecek kdv`,
+      `${q} inşaat maliyet kdv`
+    );
+  }
+
+  if (facts.hasIade) {
+    add(
+      `${q} iade usul esas`,
+      `${q} indirim yoluyla giderilemeyen kdv`,
+      `${q} iade talep şartları`
+    );
+  }
+
+  if (facts.mentionsKonut || facts.mentions150m2) {
+    add(
+      `${q} konut teslimi indirimli oran`,
+      `${q} 150 m2 altı konut kdv`
+    );
+  }
+
+  if (facts.mentionsArsa) {
+    add(
+      `${q} arsa karşılığı inşaat`,
+      `${q} arsa payı kdv matrah`
+    );
+  }
+
+  if (facts.mentionsRestorasyon) {
+    add(
+      `${q} restorasyon kdv iade`,
+      `${q} kültür varlığı kdv`
+    );
+  }
+
+  if (facts.mentionsTesvik) {
+    add(
+      `${q} yatırım teşvik kdv`,
+      `${q} teşvik belgesi kdv iadesi`
+    );
+  }
+
+  if (facts.mentionsFinansman) {
+    add(
+      `${q} finansman gideri kdv`,
+      `${q} kredi faizi maliyet gider`
     );
   }
 
   if (facts.hasKV) {
     add(
       `${q} kurumlar vergisi genel tebliği`,
-      `${q} kurumlar vergisi beyanname düzenleme kılavuzu`,
-      `${q} kurum kazancı istisna indirim gider`
+      `${q} kurumlar vergisi beyanname düzenleme kılavuzu`
     );
   }
 
   if (facts.hasGV || facts.hasStopaj) {
     add(
-      `${q} gelir vergisi kanunu tevkifat`,
-      `${q} gelir vergisi beyanname düzenleme kılavuzu`,
-      `${q} stopaj kesinti beyan`
-    );
-  }
-
-  if (/(vuk|vergi usul|muhasebe|mizan|bilanço|defter|belge)/i.test(q.toLowerCase())) {
-    add(
-      `${q} vergi usul kanunu`,
-      `${q} muhasebe sistemi uygulama genel tebliği`,
-      `${q} genel muhasebe`
-    );
-  }
-
-  if (/(teşvik|yatırım|indirimli kurumlar|32\/a|32a)/i.test(q.toLowerCase())) {
-    add(
-      `${q} yatırım teşvik indirimli kurumlar`,
-      `${q} kurumlar vergisi kanunu 32a`,
-      `${q} teşvik uygulama`
-    );
-  }
-
-  if (facts.hasInsaat) {
-    add(
-      `${q} inşaat kdv indirim iade matrah`,
-      `${q} beyanname düzenleme kılavuzu inşaat`,
-      `${q} inşaat sektöründe kdv uygulaması`
-    );
-
-    if (facts.mentionsKonut || facts.mentions150m2) {
-      add(
-        `${q} konut teslimi 150 m2 altı kdv iadesi`,
-        `${q} indirimli oranlı konut teslimi`
-      );
-    }
-
-    if (facts.mentionsArsa) {
-      add(
-        `${q} arsa karşılığı inşaat`,
-        `${q} arsa payı teslimi matrah kdv`
-      );
-    }
-
-    if (facts.mentionsFinansman) {
-      add(
-        `${q} finansman gideri maliyet bedeli`,
-        `${q} kredi faizi kdv matrah maliyet`
-      );
-    }
-  }
-
-  if (facts.hasIade) {
-    add(
-      `${q} iade usul esas`,
-      `${q} iade talep şartları`,
-      `${q} indirim yoluyla giderilemeyen kdv`
+      `${q} gelir vergisi tevkifat`,
+      `${q} stopaj beyan`
     );
   }
 
@@ -249,36 +281,11 @@ async function searchDocuments(embedding, matchCount = RETRIEVAL_TOP_K, threshol
   return data || [];
 }
 
-function isDocConditionallyRelevant(doc, facts) {
-  const source = getSourceName(doc).toLowerCase();
-  const content = normalizeWhitespace(doc.content).toLowerCase();
-
-  if (!facts.hasInsaat) return false;
-
-  if (content.includes('150 m²') || content.includes('150 m2') || content.includes('150m²') || content.includes('150m2')) {
-    return !(facts.mentionsKonut || facts.mentions150m2);
-  }
-
-  if (content.includes('arsa karşılığı') || content.includes('arsa payı')) {
-    return !facts.mentionsArsa;
-  }
-
-  if (content.includes('kültür varlığı') || content.includes('restorasyon') || content.includes('2863')) {
-    return !facts.mentionsRestorasyon;
-  }
-
-  if (content.includes('finansman gideri') || content.includes('kredi')) {
-    return !facts.mentionsFinansman;
-  }
-
-  if (source.includes('beyanname düzenleme kılavuzu') && content.includes('konut')) {
-    return !facts.mentionsKonut;
-  }
-
-  return false;
+function scoreDocument(doc) {
+  return (doc.similarity || 0) + (doc.sourcePriority || 0) * 0.015;
 }
 
-async function retrieveDocumentsForQuestion(question) {
+async function retrieveCandidateDocuments(question) {
   const facts = extractQuestionFacts(question);
   const subqueries = buildDeterministicSubqueries(question);
   const merged = new Map();
@@ -289,163 +296,66 @@ async function retrieveDocumentsForQuestion(question) {
 
     for (const doc of docs) {
       const key = String(doc.id);
-      const existing = merged.get(key);
       const source = getSourceName(doc);
-
       const enriched = {
         ...doc,
         source,
         sourcePriority: getSourcePriority(source),
         matchedBy: subquery,
-        conditional: isDocConditionallyRelevant(doc, facts)
+        specialTags: inferSpecialTags(doc)
       };
 
-      if (!existing) {
+      const existing = merged.get(key);
+      if (!existing || scoreDocument(enriched) > scoreDocument(existing)) {
         merged.set(key, enriched);
-        continue;
-      }
-
-      const existingScore = (existing.similarity || 0) + (existing.sourcePriority || 0) * 0.015;
-      const newScore = (enriched.similarity || 0) + (enriched.sourcePriority || 0) * 0.015;
-
-      if (newScore > existingScore) {
-        merged.set(key, { ...existing, ...enriched });
       }
     }
   }
 
-  const allDocs = [...merged.values()].sort((a, b) => {
-    const aConditionalPenalty = a.conditional ? 0.04 : 0;
-    const bConditionalPenalty = b.conditional ? 0.04 : 0;
-
-    const aScore = (a.similarity || 0) + (a.sourcePriority || 0) * 0.015 - aConditionalPenalty;
-    const bScore = (b.similarity || 0) + (b.sourcePriority || 0) * 0.015 - bConditionalPenalty;
-
-    return bScore - aScore;
-  });
-
-  const primary = [];
-  const secondary = [];
-  const usedSources = new Set();
-
-  for (const doc of allDocs) {
-    if (!doc.conditional && primary.length < Math.ceil(MAX_CONTEXT_DOCS * 0.7)) {
-      if (!usedSources.has(doc.source)) {
-        primary.push(doc);
-        usedSources.add(doc.source);
-      }
-    }
-  }
-
-  for (const doc of allDocs) {
-    if (!doc.conditional && primary.length < Math.ceil(MAX_CONTEXT_DOCS * 0.7)) {
-      if (!primary.find(item => item.id === doc.id)) {
-        primary.push(doc);
-      }
-    }
-  }
-
-  for (const doc of allDocs) {
-    if (doc.conditional && secondary.length < Math.floor(MAX_CONTEXT_DOCS * 0.3)) {
-      if (!secondary.find(item => item.id === doc.id)) {
-        secondary.push(doc);
-      }
-    }
-  }
-
-  const documents = [...primary, ...secondary].slice(0, MAX_CONTEXT_DOCS);
+  const allDocs = [...merged.values()].sort((a, b) => scoreDocument(b) - scoreDocument(a));
 
   return {
+    facts,
     subqueries,
-    documents,
-    facts
+    documents: allDocs.slice(0, MAX_CANDIDATE_DOCS)
   };
 }
 
-function buildContext(documents) {
-  const parts = [];
-  let totalChars = 0;
-
-  for (const doc of documents) {
-    const content = normalizeWhitespace(doc.content);
-    if (!content) continue;
-
-    const conditionalLabel = doc.conditional ? 'Evet' : 'Hayır';
-    const block = `[Kaynak: ${doc.source}]
-[Benzerlik: ${(doc.similarity || 0).toFixed(4)}]
-[Eşleşen sorgu: ${doc.matchedBy}]
-[Şarta bağlı başlık: ${conditionalLabel}]
-${content}`;
-
-    const nextSize = totalChars + block.length + 10;
-    if (nextSize > MAX_CONTEXT_CHARS) break;
-
-    parts.push(block);
-    totalChars = nextSize;
-  }
-
-  return parts.join('\n\n---\n\n');
+function buildDocPreview(doc) {
+  return {
+    id: String(doc.id),
+    source: doc.source,
+    similarity: Number((doc.similarity || 0).toFixed(4)),
+    matchedBy: doc.matchedBy,
+    specialTags: doc.specialTags || [],
+    preview: truncateText(doc.content, DOC_PREVIEW_CHARS)
+  };
 }
 
-const SYSTEM_PROMPT = `Sen Legatis Tax adlı bir Türk vergi danışmanlık asistanısın. Kullanıcıya Google gibi sonuç sıralayan bir arama motoru gibi değil, mevzuata dayalı çalışan kıdemli bir vergi danışmanı gibi yanıt verirsin.
+function parseJsonFromText(text) {
+  const raw = String(text || '').trim();
 
-TEMEL KURAL:
-- Yalnızca BAĞLAM içinde açıkça yer alan bilgilere dayan.
-- BAĞLAMDA olmayan hiçbir hüküm, oran, şart, istisna, süre, sonuç veya senaryo ekleme.
-- Soru metninde doğrulanmayan alt senaryoları ana çözüm gibi yazma.
-- BAĞLAM içinde "Şarta bağlı başlık: Evet" olarak işaretlenen metinleri yalnızca ikincil ve sınırlı biçimde kullan.
+  try {
+    return JSON.parse(raw);
+  } catch (_) {}
 
-DANIŞMANLIK YAKLAŞIMI:
-- Önce kullanıcının sorusundaki kesin olguları esas al.
-- Sonra sadece bu kesin olgularla doğrudan ilişkili çözümleri ana bölümde yaz.
-- Soruda doğrulanmayan ama bağlamda geçen alt senaryoları kısa tut ve ayrı bölüme koy.
-- Ana cevapta kullanıcıya öncelik sırasına göre yol göster.
-- Kullanıcının olayına temas etmeyen başlıkları sırf bağlamda var diye yazma.
-- "genellikle" tarzı soyut cümlelerle genel sektör anlatısı kurma.
+  const fenced = raw.match(/```json\s*([\s\S]*?)```/i) || raw.match(/```\s*([\s\S]*?)```/i);
+  if (fenced) {
+    try {
+      return JSON.parse(fenced[1].trim());
+    } catch (_) {}
+  }
 
-KAYNAK KULLANIMI:
-- Kanun, tebliğ, uygulama tebliği, beyanname düzenleme kılavuzu, muhasebe kaynakları birlikte gelebilir.
-- Bunlar aynı konuda farklı ayrıntılar içeriyorsa yalnızca BAĞLAMDA açıkça bulunan noktaları birleştir.
-- Bir kaynaktaki ayrıntıyı başka kaynağa dayandırıyormuş gibi yazma.
-- Madde numarası yoksa uydurma madde yazma.
-- Beyanname Düzenleme Kılavuzu veya muhasebe kaynağındaki teknik ayrıntıyı açıkça kendi kaynağına bağla.
+  const start = raw.indexOf('{');
+  const end = raw.lastIndexOf('}');
+  if (start !== -1 && end !== -1 && end > start) {
+    try {
+      return JSON.parse(raw.slice(start, end + 1));
+    } catch (_) {}
+  }
 
-CEVAP BİÇİMİ:
-- Başlıklar için ## kullan
-- Alt başlıklar için ### kullan
-- Madde listeleri için - kullan
-- Önemli kavramları **kalın** yaz
-- Bölümleri birbirinden ayırmak için --- kullan
-
-HER CEVAP ŞU SIRAYI İZLESİN:
-1. Kısa değerlendirme
-2. ## Sorudaki Durumun Vergisel Çerçevesi
-3. ## Doğrudan Uygulanabilir Seçenekler
-4. ## Şarta Bağlı Değerlendirilmesi Gereken Başlıklar
-5. ## Yasal Dayanak
-6. ## Pratik Yol Haritası
-7. Gerekirse tek paragraf: Netleştirilmesi gereken hususlar
-
-YAZIM KURALI:
-- Cevap arama motoru özeti gibi değil, seçici ve isabetli danışmanlık notu gibi olmalı.
-- Ana bölümde en fazla 2-4 ana çözüm ekseni yaz.
-- Şarta bağlı bölüm kısa olmalı; soru sahibinin olayı doğrulamıyorsa orayı ana gövdeye taşıma.
-- Sorunun içinde açıkça geçmeyen faaliyet/işlem türünü kesinmiş gibi yazma.
-- Bağlam zenginse ayrıntı ver ama gereksiz başlık çoğaltma.
-- Aynı bilgiyi tekrar etme.
-
-HALÜSİNASYON KURALI:
-- Yalnızca BAĞLAM'a dayan.
-- BAĞLAMDA bilgi yoksa şunu söyle:
-"Bu konuda bilgi tabanımda yeterli mevzuat kaynağı bulunamadı. Güncel bilgi için vergi danışmanınıza başvurun."
-- Tahmin, varsayım veya genel bilgiden yanıt üretme.
-- Rakam, oran, süre, şart veya sonuç BAĞLAMDA açıkça yoksa yazma.
-- "genellikle", "muhtemelen", "olabilir", "sanırım" gibi ifadeleri kullanma.
-
-YASAKLAR:
-- Vergi kaçakçılığına yönlendirecek tavsiye verme.
-- BAĞLAMDA olmayan konuda hüküm verme.
-- Kullanıcının olayında doğrulanmamış bir alt senaryoyu kesinmiş gibi anlatma.`;
+  throw new Error('JSON parse edilemedi');
+}
 
 async function callAnthropicText({ system, userText, maxTokens = 4000 }) {
   const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -482,6 +392,224 @@ async function callAnthropicText({ system, userText, maxTokens = 4000 }) {
 
   return text;
 }
+
+async function classifyCandidateDocuments(question, facts, candidateDocs) {
+  const previews = candidateDocs.map(buildDocPreview);
+
+  const classifierSystem = `Sen bir vergi danışmanlık sisteminde çalışan "kaynak seçici" modülsün. Görevin cevap yazmak değil, yalnızca kullanıcının sorusuna gerçekten uygun kaynak parçalarını seçmektir.
+
+KURALLAR:
+- Yalnızca kullanıcı sorusu, çıkarılan olgular ve aday kaynak özetlerine bak.
+- Genel vergi bilgisi kullanma.
+- Soruda açıkça doğrulanmayan özel rejimleri ana kaynak olarak seçme.
+- Özellikle şu başlıklar soruda açık tetikleyici yoksa reddedilmeli veya en fazla conditional seçilmeli:
+  - yatırım teşvik / teşvik belgesi
+  - restorasyon / 2863
+  - 150 m² altı konut
+  - arsa karşılığı inşaat
+- Kullanıcının sorusu genel ise ana kaynaklar, doğrudan sorunun merkezine hizmet eden genel KDV / inşaat / muhasebe / uygulama parçaları olmalı.
+- Şarta bağlı kaynaklar en fazla birkaç adet olmalı.
+- Uygunsuz kaynakları reddet.
+
+SADECE JSON DÖNDÜR:
+{
+  "selected_ids": ["..."],
+  "conditional_ids": ["..."],
+  "rejected_ids": ["..."],
+  "issue_focus": ["..."],
+  "missing_facts": ["..."],
+  "reasoning_summary": "..."
+}`;
+
+  const classifierUserText = `KULLANICI SORUSU:
+${question}
+
+SORUDAN ÇIKARILAN OLGULAR:
+${JSON.stringify(facts, null, 2)}
+
+ADAY KAYNAKLAR:
+${JSON.stringify(previews, null, 2)}
+
+Yalnızca JSON döndür.`;
+
+  const raw = await callAnthropicText({
+    system: classifierSystem,
+    userText: classifierUserText,
+    maxTokens: 1800
+  });
+
+  const parsed = parseJsonFromText(raw);
+
+  const selectedIds = Array.isArray(parsed.selected_ids) ? parsed.selected_ids.map(String) : [];
+  const conditionalIds = Array.isArray(parsed.conditional_ids) ? parsed.conditional_ids.map(String) : [];
+  const rejectedIds = Array.isArray(parsed.rejected_ids) ? parsed.rejected_ids.map(String) : [];
+  const issueFocus = Array.isArray(parsed.issue_focus) ? parsed.issue_focus.map(item => normalizeWhitespace(item)).filter(Boolean) : [];
+  const missingFacts = Array.isArray(parsed.missing_facts) ? parsed.missing_facts.map(item => normalizeWhitespace(item)).filter(Boolean) : [];
+  const reasoningSummary = normalizeWhitespace(parsed.reasoning_summary || '');
+
+  return {
+    selectedIds,
+    conditionalIds,
+    rejectedIds,
+    issueFocus,
+    missingFacts,
+    reasoningSummary
+  };
+}
+
+function shouldHardExclude(doc, facts) {
+  const tags = doc.specialTags || [];
+
+  if (tags.includes('tesvik') && !facts.mentionsTesvik) return true;
+  if (tags.includes('restorasyon') && !facts.mentionsRestorasyon) return true;
+  if (tags.includes('konut_150m2') && !(facts.mentionsKonut || facts.mentions150m2)) return true;
+  if (tags.includes('arsa_karsiligi') && !facts.mentionsArsa) return true;
+
+  return false;
+}
+
+function fallbackSelectDocuments(facts, candidateDocs) {
+  const primary = [];
+  const conditional = [];
+
+  for (const doc of candidateDocs) {
+    if (shouldHardExclude(doc, facts)) continue;
+
+    const tags = doc.specialTags || [];
+    const isConditional =
+      (tags.includes('konut_150m2') && !(facts.mentionsKonut || facts.mentions150m2)) ||
+      (tags.includes('arsa_karsiligi') && !facts.mentionsArsa) ||
+      (tags.includes('restorasyon') && !facts.mentionsRestorasyon) ||
+      (tags.includes('tesvik') && !facts.mentionsTesvik);
+
+    if (isConditional) {
+      if (conditional.length < MAX_CONDITIONAL_DOCS) conditional.push(doc);
+    } else {
+      if (primary.length < MAX_PRIMARY_DOCS) primary.push(doc);
+    }
+  }
+
+  return {
+    primaryDocs: primary,
+    conditionalDocs: conditional,
+    issueFocus: [],
+    missingFacts: [],
+    reasoningSummary: 'Fallback secim kullanildi'
+  };
+}
+
+function resolveSelectedDocuments(facts, candidateDocs, classification) {
+  const byId = new Map(candidateDocs.map(doc => [String(doc.id), doc]));
+
+  const primaryDocs = [];
+  const conditionalDocs = [];
+
+  for (const id of classification.selectedIds || []) {
+    const doc = byId.get(String(id));
+    if (!doc) continue;
+    if (shouldHardExclude(doc, facts)) continue;
+    if (!primaryDocs.find(item => String(item.id) === String(doc.id)) && primaryDocs.length < MAX_PRIMARY_DOCS) {
+      primaryDocs.push(doc);
+    }
+  }
+
+  for (const id of classification.conditionalIds || []) {
+    const doc = byId.get(String(id));
+    if (!doc) continue;
+    if (shouldHardExclude(doc, facts)) continue;
+    if (
+      !primaryDocs.find(item => String(item.id) === String(doc.id)) &&
+      !conditionalDocs.find(item => String(item.id) === String(doc.id)) &&
+      conditionalDocs.length < MAX_CONDITIONAL_DOCS
+    ) {
+      conditionalDocs.push(doc);
+    }
+  }
+
+  if (primaryDocs.length === 0) {
+    return fallbackSelectDocuments(facts, candidateDocs);
+  }
+
+  return {
+    primaryDocs,
+    conditionalDocs,
+    issueFocus: classification.issueFocus || [],
+    missingFacts: classification.missingFacts || [],
+    reasoningSummary: classification.reasoningSummary || ''
+  };
+}
+
+function buildAnswerContext(primaryDocs, conditionalDocs) {
+  const blocks = [];
+  let totalChars = 0;
+
+  const pushDoc = (doc, groupLabel) => {
+    const content = normalizeWhitespace(doc.content);
+    if (!content) return;
+
+    const block = `[Grup: ${groupLabel}]
+[Kaynak: ${doc.source}]
+[Benzerlik: ${(doc.similarity || 0).toFixed(4)}]
+[Eşleşen sorgu: ${doc.matchedBy}]
+[Etiketler: ${(doc.specialTags || []).join(', ') || '-'}]
+${content}`;
+
+    const nextSize = totalChars + block.length + 10;
+    if (nextSize > MAX_CONTEXT_CHARS) return;
+
+    blocks.push(block);
+    totalChars = nextSize;
+  };
+
+  for (const doc of primaryDocs) pushDoc(doc, 'ANA');
+  for (const doc of conditionalDocs) pushDoc(doc, 'ŞARTA_BAĞLI');
+
+  return blocks.join('\n\n---\n\n');
+}
+
+const ANSWER_SYSTEM_PROMPT = `Sen Legatis Tax adlı bir Türk vergi danışmanlık asistanısın. Kullanıcıya Google gibi sonuç sıralayan bir arama motoru gibi değil, mevzuata dayalı çalışan kıdemli bir vergi danışmanı gibi yanıt verirsin.
+
+EN ÖNEMLİ KURAL:
+- Yalnızca BAĞLAM içindeki bilgilere dayan.
+- BAĞLAMDA olmayan hiçbir hüküm, oran, şart, istisna, sonuç veya senaryo ekleme.
+- BAĞLAMDA "Grup: ŞARTA_BAĞLI" olarak işaretlenen kaynakları yalnızca kısa ve ikincil biçimde kullan.
+- Ana çözüm bölümünü yalnızca "Grup: ANA" kaynaklarıyla kur.
+
+DANIŞMANLIK DAVRANIŞI:
+- Önce sorudaki somut problemi 2-3 cümleyle çerçevele.
+- Sonra kullanıcı için gerçekten uygulanabilir 2-4 ana çözüm ekseni yaz.
+- Soruda doğrulanmayan özel rejimleri ana çözüm gibi anlatma.
+- Kullanıcıya öncelik sırasına göre yol göster.
+- Cevap genel başlık yığını gibi değil, seçici danışmanlık notu gibi olsun.
+
+KAYNAK KULLANIMI:
+- Kanun, tebliğ, uygulama tebliği, beyanname düzenleme kılavuzu ve muhasebe kaynaklarını yalnızca BAĞLAMDA açıkça geçen noktalarda birleştir.
+- Bir kaynaktaki ayrıntıyı başka kaynağa dayandırıyormuş gibi yazma.
+- Madde numarası yoksa uydurma madde yazma.
+- Beyanname Düzenleme Kılavuzu veya muhasebe kaynağındaki teknik ayrıntıyı açıkça o kaynağa bağla.
+
+CEVAP BİÇİMİ:
+1. Kısa değerlendirme
+2. ## Sorudaki Durumun Vergisel Çerçevesi
+3. ## Doğrudan Uygulanabilir Seçenekler
+4. ## Şarta Bağlı Değerlendirilmesi Gereken Başlıklar
+5. ## Yasal Dayanak
+6. ## Pratik Yol Haritası
+7. Gerekirse: Netleştirilmesi gereken hususlar
+
+YAZIM KURALLARI:
+- Başlıklar için ## kullan
+- Alt başlıklar için ### kullan
+- Madde listeleri için - kullan
+- Önemli kavramları **kalın** yaz
+- Aynı bilgiyi tekrar etme
+- Boş süslü cümle kurma
+- "genellikle", "muhtemelen", "olabilir", "sanırım" gibi ifadeleri kullanma
+
+HALÜSİNASYON YASAĞI:
+- Yalnızca BAĞLAM'a dayan.
+- BAĞLAMDA bilgi yoksa şunu söyle:
+"Bu konuda bilgi tabanımda yeterli mevzuat kaynağı bulunamadı. Güncel bilgi için vergi danışmanınıza başvurun."`;
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
@@ -540,8 +668,8 @@ const server = http.createServer(async (req, res) => {
         }
 
         const cleanQuestion = normalizeWhitespace(question);
-        const retrieval = await retrieveDocumentsForQuestion(cleanQuestion);
 
+        const retrieval = await retrieveCandidateDocuments(cleanQuestion);
         if (!retrieval.documents || retrieval.documents.length === 0) {
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({
@@ -550,7 +678,32 @@ const server = http.createServer(async (req, res) => {
           return;
         }
 
-        const context = buildContext(retrieval.documents);
+        let classification;
+        try {
+          classification = await classifyCandidateDocuments(cleanQuestion, retrieval.facts, retrieval.documents);
+        } catch (classificationError) {
+          console.error('/api/chat classification hatasi:', classificationError);
+          classification = {
+            selectedIds: [],
+            conditionalIds: [],
+            rejectedIds: [],
+            issueFocus: [],
+            missingFacts: [],
+            reasoningSummary: 'Classification fallback'
+          };
+        }
+
+        const resolved = resolveSelectedDocuments(retrieval.facts, retrieval.documents, classification);
+
+        if (!resolved.primaryDocs || resolved.primaryDocs.length === 0) {
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({
+            text: 'Bu konuda bilgi tabanımda yeterli mevzuat kaynağı bulunamadı. Güncel bilgi için vergi danışmanınıza başvurun.'
+          }));
+          return;
+        }
+
+        const context = buildAnswerContext(resolved.primaryDocs, resolved.conditionalDocs);
 
         if (!context.trim()) {
           res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -560,39 +713,47 @@ const server = http.createServer(async (req, res) => {
           return;
         }
 
-        console.log('/api/chat subqueries:', retrieval.subqueries);
         console.log('/api/chat facts:', retrieval.facts);
-        console.log('/api/chat kaynaklar:', retrieval.documents.map(doc => ({
+        console.log('/api/chat subqueries:', retrieval.subqueries);
+        console.log('/api/chat classification:', classification);
+        console.log('/api/chat primary sources:', resolved.primaryDocs.map(doc => ({
           id: doc.id,
           source: doc.source,
           similarity: Number((doc.similarity || 0).toFixed(4)),
-          matchedBy: doc.matchedBy,
-          conditional: doc.conditional
+          tags: doc.specialTags || []
+        })));
+        console.log('/api/chat conditional sources:', resolved.conditionalDocs.map(doc => ({
+          id: doc.id,
+          source: doc.source,
+          similarity: Number((doc.similarity || 0).toFixed(4)),
+          tags: doc.specialTags || []
         })));
 
         const answerText = await callAnthropicText({
-          system: SYSTEM_PROMPT,
+          system: ANSWER_SYSTEM_PROMPT,
           userText: `KULLANICI SORUSU:
 ${cleanQuestion}
 
-SORUDAN ÇIKARILAN KESİN OLGULAR:
+SORUDAN ÇIKARILAN OLGULAR:
 ${JSON.stringify(retrieval.facts, null, 2)}
 
+KAYNAK SEÇİMİNİN ODAĞI:
+${JSON.stringify(resolved.issueFocus || [], null, 2)}
+
+NETLEŞTİRİLMESİ GEREKEBİLECEK HUSUSLAR:
+${JSON.stringify(resolved.missingFacts || [], null, 2)}
+
 GÖREV:
-- Bu soruya arama motoru gibi değil, mevzuata dayalı yol gösteren kıdemli bir vergi danışmanı gibi yanıt ver.
-- Önce yalnızca kullanıcı sorusunda açıkça doğrulanan olguları esas al.
-- Ana çözüm bölümünde yalnızca bu doğrulanmış olgularla doğrudan ilgili başlıkları kullan.
-- BAĞLAMDA "Şarta bağlı başlık: Evet" olarak gelen metinleri yalnızca ikincil başlıkta ve kısa biçimde kullan.
-- Kullanıcının olayında doğrulanmamış alt senaryoları ana çözüm gibi anlatma.
-- İlk bölümde mevcut sorunu 2-3 cümleyle çerçevele ama soru metninde olmayan faaliyet/işlem türünü ekleme.
-- Doğrudan uygulanabilir bölümünde en fazla 2-4 ana başlık yaz.
-- Pratik yol haritasında önce hangi verinin kontrol edilmesi gerektiğini sırala.
-- Yasal dayanakta kaynakları açıkça göster.
-- Eğer soru, bazı başlıkları kesinleştirmeye yetmiyorsa bunu yalnızca son bölümde belirt.
+- Cevabı yalnızca ANA kaynaklar üzerine kur.
+- ŞARTA_BAĞLI kaynakları kısa ve ikinci planda kullan.
+- Soruda geçmeyen özel rejimleri ana çözüm gibi anlatma.
+- Kullanıcıya mevzuata dayalı yol gösteren danışman gibi konuş.
+- En fazla 2-4 ana çözüm ekseni yaz.
+- Pratik yol haritasında önce hangi verilerin kontrol edilmesi gerektiğini sırala.
 
 BAĞLAM:
 ${context}`,
-          maxTokens: 4000
+          maxTokens: 3200
         });
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -600,9 +761,15 @@ ${context}`,
           text: answerText,
           debug: {
             sourceCount: retrieval.documents.length,
+            selectedPrimaryCount: resolved.primaryDocs.length,
+            selectedConditionalCount: resolved.conditionalDocs.length,
             subqueries: retrieval.subqueries,
-            sources: retrieval.documents.map(doc => doc.source),
-            facts: retrieval.facts
+            facts: retrieval.facts,
+            primarySources: resolved.primaryDocs.map(doc => doc.source),
+            conditionalSources: resolved.conditionalDocs.map(doc => doc.source),
+            issueFocus: resolved.issueFocus,
+            missingFacts: resolved.missingFacts,
+            reasoningSummary: resolved.reasoningSummary
           }
         }));
       } catch (err) {
