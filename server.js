@@ -46,10 +46,7 @@ async function getEmbedding(text) {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
     },
-    body: JSON.stringify({
-      model: 'text-embedding-ada-002',
-      input: text
-    })
+    body: JSON.stringify({ model: 'text-embedding-ada-002', input: text })
   });
   const data = await response.json();
   return data.data[0].embedding;
@@ -73,6 +70,14 @@ Sen Legatis Tax adlı bir Türk vergi danışmanlık asistanısın. Arkandaki ek
 TEMEL BAKIŞ AÇIN:
 Gelir İdaresi Başkanlığı vergi mevzuatını hazine lehine yorumlar. Sen aynı mevzuatı mükellef lehine yorumlarsın. Her ikisi de yasaldır — sen mükellefi kendi lehine olan yasal seçeneklerden haberdar edersin.
 
+YANIT DETAYI — KESİNLİKLE UYGULA:
+Her yanıt kapsamlı ve detaylı olmalıdır. Kullanıcı sorusunu tam olarak anlayıp tüm boyutlarıyla yanıtla. Kısa veya yüzeysel yanıt verme. Her seçenek için:
+- Yasal dayanağını belirt
+- Pratik uygulama adımlarını açıkla
+- Avantaj ve dezavantajlarını say
+- Varsa rakamsal örnek ver
+- Mükellef lehine yorumu açıkla
+
 CEVAP FORMATI — MUTLAKA UYGULA:
 - Başlıklar için ## kullan
 - Alt başlıklar için ### kullan
@@ -84,9 +89,25 @@ CEVAP FORMATI — MUTLAKA UYGULA:
 CEVAP YAPISI — HER CEVAP BU SIRALAMAYI TAKİP ETSİN:
 1. Kısa özet (2-3 cümle, sorunun özü)
 2. ## Yasal Alternatifler (mükellef lehine tüm seçenekler, rakamsal etkisiyle)
-3. ## Yasal Dayanak (kanun adı ve madde numarası)
-4. ## Önerilen Adımlar (pratik, uygulanabilir adımlar)
-5. ⚠️ Bu bilgiler genel bilgilendirme amaçlıdır. Şirketinizin özel koşulları farklı sonuçlar doğurabilir. Daha detaylı ve kişiselleştirilmiş analiz için **Legatis Tax uzmanlarıyla görüşmenizi** öneririz.
+3. ## Dikkat Edilmesi Gereken Riskler
+4. ## Yasal Dayanak (kanun adı ve madde numarası)
+5. ## Önerilen Adımlar (pratik, uygulanabilir adımlar)
+6. ⚠️ Bu bilgiler genel bilgilendirme amaçlıdır. Şirketinizin özel koşulları farklı sonuçlar doğurabilir. Daha detaylı ve kişiselleştirilmiş analiz için **Legatis Tax uzmanlarıyla görüşmenizi** öneririz.
+7. Soru önerileri bloğu (aşağıya bak)
+
+SORU ÖNERİLERİ — KESİNLİKLE UYGULA:
+Yanıtın en sonuna, ⚠️ uyarısından SONRA, aşağıdaki formatta tam olarak 3 soru önerisi ekle:
+
+###SORULAR###
+{"sorular":["Soru 1 metni","Soru 2 metni","Soru 3 metni"]}
+###SORULAR_BITIS###
+
+Soru önerileri kuralları:
+- Kullanıcının sorusunu farklı açılardan derinleştirecek sorular olsun
+- Her biri bağımsız, tam bir soru olsun
+- Kısa ve net olsun (max 15 kelime)
+- Türkçe olsun
+- Kullanıcının durumuna özel olsun
 
 HALÜSİNASYON KURALI — KESİNLİKLE UYULMASI ZORUNLU:
 - Yalnızca aşağıda sağlanan BAĞLAM bölümündeki bilgilere dayanarak yanıt ver.
@@ -110,29 +131,12 @@ const server = http.createServer(async (req, res) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
 
-  if (req.method === 'GET' && url.pathname === '/') {
-    serveHtmlFile(res, 'landing.html'); return;
-  }
-
-  if (req.method === 'GET' && url.pathname === '/app') {
-    serveHtmlFile(res, 'index.html'); return;
-  }
-
-  if (req.method === 'GET' && url.pathname === '/kvkk') {
-    serveHtmlFile(res, 'kvkk.html'); return;
-  }
-
-  if (req.method === 'GET' && url.pathname === '/gizlilik') {
-    serveHtmlFile(res, 'gizlilik.html'); return;
-  }
-
-  if (req.method === 'GET' && url.pathname === '/kullanim-kosullari') {
-    serveHtmlFile(res, 'kullanim-kosullari.html'); return;
-  }
-
-  if (req.method === 'GET' && url.pathname === '/cerez-politikasi') {
-    serveHtmlFile(res, 'cerez-politikasi.html'); return;
-  }
+  if (req.method === 'GET' && url.pathname === '/') { serveHtmlFile(res, 'landing.html'); return; }
+  if (req.method === 'GET' && url.pathname === '/app') { serveHtmlFile(res, 'index.html'); return; }
+  if (req.method === 'GET' && url.pathname === '/kvkk') { serveHtmlFile(res, 'kvkk.html'); return; }
+  if (req.method === 'GET' && url.pathname === '/gizlilik') { serveHtmlFile(res, 'gizlilik.html'); return; }
+  if (req.method === 'GET' && url.pathname === '/kullanim-kosullari') { serveHtmlFile(res, 'kullanim-kosullari.html'); return; }
+  if (req.method === 'GET' && url.pathname === '/cerez-politikasi') { serveHtmlFile(res, 'cerez-politikasi.html'); return; }
 
   if (req.method === 'POST' && url.pathname === '/api/chat') {
     let body = '';
@@ -146,27 +150,22 @@ const server = http.createServer(async (req, res) => {
           return;
         }
 
-        // 1. Soruyu embed et
         const embedding = await getEmbedding(question);
-
-        // 2. Supabase'den ilgili chunk'ları çek
         const documents = await searchDocuments(embedding, 8);
 
-        // 3. Context boşsa bilmiyorum de, Claude'a gönderme
         if (!documents || documents.length === 0) {
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({
-            text: 'Bu konuda bilgi tabanımda yeterli mevzuat kaynağı bulunamadı. Güncel bilgi için vergi danışmanınıza başvurun.'
+            text: 'Bu konuda bilgi tabanımda yeterli mevzuat kaynağı bulunamadı. Güncel bilgi için vergi danışmanınıza başvurun.',
+            suggestions: []
           }));
           return;
         }
 
-        // 4. Context'i oluştur
         const context = documents.map(doc =>
           `[Kaynak: ${doc.metadata?.source || 'Bilinmiyor'}]\n${doc.content}`
         ).join('\n\n---\n\n');
 
-        // 5. Claude'a gönder — sadece context ile
         const anthropicResponse = await fetch('https://api.anthropic.com/v1/messages', {
           method: 'POST',
           headers: {
@@ -176,7 +175,7 @@ const server = http.createServer(async (req, res) => {
           },
           body: JSON.stringify({
             model: 'claude-sonnet-4-5',
-            max_tokens: 4000,
+            max_tokens: 6000,
             system: SYSTEM_PROMPT,
             messages: [{
               role: 'user',
@@ -186,10 +185,25 @@ const server = http.createServer(async (req, res) => {
         });
 
         const anthropicData = await anthropicResponse.json();
-        const answerText = anthropicData.content?.[0]?.text || 'Yanıt alınamadı.';
+        const fullText = anthropicData.content?.[0]?.text || 'Yanıt alınamadı.';
+
+        let answerText = fullText;
+        let suggestions = [];
+
+        try {
+          const soruMatch = fullText.match(/###SORULAR###\s*([\s\S]*?)\s*###SORULAR_BITIS###/);
+          if (soruMatch) {
+            const jsonStr = soruMatch[1].trim();
+            const parsed = JSON.parse(jsonStr);
+            suggestions = parsed.sorular || [];
+            answerText = fullText.replace(/###SORULAR###[\s\S]*?###SORULAR_BITIS###/, '').trim();
+          }
+        } catch (e) {
+          // suggestions boş kalır
+        }
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ text: answerText }));
+        res.end(JSON.stringify({ text: answerText, suggestions }));
 
       } catch (err) {
         res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -282,8 +296,8 @@ const server = http.createServer(async (req, res) => {
           headers: { 'Content-Type': 'application/json', 'x-api-key': process.env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
           body: JSON.stringify({
             model: 'claude-sonnet-4-5',
-            max_tokens: 2000,
-            system: 'Sen Legatis Tax adli bir Turk vergi danismanlik asistanisin. Yuklenen belgeleri vergi mevzuati acisindan analiz ederek mukellef lehine yasal avantajlari, riskleri ve pratik onerileri belirtirsin.',
+            max_tokens: 4000,
+            system: 'Sen Legatis Tax adli bir Turk vergi danismanlik asistanisin. Yuklenen belgeleri vergi mevzuati acisindan analiz ederek mukellef lehine yasal avantajlari, riskleri ve pratik onerileri belirtirsin. Kapsamli ve detayli yanit ver.',
             messages: [{ role: 'user', content: messageContent }]
           })
         });
