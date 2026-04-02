@@ -3,8 +3,6 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
-let XLSX;
-try { XLSX = require('xlsx'); } catch(e) { XLSX = null; }
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -311,29 +309,7 @@ const server = http.createServer(async (req, res) => {
         }
         const base64Data = fileData.toString('base64');
         let messageContent = [];
-
-        // Excel dosyası ise xlsx ile parse et, metin olarak gönder
-        const isExcel = fileMimeType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
-                        fileMimeType === 'application/vnd.ms-excel' ||
-                        fileName.endsWith('.xlsx') || fileName.endsWith('.xls');
-
-        if (isExcel && XLSX) {
-          try {
-            const workbook = XLSX.read(fileData, { type: 'buffer' });
-            let excelText = `Dosya: ${fileName}\n\n`;
-            workbook.SheetNames.forEach(sheetName => {
-              const sheet = workbook.Sheets[sheetName];
-              const csv = XLSX.utils.sheet_to_csv(sheet, { blankrows: false });
-              if (csv.trim()) {
-                excelText += `=== Sayfa: ${sheetName} ===\n${csv}\n\n`;
-              }
-            });
-            messageContent = [{ type: 'text', text: `Aşağıda Excel dosyasının içeriği CSV formatında verilmiştir:\n\n${excelText}\n\nSoru: ${question}` }];
-          } catch(xlsxErr) {
-            // Parse hatası — metin olarak gönder
-            messageContent = [{ type: 'text', text: `Kullanici bir Excel dosyası yukledi (${fileName}). ${question}` }];
-          }
-        } else if (fileMimeType === 'application/pdf') {
+        if (fileMimeType === 'application/pdf') {
           messageContent = [{ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64Data } }, { type: 'text', text: question }];
         } else if (fileMimeType.startsWith('image/')) {
           const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
@@ -347,7 +323,7 @@ const server = http.createServer(async (req, res) => {
           headers: { 'Content-Type': 'application/json', 'x-api-key': process.env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
           body: JSON.stringify({
             model: 'claude-sonnet-4-5',
-            max_tokens: 4000,
+            max_tokens: 6000,
             system: 'Sen Legatis Tax adli bir Turk vergi danismanlik asistanisin. Yuklenen belgeleri vergi mevzuati acisindan analiz ederek mukellef lehine yasal avantajlari, riskleri ve pratik onerileri belirtirsin. Kapsamli ve detayli yanit ver.',
             messages: [{ role: 'user', content: messageContent }]
           })
