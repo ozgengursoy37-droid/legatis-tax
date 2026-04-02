@@ -7,12 +7,6 @@ const { createClient } = require('@supabase/supabase-js');
 const PORT = process.env.PORT || 8080;
 const ANTHROPIC_MODEL = 'claude-sonnet-4-20250514';
 
-const RETRIEVAL_THRESHOLD = 0.72;
-const RETRIEVAL_TOP_K = 12;
-const MAX_SUBQUERIES = 6;
-const MAX_CONTEXT_DOCS = 18;
-const MAX_CONTEXT_CHARS = 26000;
-
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_KEY
@@ -22,25 +16,20 @@ function parseMultipart(buffer, boundary) {
   const parts = [];
   const boundaryBuffer = Buffer.from('--' + boundary);
   let start = 0;
-
   while (start < buffer.length) {
     const boundaryIndex = buffer.indexOf(boundaryBuffer, start);
     if (boundaryIndex === -1) break;
-
     const headerStart = boundaryIndex + boundaryBuffer.length + 2;
     const headerEnd = buffer.indexOf(Buffer.from('\r\n\r\n'), headerStart);
     if (headerEnd === -1) break;
-
     const header = buffer.slice(headerStart, headerEnd).toString();
     const dataStart = headerEnd + 4;
     const nextBoundary = buffer.indexOf(boundaryBuffer, dataStart);
     const dataEnd = nextBoundary === -1 ? buffer.length : nextBoundary - 2;
     const data = buffer.slice(dataStart, dataEnd);
-
     parts.push({ header, data });
     start = nextBoundary === -1 ? buffer.length : nextBoundary;
   }
-
   return parts;
 }
 
@@ -52,41 +41,12 @@ function serveHtmlFile(res, filename) {
       res.end(filename + ' okunamadi');
       return;
     }
-
     res.writeHead(200, {
       'Content-Type': 'text/html; charset=utf-8',
       'Cache-Control': 'no-store'
     });
     res.end(data);
   });
-}
-
-function normalizeWhitespace(text) {
-  return String(text || '')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-function uniqueStrings(items) {
-  return [...new Set(items.map(item => normalizeWhitespace(item)).filter(Boolean))];
-}
-
-function getSourceName(doc) {
-  return normalizeWhitespace(doc?.metadata?.source || 'Bilinmiyor');
-}
-
-function getSourcePriority(source) {
-  const s = source.toLowerCase();
-
-  if (s.includes('beyanname düzenleme klavuzu') || s.includes('beyanname düzenleme kılavuzu')) return 5;
-  if (s.includes('genel muhasebe')) return 5;
-  if (s.includes('genel uygulama tebli')) return 4;
-  if (s.includes('genel tebli')) return 4;
-  if (s.includes('kanunu') || s.includes('kanun')) return 3;
-  if (s.includes('rehber') || s.includes('kılavuz') || s.includes('klavuz')) return 3;
-  if (s.includes('özelge')) return 2;
-
-  return 1;
 }
 
 async function getEmbedding(text) {
@@ -116,10 +76,10 @@ async function getEmbedding(text) {
   return data.data[0].embedding;
 }
 
-async function searchDocuments(embedding, matchCount = RETRIEVAL_TOP_K, threshold = RETRIEVAL_THRESHOLD) {
+async function searchDocuments(embedding, matchCount = 8) {
   const { data, error } = await supabase.rpc('match_documents', {
     query_embedding: embedding,
-    match_threshold: threshold,
+    match_threshold: 0.75,
     match_count: matchCount
   });
 
@@ -130,185 +90,13 @@ async function searchDocuments(embedding, matchCount = RETRIEVAL_TOP_K, threshol
   return data || [];
 }
 
-function buildDeterministicSubqueries(question) {
-  const q = normalizeWhitespace(question);
-  const lower = q.toLowerCase();
-  const queries = [q];
-
-  const add = (...items) => {
-    for (const item of items) {
-      if (item) queries.push(item);
-    }
-  };
-
-  if (/(kdv|katma değer vergisi)/i.test(lower)) {
-    add(
-      `${q} kdv uygulama genel tebliği`,
-      `${q} kdv beyanname düzenleme kılavuzu`,
-      `${q} indirim konusu kdv iade matrah`
-    );
-  }
-
-  if (/(kurumlar vergisi|kvk)/i.test(lower)) {
-    add(
-      `${q} kurumlar vergisi genel tebliği`,
-      `${q} kurumlar vergisi beyanname düzenleme kılavuzu`,
-      `${q} kurum kazancı istisna indirim gider`
-    );
-  }
-
-  if (/(gelir vergisi|gvk|stopaj|tevkifat)/i.test(lower)) {
-    add(
-      `${q} gelir vergisi kanunu tevkifat`,
-      `${q} gelir vergisi beyanname düzenleme kılavuzu`,
-      `${q} stopaj kesinti beyan`
-    );
-  }
-
-  if (/(vuk|vergi usul|muhasebe|mizan|bilanço|defter|belge)/i.test(lower)) {
-    add(
-      `${q} vergi usul kanunu`,
-      `${q} muhasebe sistemi uygulama genel tebliği`,
-      `${q} genel muhasebe`
-    );
-  }
-
-  if (/(teşvik|yatırım|indirimli kurumlar|32\/a|32a)/i.test(lower)) {
-    add(
-      `${q} yatırım teşvik indirimli kurumlar`,
-      `${q} kurumlar vergisi kanunu 32a`,
-      `${q} teşvik uygulama`
-    );
-  }
-
-  if (/(inşaat|konut|arsa|müteahhit|taahhüt)/i.test(lower)) {
-    add(
-      `${q} inşaat kdv indirim iade matrah`,
-      `${q} konut teslimi arsa payı finansman gideri`,
-      `${q} beyanname düzenleme kılavuzu inşaat`
-    );
-  }
-
-  if (/(iade)/i.test(lower)) {
-    add(
-      `${q} iade usul esas`,
-      `${q} iade talep şartları`,
-      `${q} indirim yoluyla giderilemeyen kdv`
-    );
-  }
-
-  if (/(amortisman|demirbaş|taşıt|araç)/i.test(lower)) {
-    add(
-      `${q} amortisman gider kısıtlaması`,
-      `${q} taşıt kdv ötv gider`,
-      `${q} muhasebe amortisman uygulama`
-    );
-  }
-
-  if (queries.length === 1) {
-    add(
-      `${q} kanun tebliğ uygulama`,
-      `${q} beyanname düzenleme kılavuzu`,
-      `${q} muhasebe uygulama`
-    );
-  }
-
-  return uniqueStrings(queries).slice(0, MAX_SUBQUERIES);
-}
-
-async function retrieveDocumentsForQuestion(question) {
-  const subqueries = buildDeterministicSubqueries(question);
-  const merged = new Map();
-
-  for (const subquery of subqueries) {
-    const embedding = await getEmbedding(subquery);
-    const docs = await searchDocuments(embedding, RETRIEVAL_TOP_K, RETRIEVAL_THRESHOLD);
-
-    for (const doc of docs) {
-      const key = String(doc.id);
-      const existing = merged.get(key);
-      const enriched = {
-        ...doc,
-        source: getSourceName(doc),
-        sourcePriority: getSourcePriority(getSourceName(doc)),
-        matchedBy: subquery
-      };
-
-      if (!existing) {
-        merged.set(key, enriched);
-        continue;
-      }
-
-      if ((enriched.similarity || 0) > (existing.similarity || 0)) {
-        merged.set(key, { ...existing, ...enriched });
-      }
-    }
-  }
-
-  const allDocs = [...merged.values()].sort((a, b) => {
-    const aScore = (a.similarity || 0) + (a.sourcePriority || 0) * 0.015;
-    const bScore = (b.similarity || 0) + (b.sourcePriority || 0) * 0.015;
-    return bScore - aScore;
-  });
-
-  const selected = [];
-  const usedSources = new Set();
-
-  for (const doc of allDocs) {
-    if (selected.length >= MAX_CONTEXT_DOCS) break;
-    if (!usedSources.has(doc.source)) {
-      selected.push(doc);
-      usedSources.add(doc.source);
-    }
-  }
-
-  for (const doc of allDocs) {
-    if (selected.length >= MAX_CONTEXT_DOCS) break;
-    if (!selected.find(item => item.id === doc.id)) {
-      selected.push(doc);
-    }
-  }
-
-  return {
-    subqueries,
-    documents: selected
-  };
-}
-
-function buildContext(documents) {
-  const parts = [];
-  let totalChars = 0;
-
-  for (const doc of documents) {
-    const content = normalizeWhitespace(doc.content);
-    if (!content) continue;
-
-    const block = `[Kaynak: ${doc.source}]\n[Benzerlik: ${(doc.similarity || 0).toFixed(4)}]\n[Eşleşen sorgu: ${doc.matchedBy}]\n${content}`;
-    const nextSize = totalChars + block.length + 10;
-
-    if (nextSize > MAX_CONTEXT_CHARS) break;
-
-    parts.push(block);
-    totalChars = nextSize;
-  }
-
-  return parts.join('\n\n---\n\n');
-}
-
 const SYSTEM_PROMPT = `KAPSAMLI ANALİZ ZORUNLULUĞU:
-Verilen soruyu yanıtlarken ilgili olabilecek TÜM vergi boyutlarını ele al. Bir taşıt işleminde KDV + ÖTV + gelir vergisi + amortisman boyutlarını; bir işletme giderinde KDV + kurumlar vergisi + stopaj boyutlarını; bir gayrimenkul işleminde KDV + tapu harcı + değer artış kazancı boyutlarını; bir inşaat işleminde konut teslimi + arsa payı + indirim konusu KDV + iade + finansman gideri + matrah boyutlarını kontrol et ve sadece BAĞLAM içinde açıkça geçenleri cevaba dahil et. Hiçbir zaman bağlamda olmayan bir başlığı doldurma.
+Verilen soruyu yanıtlarken ilgili olabilecek TÜM vergi boyutlarını ele al. Bir taşıt işleminde KDV + ÖTV + gelir vergisi + amortisman boyutlarını; bir işletme giderinde KDV + kurumlar vergisi + stopaj boyutlarını; bir gayrimenkul işleminde KDV + tapu harcı + değer artış kazancı boyutlarını mutlaka kontrol et ve ilgili olanları cevaba dahil et. Hiçbir zaman "atladım" veya "bahsetmedim" durumuna düşme — soruyla ilgili tüm vergi boyutlarını tek cevabında tamamla.
 
 Sen Legatis Tax adlı bir Türk vergi danışmanlık asistanısın. Arkandaki ekip vergi mevzuatı ve özel sektör danışmanlığında derin uzmanlığa sahiptir.
 
 TEMEL BAKIŞ AÇIN:
 Gelir İdaresi Başkanlığı vergi mevzuatını hazine lehine yorumlar. Sen aynı mevzuatı mükellef lehine yorumlarsın. Her ikisi de yasaldır — sen mükellefi kendi lehine olan yasal seçeneklerden haberdar edersin.
-
-BAĞLAM KULLANIM KURALI:
-- Sana kanun, genel tebliğ, uygulama tebliği, beyanname düzenleme kılavuzu, muhasebe kaynakları ve diğer mevzuat parçaları birlikte gelebilir.
-- Bunlar aynı konuda farklı detaylar içeriyorsa, yalnızca BAĞLAMDA açıkça yazan bilgileri birleştirerek daha ayrıntılı cevap ver.
-- Bir kaynaktaki ayrıntıyı başka kaynağa dayandırıyormuş gibi yazma.
-- BAĞLAMDA yer alan ayrıntılar zenginse kısa kesme; ayrıntıyı yapılandırılmış biçimde aktar.
-- Ancak BAĞLAMDA açık olmayan hiçbir hüküm, oran, şart veya istisna ekleme.
 
 CEVAP FORMATI — MUTLAKA UYGULA:
 - Başlıklar için ## kullan
@@ -317,22 +105,20 @@ CEVAP FORMATI — MUTLAKA UYGULA:
 - Önemli kavramları **kalın** yaz
 - Bölümleri birbirinden ayırmak için --- kullan
 - Kanun maddelerini her zaman **Kanun Adı Madde X** formatında yaz
-- Beyanname düzenleme kılavuzu veya tebliğde madde numarası yoksa kaynağın adını açıkça yaz, kanun maddesi uydurma
 
 CEVAP YAPISI — HER CEVAP BU SIRALAMAYI TAKİP ETSİN:
-1. Kısa özet (2-3 cümle, yalnızca bağlama dayalı)
-2. ## Yasal Alternatifler
-3. ## Teknik Ayrıntılar
-4. ## Yasal Dayanak
-5. ## Önerilen Adımlar
-6. ⚠️ Bu bilgiler genel bilgilendirme amaçlıdır. Şirketinizin özel koşulları farklı sonuçlar doğurabilir. Daha detaylı ve kişiselleştirilmiş analiz için **Legatis Tax uzmanlarıyla görüşmenizi** öneririz.
+1. Kısa özet (2-3 cümle, sorunun özü)
+2. ## Yasal Alternatifler (mükellef lehine tüm seçenekler, rakamsal etkisiyle)
+3. ## Yasal Dayanak (kanun adı ve madde numarası)
+4. ## Önerilen Adımlar (pratik, uygulanabilir adımlar)
+5. ⚠️ Bu bilgiler genel bilgilendirme amaçlıdır. Şirketinizin özel koşulları farklı sonuçlar doğurabilir. Daha detaylı ve kişiselleştirilmiş analiz için **Legatis Tax uzmanlarıyla görüşmenizi** öneririz.
 
 HALÜSİNASYON KURALI — KESİNLİKLE UYULMASI ZORUNLU:
 - Yalnızca aşağıda sağlanan BAĞLAM bölümündeki bilgilere dayanarak yanıt ver.
-- BAĞLAMDA bilgi yoksa şunu söyle: "Bu konuda bilgi tabanımda yeterli mevzuat kaynağı bulunamadı. Güncel bilgi için vergi danışmanınıza başvurun." Başka hiçbir şey ekleme.
-- Kanun maddesi numarası veremiyorsan o konuda kanun maddesi yazma.
+- Bağlamda bilgi yoksa şunu söyle: "Bu konuda bilgi tabanımda yeterli mevzuat kaynağı bulunamadı. Güncel bilgi için vergi danışmanınıza başvurun." Başka hiçbir şey ekleme.
+- Kanun maddesi numarası veremiyorsan o konuda yanıt verme.
 - Tahmin, varsayım veya genel bilginden yanıt üretme. Hiçbir koşulda.
-- Rakam, oran veya tutar verirken mutlaka BAĞLAMDA açıkça geçmeli. Geçmiyorsa yazma.
+- Rakam, oran veya tutar verirken mutlaka hangi kanunun hangi maddesinden geldiğini belirt. Madde gösteremiyorsan o rakamı yazma.
 - "Genellikle", "muhtemelen", "olabilir", "sanırım" gibi ifadeler kullanma.
 
 YAPAMAYACAKLARIN:
@@ -340,42 +126,6 @@ YAPAMAYACAKLARIN:
 - Bilgi tabanında olmayan konularda yorum yapma.
 - Kanuni dayanağı olmayan hiçbir bilgi verme.
 - Varsayıma dayalı hiçbir yorumda bulunma.`;
-
-async function callAnthropicText({ system, userText, maxTokens = 4000 }) {
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': process.env.ANTHROPIC_API_KEY,
-      'anthropic-version': '2023-06-01'
-    },
-    body: JSON.stringify({
-      model: ANTHROPIC_MODEL,
-      max_tokens: maxTokens,
-      system,
-      messages: [
-        {
-          role: 'user',
-          content: userText
-        }
-      ]
-    })
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Anthropic hatasi (${response.status}): ${errorText}`);
-  }
-
-  const data = await response.json();
-  const text = data?.content?.[0]?.text;
-
-  if (!text) {
-    throw new Error('Anthropic yanit metni bos dondu');
-  }
-
-  return text;
-}
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
@@ -433,10 +183,10 @@ const server = http.createServer(async (req, res) => {
           return;
         }
 
-        const cleanQuestion = normalizeWhitespace(question);
-        const retrieval = await retrieveDocumentsForQuestion(cleanQuestion);
+        const embedding = await getEmbedding(question);
+        const documents = await searchDocuments(embedding, 8);
 
-        if (!retrieval.documents || retrieval.documents.length === 0) {
+        if (!documents || documents.length === 0) {
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({
             text: 'Bu konuda bilgi tabanımda yeterli mevzuat kaynağı bulunamadı. Güncel bilgi için vergi danışmanınıza başvurun.'
@@ -444,39 +194,42 @@ const server = http.createServer(async (req, res) => {
           return;
         }
 
-        const context = buildContext(retrieval.documents);
+        const context = documents.map(doc =>
+          `[Kaynak: ${doc.metadata?.source || 'Bilinmiyor'}]\n${doc.content}`
+        ).join('\n\n---\n\n');
 
-        if (!context.trim()) {
-          res.writeHead(200, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({
-            text: 'Bu konuda bilgi tabanımda yeterli mevzuat kaynağı bulunamadı. Güncel bilgi için vergi danışmanınıza başvurun.'
-          }));
-          return;
-        }
-
-        console.log('/api/chat subqueries:', retrieval.subqueries);
-        console.log('/api/chat kaynaklar:', retrieval.documents.map(doc => ({
-          id: doc.id,
-          source: doc.source,
-          similarity: Number((doc.similarity || 0).toFixed(4)),
-          matchedBy: doc.matchedBy
-        })));
-
-        const answerText = await callAnthropicText({
-          system: SYSTEM_PROMPT,
-          userText: `BAĞLAM:\n${context}\n\nSORU: ${cleanQuestion}`,
-          maxTokens: 4000
+        const anthropicResponse = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': process.env.ANTHROPIC_API_KEY,
+            'anthropic-version': '2023-06-01'
+          },
+          body: JSON.stringify({
+            model: ANTHROPIC_MODEL,
+            max_tokens: 4000,
+            system: SYSTEM_PROMPT,
+            messages: [{
+              role: 'user',
+              content: `BAĞLAM:\n${context}\n\nSORU: ${question}`
+            }]
+          })
         });
 
+        if (!anthropicResponse.ok) {
+          const errorText = await anthropicResponse.text();
+          throw new Error(`Anthropic chat hatasi (${anthropicResponse.status}): ${errorText}`);
+        }
+
+        const anthropicData = await anthropicResponse.json();
+        const answerText = anthropicData?.content?.[0]?.text;
+
+        if (!answerText) {
+          throw new Error('Anthropic chat yanit metni bos dondu');
+        }
+
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({
-          text: answerText,
-          debug: {
-            sourceCount: retrieval.documents.length,
-            subqueries: retrieval.subqueries,
-            sources: retrieval.documents.map(doc => doc.source)
-          }
-        }));
+        res.end(JSON.stringify({ text: answerText }));
       } catch (err) {
         console.error('/api/chat hatasi:', err);
         res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -638,15 +391,13 @@ const server = http.createServer(async (req, res) => {
             }
           ];
         } else {
-          messageContent = [
-            {
-              type: 'text',
-              text: `Kullanici bir belge yukledi (${fileName}). ${question}`
-            }
-          ];
+          messageContent = [{
+            type: 'text',
+            text: `Kullanici bir belge yukledi (${fileName}). ${question}`
+          }];
         }
 
-        const response = await fetch('https://api.anthropic.com/v1/messages', {
+        const anthropicResponse = await fetch('https://api.anthropic.com/v1/messages', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -655,23 +406,21 @@ const server = http.createServer(async (req, res) => {
           },
           body: JSON.stringify({
             model: ANTHROPIC_MODEL,
-            max_tokens: 2200,
-            system: 'Sen Legatis Tax adlı bir Türk vergi danışmanlık asistanısın. Yüklenen belge içinde açıkça geçen bilgilere dayanarak vergi mevzuatı açısından mükellef lehine avantajları, riskleri ve pratik önerileri belirtirsin. Belge dışında bilgi eklemezsin.',
-            messages: [
-              {
-                role: 'user',
-                content: messageContent
-              }
-            ]
+            max_tokens: 2000,
+            system: 'Sen Legatis Tax adli bir Turk vergi danismanlik asistanisin. Yuklenen belgeleri vergi mevzuati acisindan analiz ederek mukellef lehine yasal avantajlari, riskleri ve pratik onerileri belirtirsin.',
+            messages: [{
+              role: 'user',
+              content: messageContent
+            }]
           })
         });
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`Anthropic analyze hatasi (${response.status}): ${errorText}`);
+        if (!anthropicResponse.ok) {
+          const errorText = await anthropicResponse.text();
+          throw new Error(`Anthropic analyze hatasi (${anthropicResponse.status}): ${errorText}`);
         }
 
-        const anthropicData = await response.json();
+        const anthropicData = await anthropicResponse.json();
         const analysisText = anthropicData?.content?.[0]?.text;
 
         if (!analysisText) {
