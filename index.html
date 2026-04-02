@@ -658,8 +658,8 @@ function copyText(btn) {
 
 function deepenQuestion(btn) {
   const msgText = btn.closest('.msg-content').querySelector('.msg-text');
-  const firstLine = msgText.querySelector('h2, p')?.innerText || '';
-  document.getElementById('userInput').value = `Bu konuyu daha detaylı açıklar mısınız: ${firstLine.substring(0, 80)}`;
+  const fullText = msgText.innerText.substring(0, 300).replace(/\n+/g, ' ').trim();
+  document.getElementById('userInput').value = `Şu konuyu daha detaylı açıklar mısınız: ${fullText}`;
   document.getElementById('userInput').focus();
 }
 
