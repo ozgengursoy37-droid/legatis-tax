@@ -62,9 +62,7 @@ function serveHtmlFile(res, filename) {
 }
 
 function normalizeWhitespace(text) {
-  return String(text || '')
-    .replace(/\s+/g, ' ')
-    .trim();
+  return String(text || '').replace(/\s+/g, ' ').trim();
 }
 
 function uniqueStrings(items) {
@@ -78,7 +76,7 @@ function getSourceName(doc) {
 function getSourcePriority(source) {
   const s = source.toLowerCase();
 
-  if (s.includes('beyanname düzenleme klavuzu') || s.includes('beyanname düzenleme kılavuzu')) return 5;
+  if (s.includes('beyanname düzenleme klavuzu') || s.includes('beyanname düzenleme kılavuzu')) return 6;
   if (s.includes('genel muhasebe')) return 5;
   if (s.includes('genel uygulama tebli')) return 4;
   if (s.includes('genel tebli')) return 4;
@@ -87,6 +85,127 @@ function getSourcePriority(source) {
   if (s.includes('özelge')) return 2;
 
   return 1;
+}
+
+function extractQuestionFacts(question) {
+  const q = normalizeWhitespace(question);
+  const lower = q.toLowerCase();
+
+  return {
+    raw: q,
+    hasKDV: /(kdv|katma değer vergisi)/i.test(lower),
+    hasKV: /(kurumlar vergisi|kvk)/i.test(lower),
+    hasGV: /(gelir vergisi|gvk)/i.test(lower),
+    hasStopaj: /(stopaj|tevkifat)/i.test(lower),
+    hasIade: /(iade)/i.test(lower),
+    hasInsaat: /(inşaat|konut|arsa|müteahhit|taahhüt)/i.test(lower),
+    saysHighMonthlyKDV: /(her ay).*(kdv).*(yüksek|fazla|çok)/i.test(lower) || /(yüksek).*(kdv)/i.test(lower),
+    mentionsKonut: /(konut)/i.test(lower),
+    mentionsArsa: /(arsa)/i.test(lower),
+    mentionsTicari: /(ticari|işyeri|ofis|dükkan|avm)/i.test(lower),
+    mentionsRestorasyon: /(restorasyon|kültür varlığı|2863)/i.test(lower),
+    mentions150m2: /(150\s*m²|150\s*m2|150 m²|150 m2)/i.test(lower),
+    mentionsFinansman: /(finansman|kredi faizi|faiz gideri|faiz|banka kredisi)/i.test(lower)
+  };
+}
+
+function buildDeterministicSubqueries(question) {
+  const q = normalizeWhitespace(question);
+  const facts = extractQuestionFacts(q);
+  const queries = [q];
+
+  const add = (...items) => {
+    for (const item of items) {
+      if (item) queries.push(item);
+    }
+  };
+
+  if (facts.hasKDV) {
+    add(
+      `${q} kdv uygulama genel tebliği`,
+      `${q} kdv beyanname düzenleme kılavuzu`,
+      `${q} indirim konusu kdv iade matrah`
+    );
+  }
+
+  if (facts.hasKV) {
+    add(
+      `${q} kurumlar vergisi genel tebliği`,
+      `${q} kurumlar vergisi beyanname düzenleme kılavuzu`,
+      `${q} kurum kazancı istisna indirim gider`
+    );
+  }
+
+  if (facts.hasGV || facts.hasStopaj) {
+    add(
+      `${q} gelir vergisi kanunu tevkifat`,
+      `${q} gelir vergisi beyanname düzenleme kılavuzu`,
+      `${q} stopaj kesinti beyan`
+    );
+  }
+
+  if (/(vuk|vergi usul|muhasebe|mizan|bilanço|defter|belge)/i.test(q.toLowerCase())) {
+    add(
+      `${q} vergi usul kanunu`,
+      `${q} muhasebe sistemi uygulama genel tebliği`,
+      `${q} genel muhasebe`
+    );
+  }
+
+  if (/(teşvik|yatırım|indirimli kurumlar|32\/a|32a)/i.test(q.toLowerCase())) {
+    add(
+      `${q} yatırım teşvik indirimli kurumlar`,
+      `${q} kurumlar vergisi kanunu 32a`,
+      `${q} teşvik uygulama`
+    );
+  }
+
+  if (facts.hasInsaat) {
+    add(
+      `${q} inşaat kdv indirim iade matrah`,
+      `${q} beyanname düzenleme kılavuzu inşaat`,
+      `${q} inşaat sektöründe kdv uygulaması`
+    );
+
+    if (facts.mentionsKonut || facts.mentions150m2) {
+      add(
+        `${q} konut teslimi 150 m2 altı kdv iadesi`,
+        `${q} indirimli oranlı konut teslimi`
+      );
+    }
+
+    if (facts.mentionsArsa) {
+      add(
+        `${q} arsa karşılığı inşaat`,
+        `${q} arsa payı teslimi matrah kdv`
+      );
+    }
+
+    if (facts.mentionsFinansman) {
+      add(
+        `${q} finansman gideri maliyet bedeli`,
+        `${q} kredi faizi kdv matrah maliyet`
+      );
+    }
+  }
+
+  if (facts.hasIade) {
+    add(
+      `${q} iade usul esas`,
+      `${q} iade talep şartları`,
+      `${q} indirim yoluyla giderilemeyen kdv`
+    );
+  }
+
+  if (queries.length === 1) {
+    add(
+      `${q} kanun tebliğ uygulama`,
+      `${q} beyanname düzenleme kılavuzu`,
+      `${q} muhasebe uygulama`
+    );
+  }
+
+  return uniqueStrings(queries).slice(0, MAX_SUBQUERIES);
 }
 
 async function getEmbedding(text) {
@@ -130,93 +249,37 @@ async function searchDocuments(embedding, matchCount = RETRIEVAL_TOP_K, threshol
   return data || [];
 }
 
-function buildDeterministicSubqueries(question) {
-  const q = normalizeWhitespace(question);
-  const lower = q.toLowerCase();
-  const queries = [q];
+function isDocConditionallyRelevant(doc, facts) {
+  const source = getSourceName(doc).toLowerCase();
+  const content = normalizeWhitespace(doc.content).toLowerCase();
 
-  const add = (...items) => {
-    for (const item of items) {
-      if (item) queries.push(item);
-    }
-  };
+  if (!facts.hasInsaat) return false;
 
-  if (/(kdv|katma değer vergisi)/i.test(lower)) {
-    add(
-      `${q} kdv uygulama genel tebliği`,
-      `${q} kdv beyanname düzenleme kılavuzu`,
-      `${q} indirim konusu kdv iade matrah`
-    );
+  if (content.includes('150 m²') || content.includes('150 m2') || content.includes('150m²') || content.includes('150m2')) {
+    return !(facts.mentionsKonut || facts.mentions150m2);
   }
 
-  if (/(kurumlar vergisi|kvk)/i.test(lower)) {
-    add(
-      `${q} kurumlar vergisi genel tebliği`,
-      `${q} kurumlar vergisi beyanname düzenleme kılavuzu`,
-      `${q} kurum kazancı istisna indirim gider`
-    );
+  if (content.includes('arsa karşılığı') || content.includes('arsa payı')) {
+    return !facts.mentionsArsa;
   }
 
-  if (/(gelir vergisi|gvk|stopaj|tevkifat)/i.test(lower)) {
-    add(
-      `${q} gelir vergisi kanunu tevkifat`,
-      `${q} gelir vergisi beyanname düzenleme kılavuzu`,
-      `${q} stopaj kesinti beyan`
-    );
+  if (content.includes('kültür varlığı') || content.includes('restorasyon') || content.includes('2863')) {
+    return !facts.mentionsRestorasyon;
   }
 
-  if (/(vuk|vergi usul|muhasebe|mizan|bilanço|defter|belge)/i.test(lower)) {
-    add(
-      `${q} vergi usul kanunu`,
-      `${q} muhasebe sistemi uygulama genel tebliği`,
-      `${q} genel muhasebe`
-    );
+  if (content.includes('finansman gideri') || content.includes('kredi')) {
+    return !facts.mentionsFinansman;
   }
 
-  if (/(teşvik|yatırım|indirimli kurumlar|32\/a|32a)/i.test(lower)) {
-    add(
-      `${q} yatırım teşvik indirimli kurumlar`,
-      `${q} kurumlar vergisi kanunu 32a`,
-      `${q} teşvik uygulama`
-    );
+  if (source.includes('beyanname düzenleme kılavuzu') && content.includes('konut')) {
+    return !facts.mentionsKonut;
   }
 
-  if (/(inşaat|konut|arsa|müteahhit|taahhüt)/i.test(lower)) {
-    add(
-      `${q} inşaat kdv indirim iade matrah`,
-      `${q} konut teslimi arsa payı finansman gideri`,
-      `${q} beyanname düzenleme kılavuzu inşaat`
-    );
-  }
-
-  if (/(iade)/i.test(lower)) {
-    add(
-      `${q} iade usul esas`,
-      `${q} iade talep şartları`,
-      `${q} indirim yoluyla giderilemeyen kdv`
-    );
-  }
-
-  if (/(amortisman|demirbaş|taşıt|araç)/i.test(lower)) {
-    add(
-      `${q} amortisman gider kısıtlaması`,
-      `${q} taşıt kdv ötv gider`,
-      `${q} muhasebe amortisman uygulama`
-    );
-  }
-
-  if (queries.length === 1) {
-    add(
-      `${q} kanun tebliğ uygulama`,
-      `${q} beyanname düzenleme kılavuzu`,
-      `${q} muhasebe uygulama`
-    );
-  }
-
-  return uniqueStrings(queries).slice(0, MAX_SUBQUERIES);
+  return false;
 }
 
 async function retrieveDocumentsForQuestion(question) {
+  const facts = extractQuestionFacts(question);
   const subqueries = buildDeterministicSubqueries(question);
   const merged = new Map();
 
@@ -227,11 +290,14 @@ async function retrieveDocumentsForQuestion(question) {
     for (const doc of docs) {
       const key = String(doc.id);
       const existing = merged.get(key);
+      const source = getSourceName(doc);
+
       const enriched = {
         ...doc,
-        source: getSourceName(doc),
-        sourcePriority: getSourcePriority(getSourceName(doc)),
-        matchedBy: subquery
+        source,
+        sourcePriority: getSourcePriority(source),
+        matchedBy: subquery,
+        conditional: isDocConditionallyRelevant(doc, facts)
       };
 
       if (!existing) {
@@ -239,39 +305,60 @@ async function retrieveDocumentsForQuestion(question) {
         continue;
       }
 
-      if ((enriched.similarity || 0) > (existing.similarity || 0)) {
+      const existingScore = (existing.similarity || 0) + (existing.sourcePriority || 0) * 0.015;
+      const newScore = (enriched.similarity || 0) + (enriched.sourcePriority || 0) * 0.015;
+
+      if (newScore > existingScore) {
         merged.set(key, { ...existing, ...enriched });
       }
     }
   }
 
   const allDocs = [...merged.values()].sort((a, b) => {
-    const aScore = (a.similarity || 0) + (a.sourcePriority || 0) * 0.015;
-    const bScore = (b.similarity || 0) + (b.sourcePriority || 0) * 0.015;
+    const aConditionalPenalty = a.conditional ? 0.04 : 0;
+    const bConditionalPenalty = b.conditional ? 0.04 : 0;
+
+    const aScore = (a.similarity || 0) + (a.sourcePriority || 0) * 0.015 - aConditionalPenalty;
+    const bScore = (b.similarity || 0) + (b.sourcePriority || 0) * 0.015 - bConditionalPenalty;
+
     return bScore - aScore;
   });
 
-  const selected = [];
+  const primary = [];
+  const secondary = [];
   const usedSources = new Set();
 
   for (const doc of allDocs) {
-    if (selected.length >= MAX_CONTEXT_DOCS) break;
-    if (!usedSources.has(doc.source)) {
-      selected.push(doc);
-      usedSources.add(doc.source);
+    if (!doc.conditional && primary.length < Math.ceil(MAX_CONTEXT_DOCS * 0.7)) {
+      if (!usedSources.has(doc.source)) {
+        primary.push(doc);
+        usedSources.add(doc.source);
+      }
     }
   }
 
   for (const doc of allDocs) {
-    if (selected.length >= MAX_CONTEXT_DOCS) break;
-    if (!selected.find(item => item.id === doc.id)) {
-      selected.push(doc);
+    if (!doc.conditional && primary.length < Math.ceil(MAX_CONTEXT_DOCS * 0.7)) {
+      if (!primary.find(item => item.id === doc.id)) {
+        primary.push(doc);
+      }
     }
   }
 
+  for (const doc of allDocs) {
+    if (doc.conditional && secondary.length < Math.floor(MAX_CONTEXT_DOCS * 0.3)) {
+      if (!secondary.find(item => item.id === doc.id)) {
+        secondary.push(doc);
+      }
+    }
+  }
+
+  const documents = [...primary, ...secondary].slice(0, MAX_CONTEXT_DOCS);
+
   return {
     subqueries,
-    documents: selected
+    documents,
+    facts
   };
 }
 
@@ -283,12 +370,14 @@ function buildContext(documents) {
     const content = normalizeWhitespace(doc.content);
     if (!content) continue;
 
+    const conditionalLabel = doc.conditional ? 'Evet' : 'Hayır';
     const block = `[Kaynak: ${doc.source}]
 [Benzerlik: ${(doc.similarity || 0).toFixed(4)}]
 [Eşleşen sorgu: ${doc.matchedBy}]
+[Şarta bağlı başlık: ${conditionalLabel}]
 ${content}`;
-    const nextSize = totalChars + block.length + 10;
 
+    const nextSize = totalChars + block.length + 10;
     if (nextSize > MAX_CONTEXT_CHARS) break;
 
     parts.push(block);
@@ -298,35 +387,30 @@ ${content}`;
   return parts.join('\n\n---\n\n');
 }
 
-const SYSTEM_PROMPT = `Sen Legatis Tax adlı bir Türk vergi danışmanlık asistanısın. Kullanıcıya Google gibi sonuç listeleyen bir arama motoru gibi değil, mevzuata dayalı yol gösteren kıdemli bir vergi danışmanı gibi yanıt verirsin.
+const SYSTEM_PROMPT = `Sen Legatis Tax adlı bir Türk vergi danışmanlık asistanısın. Kullanıcıya Google gibi sonuç sıralayan bir arama motoru gibi değil, mevzuata dayalı çalışan kıdemli bir vergi danışmanı gibi yanıt verirsin.
 
-TEMEL GÖREVİN:
-- Kullanıcının sorusundaki somut olayı önce anlamlandır.
-- Olayda açıkça doğrulanan unsurlarla, yalnızca ihtimal seviyesinde kalan unsurları birbirinden ayır.
-- Kullanıcıya öncelik sırasına göre danışmanlık ver.
+TEMEL KURAL:
 - Yalnızca BAĞLAM içinde açıkça yer alan bilgilere dayan.
-- BAĞLAMDA olmayan hiçbir hüküm, oran, şart, istisna, süre veya sonuç ekleme.
+- BAĞLAMDA olmayan hiçbir hüküm, oran, şart, istisna, süre, sonuç veya senaryo ekleme.
+- Soru metninde doğrulanmayan alt senaryoları ana çözüm gibi yazma.
+- BAĞLAM içinde "Şarta bağlı başlık: Evet" olarak işaretlenen metinleri yalnızca ikincil ve sınırlı biçimde kullan.
 
-DANIŞMANLIK DAVRANIŞI:
-- Cevabı genel başlık yığını gibi kurma.
-- Önce sorudaki olayı sınıflandır:
-  - faaliyet türü
-  - vergi türü
-  - işlem tipi
-  - sorunun pratik hedefi
-- Sonra sadece gerçekten ilgili görünen başlıkları yaz.
-- Soruda açıkça doğrulanmayan alt senaryoları kesin çözüm gibi yazma.
-- Böyle durumlarda bunları "şarta bağlı değerlendirilmesi gereken başlıklar" altında topla.
-- Kullanıcıya uygulanabilirlik, belge ihtiyacı ve risk sırasına göre yol göster.
+DANIŞMANLIK YAKLAŞIMI:
+- Önce kullanıcının sorusundaki kesin olguları esas al.
+- Sonra sadece bu kesin olgularla doğrudan ilişkili çözümleri ana bölümde yaz.
+- Soruda doğrulanmayan ama bağlamda geçen alt senaryoları kısa tut ve ayrı bölüme koy.
+- Ana cevapta kullanıcıya öncelik sırasına göre yol göster.
+- Kullanıcının olayına temas etmeyen başlıkları sırf bağlamda var diye yazma.
+- "genellikle" tarzı soyut cümlelerle genel sektör anlatısı kurma.
 
-BAĞLAM KULLANIM KURALI:
+KAYNAK KULLANIMI:
 - Kanun, tebliğ, uygulama tebliği, beyanname düzenleme kılavuzu, muhasebe kaynakları birlikte gelebilir.
-- Bunlar aynı konuda farklı ayrıntılar içeriyorsa yalnızca BAĞLAMDA açıkça yazan bilgileri birleştir.
+- Bunlar aynı konuda farklı ayrıntılar içeriyorsa yalnızca BAĞLAMDA açıkça bulunan noktaları birleştir.
 - Bir kaynaktaki ayrıntıyı başka kaynağa dayandırıyormuş gibi yazma.
 - Madde numarası yoksa uydurma madde yazma.
-- Beyanname Düzenleme Kılavuzu veya muhasebe kaynağındaki teknik ayrıntıyı açıkça o kaynağa bağla.
+- Beyanname Düzenleme Kılavuzu veya muhasebe kaynağındaki teknik ayrıntıyı açıkça kendi kaynağına bağla.
 
-CEVAP FORMATI:
+CEVAP BİÇİMİ:
 - Başlıklar için ## kullan
 - Alt başlıklar için ### kullan
 - Madde listeleri için - kullan
@@ -340,16 +424,15 @@ HER CEVAP ŞU SIRAYI İZLESİN:
 4. ## Şarta Bağlı Değerlendirilmesi Gereken Başlıklar
 5. ## Yasal Dayanak
 6. ## Pratik Yol Haritası
-7. Gerekirse tek paragraf: "Netleştirilmesi gereken hususlar"
+7. Gerekirse tek paragraf: Netleştirilmesi gereken hususlar
 
-YAZIM KURALLARI:
-- Kullanıcıya danışman gibi konuş.
-- "şunlar olabilir" diye dağılma.
-- Öncelikli ve uygulanabilir olanı önce yaz.
-- İlgisiz veya düşük ihtimalli başlıkları ana çözüm gibi sunma.
-- Kısa ama yetersiz olma; bağlam zenginse ayrıntılandır.
+YAZIM KURALI:
+- Cevap arama motoru özeti gibi değil, seçici ve isabetli danışmanlık notu gibi olmalı.
+- Ana bölümde en fazla 2-4 ana çözüm ekseni yaz.
+- Şarta bağlı bölüm kısa olmalı; soru sahibinin olayı doğrulamıyorsa orayı ana gövdeye taşıma.
+- Sorunun içinde açıkça geçmeyen faaliyet/işlem türünü kesinmiş gibi yazma.
+- Bağlam zenginse ayrıntı ver ama gereksiz başlık çoğaltma.
 - Aynı bilgiyi tekrar etme.
-- Boş süslü cümle kurma.
 
 HALÜSİNASYON KURALI:
 - Yalnızca BAĞLAM'a dayan.
@@ -478,11 +561,13 @@ const server = http.createServer(async (req, res) => {
         }
 
         console.log('/api/chat subqueries:', retrieval.subqueries);
+        console.log('/api/chat facts:', retrieval.facts);
         console.log('/api/chat kaynaklar:', retrieval.documents.map(doc => ({
           id: doc.id,
           source: doc.source,
           similarity: Number((doc.similarity || 0).toFixed(4)),
-          matchedBy: doc.matchedBy
+          matchedBy: doc.matchedBy,
+          conditional: doc.conditional
         })));
 
         const answerText = await callAnthropicText({
@@ -490,16 +575,20 @@ const server = http.createServer(async (req, res) => {
           userText: `KULLANICI SORUSU:
 ${cleanQuestion}
 
+SORUDAN ÇIKARILAN KESİN OLGULAR:
+${JSON.stringify(retrieval.facts, null, 2)}
+
 GÖREV:
-Bu soruya arama motoru gibi değil, mevzuata dayalı yol gösteren kıdemli bir vergi danışmanı gibi yanıt ver.
-Önce kullanıcının olayında açıkça doğrulanan unsurları esas al.
-Soruda doğrulanmayan alt senaryoları ana çözüm gibi sunma.
-Öncelik sırası kur.
-İlk bölümde kullanıcının mevcut olayını 2-3 cümleyle çerçevele.
-Ardından sadece gerçekten ilgili başlıkları yaz.
-Bir başlık yalnızca şarta bağlıysa bunu ayrı bölümde belirt.
-Yasal dayanakta kaynakları açıkça göster.
-Pratik yol haritasında kullanıcıya neyi önce kontrol etmesi gerektiğini sırala.
+- Bu soruya arama motoru gibi değil, mevzuata dayalı yol gösteren kıdemli bir vergi danışmanı gibi yanıt ver.
+- Önce yalnızca kullanıcı sorusunda açıkça doğrulanan olguları esas al.
+- Ana çözüm bölümünde yalnızca bu doğrulanmış olgularla doğrudan ilgili başlıkları kullan.
+- BAĞLAMDA "Şarta bağlı başlık: Evet" olarak gelen metinleri yalnızca ikincil başlıkta ve kısa biçimde kullan.
+- Kullanıcının olayında doğrulanmamış alt senaryoları ana çözüm gibi anlatma.
+- İlk bölümde mevcut sorunu 2-3 cümleyle çerçevele ama soru metninde olmayan faaliyet/işlem türünü ekleme.
+- Doğrudan uygulanabilir bölümünde en fazla 2-4 ana başlık yaz.
+- Pratik yol haritasında önce hangi verinin kontrol edilmesi gerektiğini sırala.
+- Yasal dayanakta kaynakları açıkça göster.
+- Eğer soru, bazı başlıkları kesinleştirmeye yetmiyorsa bunu yalnızca son bölümde belirt.
 
 BAĞLAM:
 ${context}`,
@@ -512,7 +601,8 @@ ${context}`,
           debug: {
             sourceCount: retrieval.documents.length,
             subqueries: retrieval.subqueries,
-            sources: retrieval.documents.map(doc => doc.source)
+            sources: retrieval.documents.map(doc => doc.source),
+            facts: retrieval.facts
           }
         }));
       } catch (err) {
