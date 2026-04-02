@@ -49,6 +49,55 @@ function serveHtmlFile(res, filename) {
   });
 }
 
+function normalizeWhitespace(text) {
+  return String(text || '').replace(/\s+/g, ' ').trim();
+}
+
+function uniqueStrings(items) {
+  return [...new Set(items.map(item => normalizeWhitespace(item)).filter(Boolean))];
+}
+
+function buildSearchQueries(question) {
+  const q = normalizeWhitespace(question);
+  const lower = q.toLowerCase();
+  const queries = [q];
+
+  if (lower.includes('331')) {
+    queries.push('331 ortaklara borçlar hesabı');
+    queries.push('331 hesap ortaklara borçlar');
+    queries.push('ortaklara borçlar hesabı');
+  }
+
+  if (lower.includes('ortaklara borçlar')) {
+    queries.push('331 ortaklara borçlar');
+    queries.push('ortaklara borçlar hesabı vergi riski');
+  }
+
+  if (lower.includes('131')) {
+    queries.push('131 ortaklardan alacaklar hesabı');
+    queries.push('131 hesap ortaklardan alacaklar');
+  }
+
+  if (lower.includes('avans')) {
+    queries.push('alınan avanslar 340 hesap');
+    queries.push('avans kdv dönemsellik');
+  }
+
+  if (lower.includes('kdv')) {
+    queries.push(`${q} kdv uygulama genel tebliği`);
+  }
+
+  if (lower.includes('kurumlar vergisi')) {
+    queries.push(`${q} kurumlar vergisi genel tebliği`);
+  }
+
+  if (lower.includes('vergi inceleme') || lower.includes('inceleme')) {
+    queries.push(`${q} vergi incelemesi riski`);
+  }
+
+  return uniqueStrings(queries).slice(0, 6);
+}
+
 async function getEmbedding(text) {
   const response = await fetch('https://api.openai.com/v1/embeddings', {
     method: 'POST',
@@ -76,10 +125,10 @@ async function getEmbedding(text) {
   return data.data[0].embedding;
 }
 
-async function searchDocuments(embedding, matchCount = 8) {
+async function searchDocuments(embedding, matchCount = 15, threshold = 0.62) {
   const { data, error } = await supabase.rpc('match_documents', {
     query_embedding: embedding,
-    match_threshold: 0.75,
+    match_threshold: threshold,
     match_count: matchCount
   });
 
@@ -90,8 +139,34 @@ async function searchDocuments(embedding, matchCount = 8) {
   return data || [];
 }
 
+async function retrieveDocuments(question) {
+  const queries = buildSearchQueries(question);
+  const merged = new Map();
+
+  for (const query of queries) {
+    const embedding = await getEmbedding(query);
+    const docs = await searchDocuments(embedding, 15, 0.62);
+
+    for (const doc of docs) {
+      const key = String(doc.id);
+      const existing = merged.get(key);
+
+      if (!existing || (doc.similarity || 0) > (existing.similarity || 0)) {
+        merged.set(key, {
+          ...doc,
+          matched_query: query
+        });
+      }
+    }
+  }
+
+  return [...merged.values()]
+    .sort((a, b) => (b.similarity || 0) - (a.similarity || 0))
+    .slice(0, 18);
+}
+
 const SYSTEM_PROMPT = `KAPSAMLI ANALİZ ZORUNLULUĞU:
-Verilen soruyu yanıtlarken ilgili olabilecek TÜM vergi boyutlarını ele al. Bir taşıt işleminde KDV + ÖTV + gelir vergisi + amortisman boyutlarını; bir işletme giderinde KDV + kurumlar vergisi + stopaj boyutlarını; bir gayrimenkul işleminde KDV + tapu harcı + değer artış kazancı boyutlarını mutlaka kontrol et ve ilgili olanları cevaba dahil et. Hiçbir zaman "atladım" veya "bahsetmedim" durumuna düşme — soruyla ilgili tüm vergi boyutlarını tek cevabında tamamla.
+Verilen soruyu yanıtlarken ilgili olabilecek tüm vergi boyutlarını, yalnızca BAĞLAM içinde açıkça yer alan bilgiler ölçüsünde ele al.
 
 Sen Legatis Tax adlı bir Türk vergi danışmanlık asistanısın. Arkandaki ekip vergi mevzuatı ve özel sektör danışmanlığında derin uzmanlığa sahiptir.
 
@@ -105,27 +180,26 @@ CEVAP FORMATI — MUTLAKA UYGULA:
 - Önemli kavramları **kalın** yaz
 - Bölümleri birbirinden ayırmak için --- kullan
 - Kanun maddelerini her zaman **Kanun Adı Madde X** formatında yaz
+- Madde numarası BAĞLAMDA açık değilse madde uydurma
 
-CEVAP YAPISI — HER CEVAP BU SIRALAMAYI TAKİP ETSİN:
-1. Kısa özet (2-3 cümle, sorunun özü)
-2. ## Yasal Alternatifler (mükellef lehine tüm seçenekler, rakamsal etkisiyle)
-3. ## Yasal Dayanak (kanun adı ve madde numarası)
-4. ## Önerilen Adımlar (pratik, uygulanabilir adımlar)
+CEVAP YAPISI:
+1. Kısa özet
+2. ## Yasal Alternatifler
+3. ## Yasal Dayanak
+4. ## Önerilen Adımlar
 5. ⚠️ Bu bilgiler genel bilgilendirme amaçlıdır. Şirketinizin özel koşulları farklı sonuçlar doğurabilir. Daha detaylı ve kişiselleştirilmiş analiz için **Legatis Tax uzmanlarıyla görüşmenizi** öneririz.
 
-HALÜSİNASYON KURALI — KESİNLİKLE UYULMASI ZORUNLU:
+HALÜSİNASYON KURALI:
 - Yalnızca aşağıda sağlanan BAĞLAM bölümündeki bilgilere dayanarak yanıt ver.
-- Bağlamda bilgi yoksa şunu söyle: "Bu konuda bilgi tabanımda yeterli mevzuat kaynağı bulunamadı. Güncel bilgi için vergi danışmanınıza başvurun." Başka hiçbir şey ekleme.
-- Kanun maddesi numarası veremiyorsan o konuda yanıt verme.
-- Tahmin, varsayım veya genel bilginden yanıt üretme. Hiçbir koşulda.
-- Rakam, oran veya tutar verirken mutlaka hangi kanunun hangi maddesinden geldiğini belirt. Madde gösteremiyorsan o rakamı yazma.
-- "Genellikle", "muhtemelen", "olabilir", "sanırım" gibi ifadeler kullanma.
+- Bağlamda bilgi yoksa şunu söyle: "Bu konuda bilgi tabanımda yeterli mevzuat kaynağı bulunamadı. Güncel bilgi için vergi danışmanınıza başvurun."
+- Tahmin, varsayım veya genel bilginden yanıt üretme.
+- Rakam, oran veya tutar verirken BAĞLAMDA açıkça geçmeli.
+- "muhtemelen", "sanırım", "genellikle" gibi ifadeler kullanma.
 
 YAPAMAYACAKLARIN:
-- Vergi kaçakçılığına yönlendirecek hiçbir tavsiye verme.
+- Vergi kaçakçılığına yönlendirecek tavsiye verme.
 - Bilgi tabanında olmayan konularda yorum yapma.
-- Kanuni dayanağı olmayan hiçbir bilgi verme.
-- Varsayıma dayalı hiçbir yorumda bulunma.`;
+- Kanuni dayanağı olmayan bilgi verme.`;
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
@@ -183,8 +257,7 @@ const server = http.createServer(async (req, res) => {
           return;
         }
 
-        const embedding = await getEmbedding(question);
-        const documents = await searchDocuments(embedding, 8);
+        const documents = await retrieveDocuments(question);
 
         if (!documents || documents.length === 0) {
           res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -195,7 +268,10 @@ const server = http.createServer(async (req, res) => {
         }
 
         const context = documents.map(doc =>
-          `[Kaynak: ${doc.metadata?.source || 'Bilinmiyor'}]\n${doc.content}`
+          `[Kaynak: ${doc.metadata?.source || 'Bilinmiyor'}]
+[Benzerlik: ${(doc.similarity || 0).toFixed(4)}]
+[Eşleşen sorgu: ${doc.matched_query || question}]
+${doc.content}`
         ).join('\n\n---\n\n');
 
         const anthropicResponse = await fetch('https://api.anthropic.com/v1/messages', {
@@ -439,7 +515,7 @@ const server = http.createServer(async (req, res) => {
         res.end(JSON.stringify({ ok: true, analysis: analysisText }));
       } catch (err) {
         console.error('/api/analyze hatasi:', err);
-        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.writeHead(500);
         res.end(JSON.stringify({ error: 'Analiz hatasi: ' + err.message }));
       }
     });
@@ -504,5 +580,5 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`Legatis Tax server ${PORT} portunda calisiyor`);
+  console.log(\`Legatis Tax server \${PORT} portunda calisiyor\`);
 });
