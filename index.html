@@ -717,7 +717,9 @@ async function sendMessage() {
       if (data.ok) { addMessage('bot', data.analysis); }
       else { addMessage('bot', 'Belge analizi sırasında bir hata oluştu: ' + (data.error || 'Bilinmeyen hata')); }
     } else {
-      await fetch('/api/question', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: currentUser?.id || 'test-user', category: currentCategory, question_text: questionText }) });
+      try {
+        await fetch('/api/question', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: currentUser?.id || 'test-user', category: currentCategory, question_text: questionText }) });
+      } catch(e) {}
       const chatRes = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question: questionText, sessionId: sessionId }) });
       const chatData = await chatRes.json(); removeTyping();
       addMessage('bot', chatData.text || 'Yanıt alınamadı.', null, chatData.suggestions || []);
