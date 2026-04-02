@@ -7,12 +7,11 @@ const { createClient } = require('@supabase/supabase-js');
 const PORT = process.env.PORT || 8080;
 const ANTHROPIC_MODEL = 'claude-sonnet-4-20250514';
 
-const RETRIEVAL_THRESHOLD = 0.71;
+const RETRIEVAL_THRESHOLD = 0.72;
 const RETRIEVAL_TOP_K = 12;
-const MAX_SUBQUERIES = 8;
-const MAX_SELECTED_DOCS = 14;
-const MAX_CONTEXT_CHARS = 22000;
-const DOC_PREVIEW_CHARS = 900;
+const MAX_SUBQUERIES = 6;
+const MAX_CONTEXT_DOCS = 18;
+const MAX_CONTEXT_CHARS = 26000;
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -63,17 +62,13 @@ function serveHtmlFile(res, filename) {
 }
 
 function normalizeWhitespace(text) {
-  return String(text || '').replace(/\s+/g, ' ').trim();
+  return String(text || '')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 function uniqueStrings(items) {
   return [...new Set(items.map(item => normalizeWhitespace(item)).filter(Boolean))];
-}
-
-function truncateText(text, max = DOC_PREVIEW_CHARS) {
-  const clean = normalizeWhitespace(text);
-  if (clean.length <= max) return clean;
-  return clean.slice(0, max) + '...';
 }
 
 function getSourceName(doc) {
@@ -83,7 +78,7 @@ function getSourceName(doc) {
 function getSourcePriority(source) {
   const s = source.toLowerCase();
 
-  if (s.includes('beyanname düzenleme klavuzu') || s.includes('beyanname düzenleme kılavuzu')) return 6;
+  if (s.includes('beyanname düzenleme klavuzu') || s.includes('beyanname düzenleme kılavuzu')) return 5;
   if (s.includes('genel muhasebe')) return 5;
   if (s.includes('genel uygulama tebli')) return 4;
   if (s.includes('genel tebli')) return 4;
@@ -92,167 +87,6 @@ function getSourcePriority(source) {
   if (s.includes('özelge')) return 2;
 
   return 1;
-}
-
-function extractQuestionFacts(question) {
-  const q = normalizeWhitespace(question);
-  const lower = q.toLowerCase();
-
-  return {
-    raw: q,
-    hasKDV: /(kdv|katma değer vergisi)/i.test(lower),
-    hasKV: /(kurumlar vergisi|kvk)/i.test(lower),
-    hasGV: /(gelir vergisi|gvk)/i.test(lower),
-    hasStopaj: /(stopaj|tevkifat)/i.test(lower),
-    hasInsaat: /(inşaat|konut|arsa|müteahhit|taahhüt|şantiye)/i.test(lower),
-    saysHighMonthlyKDV: /(her ay).*(kdv).*(yüksek|fazla|çok)/i.test(lower) || /(yüksek).*(kdv)/i.test(lower),
-    asksSolution: /(çözüm|öner|öneri|yol|nasıl azalt|nasıl düşür|ne yapabiliriz)/i.test(lower),
-    mentionsIade: /\biade\b/i.test(lower),
-    mentionsKonut: /\bkonut\b/i.test(lower),
-    mentionsArsa: /\barsa\b/i.test(lower),
-    mentionsRestorasyon: /(restorasyon|kültür varlığı|2863)/i.test(lower),
-    mentionsTesvik: /(teşvik|yatırım teşvik|yatırım teşvik belgesi|32\/a|32a)/i.test(lower),
-    mentions150m2: /(150\s*m²|150\s*m2|150 m²|150 m2|150m²|150m2)/i.test(lower),
-    mentionsFinansman: /(finansman|kredi faizi|faiz gideri|banka kredisi|faiz)/i.test(lower),
-    mentionsTicariYapi: /(ticari|işyeri|ofis|dükkan|avm)/i.test(lower)
-  };
-}
-
-function determineQuestionProfile(facts) {
-  if (
-    facts.hasInsaat &&
-    facts.hasKDV &&
-    facts.saysHighMonthlyKDV &&
-    !facts.mentionsIade &&
-    !facts.mentionsKonut &&
-    !facts.mentionsArsa &&
-    !facts.mentionsRestorasyon &&
-    !facts.mentionsTesvik &&
-    !facts.mentions150m2
-  ) {
-    return 'insaat_yuksek_kdv_genel';
-  }
-
-  if (facts.hasInsaat && facts.hasKDV && facts.mentionsKonut) {
-    return 'insaat_konut_kdv';
-  }
-
-  if (facts.hasInsaat && facts.hasKDV && facts.mentionsArsa) {
-    return 'insaat_arsa_kdv';
-  }
-
-  return 'genel';
-}
-
-function inferSpecialTags(doc) {
-  const text = normalizeWhitespace(doc.content).toLowerCase();
-  const source = getSourceName(doc).toLowerCase();
-  const tags = [];
-
-  if (text.includes('150 m²') || text.includes('150 m2') || text.includes('150m²') || text.includes('150m2')) tags.push('konut_150m2');
-  if (text.includes('arsa karşılığı') || text.includes('arsa payı')) tags.push('arsa_karsiligi');
-  if (text.includes('restorasyon') || text.includes('kültür varlığı') || text.includes('2863')) tags.push('restorasyon');
-  if (text.includes('yatırım teşvik') || text.includes('teşvik belgesi') || text.includes('32/a') || text.includes('32a')) tags.push('tesvik');
-  if (text.includes('indirimli oran')) tags.push('indirimli_oran');
-  if (text.includes('iade')) tags.push('iade');
-  if (text.includes('finansman') || text.includes('kredi faizi') || text.includes('faiz gideri')) tags.push('finansman');
-  if (text.includes('konut')) tags.push('konut');
-  if (text.includes('ticari') || text.includes('işyeri') || text.includes('dükkan') || text.includes('ofis')) tags.push('ticari_yapi');
-  if (text.includes('promosyon')) tags.push('promosyon');
-  if (text.includes('devreden kdv')) tags.push('devreden_kdv');
-  if (text.includes('indirilecek kdv')) tags.push('indirilecek_kdv');
-  if (text.includes('hesaplanan kdv')) tags.push('hesaplanan_kdv');
-  if (text.includes('maliyet unsuru') || text.includes('gider olarak dikkate') || text.includes('gider veya maliyet')) tags.push('maliyet_gider');
-  if (source.includes('beyanname düzenleme kılavuzu') || source.includes('beyanname düzenleme klavuzu')) tags.push('beyanname_kilavuzu');
-  if (source.includes('genel uygulama tebli')) tags.push('uygulama_tebligi');
-  if (source.includes('kanun')) tags.push('kanun');
-  if (source.includes('genel muhasebe')) tags.push('muhasebe');
-
-  return uniqueStrings(tags);
-}
-
-function buildDeterministicSubqueries(question, facts, profile) {
-  const q = normalizeWhitespace(question);
-  const queries = [q];
-
-  const add = (...items) => {
-    for (const item of items) {
-      if (item) queries.push(item);
-    }
-  };
-
-  if (profile === 'insaat_yuksek_kdv_genel') {
-    add(
-      'inşaat sektöründe yüksek çıkan kdv indirilecek kdv hesaplanan kdv',
-      'inşaat sektöründe kdv indirim mekanizması',
-      'inşaat sektöründe devreden kdv beyanname düzenleme kılavuzu',
-      'inşaat sektöründe kdv uygulama genel tebliği',
-      'indirilecek kdv hesaplanan kdv genel yönetim giderleri',
-      'maliyet unsuru gider unsuru kdv beyanname düzenleme kılavuzu',
-      'kdv kanunu 29 indirim hakkı',
-      'devreden kdv indirim konusu yapılması'
-    );
-  } else {
-    if (facts.hasKDV) {
-      add(
-        `${q} kdv uygulama genel tebliği`,
-        `${q} kdv beyanname düzenleme kılavuzu`,
-        `${q} indirilecek kdv hesaplanan kdv`
-      );
-    }
-
-    if (facts.hasInsaat) {
-      add(
-        `${q} inşaat sektöründe kdv uygulaması`,
-        `${q} inşaat kdv beyanname düzenleme kılavuzu`,
-        `${q} inşaat maliyet kdv`
-      );
-    }
-
-    if (facts.mentionsIade) {
-      add(
-        `${q} iade usul esas`,
-        `${q} indirim yoluyla giderilemeyen kdv`
-      );
-    }
-
-    if (facts.mentionsKonut || facts.mentions150m2) {
-      add(
-        `${q} konut teslimi indirimli oran`,
-        `${q} 150 m2 altı konut kdv`
-      );
-    }
-
-    if (facts.mentionsArsa) {
-      add(
-        `${q} arsa karşılığı inşaat`,
-        `${q} arsa payı kdv matrah`
-      );
-    }
-
-    if (facts.mentionsRestorasyon) {
-      add(
-        `${q} restorasyon kdv`,
-        `${q} kültür varlığı kdv`
-      );
-    }
-
-    if (facts.mentionsTesvik) {
-      add(
-        `${q} yatırım teşvik kdv`,
-        `${q} teşvik belgesi kdv`
-      );
-    }
-
-    if (facts.mentionsFinansman) {
-      add(
-        `${q} finansman gideri kdv`,
-        `${q} kredi faizi maliyet gider`
-      );
-    }
-  }
-
-  return uniqueStrings(queries).slice(0, MAX_SUBQUERIES);
 }
 
 async function getEmbedding(text) {
@@ -296,54 +130,94 @@ async function searchDocuments(embedding, matchCount = RETRIEVAL_TOP_K, threshol
   return data || [];
 }
 
-function scoreDocument(doc) {
-  return (doc.similarity || 0) + (doc.sourcePriority || 0) * 0.015;
-}
+function buildDeterministicSubqueries(question) {
+  const q = normalizeWhitespace(question);
+  const lower = q.toLowerCase();
+  const queries = [q];
 
-function isHardExcluded(doc, facts, profile) {
-  const tags = doc.specialTags || [];
+  const add = (...items) => {
+    for (const item of items) {
+      if (item) queries.push(item);
+    }
+  };
 
-  if (profile === 'insaat_yuksek_kdv_genel') {
-    if (tags.includes('tesvik')) return true;
-    if (tags.includes('restorasyon')) return true;
-    if (tags.includes('konut_150m2')) return true;
-    if (tags.includes('arsa_karsiligi')) return true;
-    if (tags.includes('promosyon')) return true;
-    if (tags.includes('indirimli_oran')) return true;
-    if (tags.includes('konut') && !facts.mentionsKonut) return true;
+  if (/(kdv|katma değer vergisi)/i.test(lower)) {
+    add(
+      `${q} kdv uygulama genel tebliği`,
+      `${q} kdv beyanname düzenleme kılavuzu`,
+      `${q} indirim konusu kdv iade matrah`
+    );
   }
 
-  if (tags.includes('tesvik') && !facts.mentionsTesvik) return true;
-  if (tags.includes('restorasyon') && !facts.mentionsRestorasyon) return true;
-  if (tags.includes('konut_150m2') && !(facts.mentionsKonut || facts.mentions150m2)) return true;
-  if (tags.includes('arsa_karsiligi') && !facts.mentionsArsa) return true;
-  if (tags.includes('promosyon') && profile === 'insaat_yuksek_kdv_genel') return true;
-
-  return false;
-}
-
-function isPrimaryForProfile(doc, facts, profile) {
-  const tags = doc.specialTags || [];
-
-  if (profile === 'insaat_yuksek_kdv_genel') {
-    if (tags.includes('indirilecek_kdv')) return true;
-    if (tags.includes('hesaplanan_kdv')) return true;
-    if (tags.includes('devreden_kdv')) return true;
-    if (tags.includes('maliyet_gider')) return true;
-    if (tags.includes('uygulama_tebligi')) return true;
-    if (tags.includes('beyanname_kilavuzu')) return true;
-    if (tags.includes('kanun')) return true;
-    if (tags.includes('muhasebe')) return true;
+  if (/(kurumlar vergisi|kvk)/i.test(lower)) {
+    add(
+      `${q} kurumlar vergisi genel tebliği`,
+      `${q} kurumlar vergisi beyanname düzenleme kılavuzu`,
+      `${q} kurum kazancı istisna indirim gider`
+    );
   }
 
-  return true;
+  if (/(gelir vergisi|gvk|stopaj|tevkifat)/i.test(lower)) {
+    add(
+      `${q} gelir vergisi kanunu tevkifat`,
+      `${q} gelir vergisi beyanname düzenleme kılavuzu`,
+      `${q} stopaj kesinti beyan`
+    );
+  }
+
+  if (/(vuk|vergi usul|muhasebe|mizan|bilanço|defter|belge)/i.test(lower)) {
+    add(
+      `${q} vergi usul kanunu`,
+      `${q} muhasebe sistemi uygulama genel tebliği`,
+      `${q} genel muhasebe`
+    );
+  }
+
+  if (/(teşvik|yatırım|indirimli kurumlar|32\/a|32a)/i.test(lower)) {
+    add(
+      `${q} yatırım teşvik indirimli kurumlar`,
+      `${q} kurumlar vergisi kanunu 32a`,
+      `${q} teşvik uygulama`
+    );
+  }
+
+  if (/(inşaat|konut|arsa|müteahhit|taahhüt)/i.test(lower)) {
+    add(
+      `${q} inşaat kdv indirim iade matrah`,
+      `${q} konut teslimi arsa payı finansman gideri`,
+      `${q} beyanname düzenleme kılavuzu inşaat`
+    );
+  }
+
+  if (/(iade)/i.test(lower)) {
+    add(
+      `${q} iade usul esas`,
+      `${q} iade talep şartları`,
+      `${q} indirim yoluyla giderilemeyen kdv`
+    );
+  }
+
+  if (/(amortisman|demirbaş|taşıt|araç)/i.test(lower)) {
+    add(
+      `${q} amortisman gider kısıtlaması`,
+      `${q} taşıt kdv ötv gider`,
+      `${q} muhasebe amortisman uygulama`
+    );
+  }
+
+  if (queries.length === 1) {
+    add(
+      `${q} kanun tebliğ uygulama`,
+      `${q} beyanname düzenleme kılavuzu`,
+      `${q} muhasebe uygulama`
+    );
+  }
+
+  return uniqueStrings(queries).slice(0, MAX_SUBQUERIES);
 }
 
-async function retrieveAndSelectDocuments(question) {
-  const facts = extractQuestionFacts(question);
-  const profile = determineQuestionProfile(facts);
-  const subqueries = buildDeterministicSubqueries(question, facts, profile);
-
+async function retrieveDocumentsForQuestion(question) {
+  const subqueries = buildDeterministicSubqueries(question);
   const merged = new Map();
 
   for (const subquery of subqueries) {
@@ -351,88 +225,123 @@ async function retrieveAndSelectDocuments(question) {
     const docs = await searchDocuments(embedding, RETRIEVAL_TOP_K, RETRIEVAL_THRESHOLD);
 
     for (const doc of docs) {
-      const source = getSourceName(doc);
-      const enriched = {
-        ...doc,
-        source,
-        sourcePriority: getSourcePriority(source),
-        matchedBy: subquery,
-        specialTags: inferSpecialTags(doc)
-      };
-
-      if (isHardExcluded(enriched, facts, profile)) continue;
-
       const key = String(doc.id);
       const existing = merged.get(key);
+      const enriched = {
+        ...doc,
+        source: getSourceName(doc),
+        sourcePriority: getSourcePriority(getSourceName(doc)),
+        matchedBy: subquery
+      };
 
-      if (!existing || scoreDocument(enriched) > scoreDocument(existing)) {
+      if (!existing) {
         merged.set(key, enriched);
+        continue;
+      }
+
+      if ((enriched.similarity || 0) > (existing.similarity || 0)) {
+        merged.set(key, { ...existing, ...enriched });
       }
     }
   }
 
-  const candidates = [...merged.values()].sort((a, b) => scoreDocument(b) - scoreDocument(a));
+  const allDocs = [...merged.values()].sort((a, b) => {
+    const aScore = (a.similarity || 0) + (a.sourcePriority || 0) * 0.015;
+    const bScore = (b.similarity || 0) + (b.sourcePriority || 0) * 0.015;
+    return bScore - aScore;
+  });
 
-  const primary = [];
-  const conditional = [];
+  const selected = [];
+  const usedSources = new Set();
 
-  for (const doc of candidates) {
-    if (primary.length >= MAX_SELECTED_DOCS) break;
-
-    if (isPrimaryForProfile(doc, facts, profile)) {
-      if (!primary.find(item => String(item.id) === String(doc.id))) {
-        primary.push(doc);
-      }
+  for (const doc of allDocs) {
+    if (selected.length >= MAX_CONTEXT_DOCS) break;
+    if (!usedSources.has(doc.source)) {
+      selected.push(doc);
+      usedSources.add(doc.source);
     }
   }
 
-  for (const doc of candidates) {
-    if (primary.length + conditional.length >= MAX_SELECTED_DOCS) break;
-    if (primary.find(item => String(item.id) === String(doc.id))) continue;
-
-    if (!conditional.find(item => String(item.id) === String(doc.id))) {
-      conditional.push(doc);
+  for (const doc of allDocs) {
+    if (selected.length >= MAX_CONTEXT_DOCS) break;
+    if (!selected.find(item => item.id === doc.id)) {
+      selected.push(doc);
     }
   }
 
   return {
-    facts,
-    profile,
     subqueries,
-    primaryDocs: primary.slice(0, MAX_SELECTED_DOCS),
-    conditionalDocs: conditional.slice(0, 3)
+    documents: selected
   };
 }
 
-function buildAnswerContext(primaryDocs, conditionalDocs) {
-  const blocks = [];
+function buildContext(documents) {
+  const parts = [];
   let totalChars = 0;
 
-  const pushDoc = (doc, groupLabel) => {
+  for (const doc of documents) {
     const content = normalizeWhitespace(doc.content);
-    if (!content) return;
+    if (!content) continue;
 
-    const block = `[Grup: ${groupLabel}]
-[Kaynak: ${doc.source}]
-[Benzerlik: ${(doc.similarity || 0).toFixed(4)}]
-[Eşleşen sorgu: ${doc.matchedBy}]
-[Etiketler: ${(doc.specialTags || []).join(', ') || '-'}]
-${truncateText(content, DOC_PREVIEW_CHARS)}`;
-
+    const block = `[Kaynak: ${doc.source}]\n[Benzerlik: ${(doc.similarity || 0).toFixed(4)}]\n[Eşleşen sorgu: ${doc.matchedBy}]\n${content}`;
     const nextSize = totalChars + block.length + 10;
-    if (nextSize > MAX_CONTEXT_CHARS) return;
 
-    blocks.push(block);
+    if (nextSize > MAX_CONTEXT_CHARS) break;
+
+    parts.push(block);
     totalChars = nextSize;
-  };
+  }
 
-  for (const doc of primaryDocs) pushDoc(doc, 'ANA');
-  for (const doc of conditionalDocs) pushDoc(doc, 'ŞARTA_BAĞLI');
-
-  return blocks.join('\n\n---\n\n');
+  return parts.join('\n\n---\n\n');
 }
 
-async function callAnthropicText({ system, userText, maxTokens = 3200 }) {
+const SYSTEM_PROMPT = `KAPSAMLI ANALİZ ZORUNLULUĞU:
+Verilen soruyu yanıtlarken ilgili olabilecek TÜM vergi boyutlarını ele al. Bir taşıt işleminde KDV + ÖTV + gelir vergisi + amortisman boyutlarını; bir işletme giderinde KDV + kurumlar vergisi + stopaj boyutlarını; bir gayrimenkul işleminde KDV + tapu harcı + değer artış kazancı boyutlarını; bir inşaat işleminde konut teslimi + arsa payı + indirim konusu KDV + iade + finansman gideri + matrah boyutlarını kontrol et ve sadece BAĞLAM içinde açıkça geçenleri cevaba dahil et. Hiçbir zaman bağlamda olmayan bir başlığı doldurma.
+
+Sen Legatis Tax adlı bir Türk vergi danışmanlık asistanısın. Arkandaki ekip vergi mevzuatı ve özel sektör danışmanlığında derin uzmanlığa sahiptir.
+
+TEMEL BAKIŞ AÇIN:
+Gelir İdaresi Başkanlığı vergi mevzuatını hazine lehine yorumlar. Sen aynı mevzuatı mükellef lehine yorumlarsın. Her ikisi de yasaldır — sen mükellefi kendi lehine olan yasal seçeneklerden haberdar edersin.
+
+BAĞLAM KULLANIM KURALI:
+- Sana kanun, genel tebliğ, uygulama tebliği, beyanname düzenleme kılavuzu, muhasebe kaynakları ve diğer mevzuat parçaları birlikte gelebilir.
+- Bunlar aynı konuda farklı detaylar içeriyorsa, yalnızca BAĞLAMDA açıkça yazan bilgileri birleştirerek daha ayrıntılı cevap ver.
+- Bir kaynaktaki ayrıntıyı başka kaynağa dayandırıyormuş gibi yazma.
+- BAĞLAMDA yer alan ayrıntılar zenginse kısa kesme; ayrıntıyı yapılandırılmış biçimde aktar.
+- Ancak BAĞLAMDA açık olmayan hiçbir hüküm, oran, şart veya istisna ekleme.
+
+CEVAP FORMATI — MUTLAKA UYGULA:
+- Başlıklar için ## kullan
+- Alt başlıklar için ### kullan
+- Madde listeleri için - kullan
+- Önemli kavramları **kalın** yaz
+- Bölümleri birbirinden ayırmak için --- kullan
+- Kanun maddelerini her zaman **Kanun Adı Madde X** formatında yaz
+- Beyanname düzenleme kılavuzu veya tebliğde madde numarası yoksa kaynağın adını açıkça yaz, kanun maddesi uydurma
+
+CEVAP YAPISI — HER CEVAP BU SIRALAMAYI TAKİP ETSİN:
+1. Kısa özet (2-3 cümle, yalnızca bağlama dayalı)
+2. ## Yasal Alternatifler
+3. ## Teknik Ayrıntılar
+4. ## Yasal Dayanak
+5. ## Önerilen Adımlar
+6. ⚠️ Bu bilgiler genel bilgilendirme amaçlıdır. Şirketinizin özel koşulları farklı sonuçlar doğurabilir. Daha detaylı ve kişiselleştirilmiş analiz için **Legatis Tax uzmanlarıyla görüşmenizi** öneririz.
+
+HALÜSİNASYON KURALI — KESİNLİKLE UYULMASI ZORUNLU:
+- Yalnızca aşağıda sağlanan BAĞLAM bölümündeki bilgilere dayanarak yanıt ver.
+- BAĞLAMDA bilgi yoksa şunu söyle: "Bu konuda bilgi tabanımda yeterli mevzuat kaynağı bulunamadı. Güncel bilgi için vergi danışmanınıza başvurun." Başka hiçbir şey ekleme.
+- Kanun maddesi numarası veremiyorsan o konuda kanun maddesi yazma.
+- Tahmin, varsayım veya genel bilginden yanıt üretme. Hiçbir koşulda.
+- Rakam, oran veya tutar verirken mutlaka BAĞLAMDA açıkça geçmeli. Geçmiyorsa yazma.
+- "Genellikle", "muhtemelen", "olabilir", "sanırım" gibi ifadeler kullanma.
+
+YAPAMAYACAKLARIN:
+- Vergi kaçakçılığına yönlendirecek hiçbir tavsiye verme.
+- Bilgi tabanında olmayan konularda yorum yapma.
+- Kanuni dayanağı olmayan hiçbir bilgi verme.
+- Varsayıma dayalı hiçbir yorumda bulunma.`;
+
+async function callAnthropicText({ system, userText, maxTokens = 4000 }) {
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -467,51 +376,6 @@ async function callAnthropicText({ system, userText, maxTokens = 3200 }) {
 
   return text;
 }
-
-const ANSWER_SYSTEM_PROMPT = `Sen Legatis Tax adlı bir Türk vergi danışmanlık asistanısın. Kullanıcıya Google gibi sonuç sıralayan bir arama motoru gibi değil, mevzuata dayalı çalışan kıdemli bir vergi danışmanı gibi yanıt verirsin.
-
-EN SIKI KURAL:
-- Yalnızca BAĞLAM içindeki bilgilere dayan.
-- BAĞLAMDA olmayan hiçbir hüküm, oran, şart, istisna, sonuç veya senaryo ekleme.
-- "Grup: ANA" kaynaklar ana cevap içindir.
-- "Grup: ŞARTA_BAĞLI" kaynaklar yalnızca kısa ve ikincil biçimde kullanılabilir.
-- Soruda geçmeyen özel rejimleri ana çözüm gibi anlatma.
-
-ÖZEL PROFİL KURALI:
-- Eğer profil "insaat_yuksek_kdv_genel" ise, cevabı şu ana eksenlerle sınırla:
-  1. indirilecek KDV'nin tam ve doğru kullanımı
-  2. hesaplanan KDV / indirilecek KDV dengesinin işlem bazında kontrolü
-  3. devreden KDV ve beyanname kontrolü
-  4. gider / maliyet / muhasebe sınıflandırmasının etkisi
-- Bu profilde kullanıcı açıkça söylemedikçe şu başlıkları ana çözümde kullanma:
-  - teşvik belgesi
-  - restorasyon
-  - 150 m² altı konut
-  - arsa karşılığı inşaat
-  - promosyon
-  - indirimli oranlı konut rejimi
-
-YAZIM KURALI:
-- Genel sektör anlatısı yapma.
-- "Bu durum sektörün yapısı gereği yaygındır" gibi soyut cümleler kurma.
-- 2-4 ana çözüm ekseniyle sınırlı kal.
-- Cevap seçici, isabetli ve danışmanvari olsun.
-- Soruda doğrulanmayan faaliyet detayını kesinmiş gibi yazma.
-- "genellikle", "muhtemelen", "olabilir", "sanırım" gibi ifadeleri kullanma.
-
-CEVAP BİÇİMİ:
-1. Kısa değerlendirme
-2. ## Sorudaki Durumun Vergisel Çerçevesi
-3. ## Doğrudan Uygulanabilir Seçenekler
-4. ## Şarta Bağlı Değerlendirilmesi Gereken Başlıklar
-5. ## Yasal Dayanak
-6. ## Pratik Yol Haritası
-7. Gerekirse: Netleştirilmesi gereken hususlar
-
-TEKNİK KURAL:
-- Madde numarası BAĞLAMDA yoksa uydurma madde yazma.
-- Beyanname Düzenleme Kılavuzu veya muhasebe kaynağından gelen teknik bilgiyi o kaynağa bağla.
-- Aynı bilgiyi tekrar etme.`;
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
@@ -570,9 +434,9 @@ const server = http.createServer(async (req, res) => {
         }
 
         const cleanQuestion = normalizeWhitespace(question);
-        const retrieval = await retrieveAndSelectDocuments(cleanQuestion);
+        const retrieval = await retrieveDocumentsForQuestion(cleanQuestion);
 
-        if (!retrieval.primaryDocs || retrieval.primaryDocs.length === 0) {
+        if (!retrieval.documents || retrieval.documents.length === 0) {
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({
             text: 'Bu konuda bilgi tabanımda yeterli mevzuat kaynağı bulunamadı. Güncel bilgi için vergi danışmanınıza başvurun.'
@@ -580,7 +444,7 @@ const server = http.createServer(async (req, res) => {
           return;
         }
 
-        const context = buildAnswerContext(retrieval.primaryDocs, retrieval.conditionalDocs);
+        const context = buildContext(retrieval.documents);
 
         if (!context.trim()) {
           res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -590,56 +454,27 @@ const server = http.createServer(async (req, res) => {
           return;
         }
 
-        console.log('/api/chat profile:', retrieval.profile);
-        console.log('/api/chat facts:', retrieval.facts);
         console.log('/api/chat subqueries:', retrieval.subqueries);
-        console.log('/api/chat primary sources:', retrieval.primaryDocs.map(doc => ({
+        console.log('/api/chat kaynaklar:', retrieval.documents.map(doc => ({
           id: doc.id,
           source: doc.source,
           similarity: Number((doc.similarity || 0).toFixed(4)),
-          tags: doc.specialTags || []
-        })));
-        console.log('/api/chat conditional sources:', retrieval.conditionalDocs.map(doc => ({
-          id: doc.id,
-          source: doc.source,
-          similarity: Number((doc.similarity || 0).toFixed(4)),
-          tags: doc.specialTags || []
+          matchedBy: doc.matchedBy
         })));
 
         const answerText = await callAnthropicText({
-          system: ANSWER_SYSTEM_PROMPT,
-          userText: `KULLANICI SORUSU:
-${cleanQuestion}
-
-SORUDAN ÇIKARILAN OLGULAR:
-${JSON.stringify(retrieval.facts, null, 2)}
-
-SORU PROFİLİ:
-${retrieval.profile}
-
-GÖREV:
-- Yalnızca ANA kaynaklarla ana çözümü kur.
-- ŞARTA_BAĞLI kaynakları kısa tut.
-- Eğer profil "insaat_yuksek_kdv_genel" ise, cevabı yalnızca genel yüksek KDV problemine doğrudan temas eden başlıklarla sınırla.
-- Teşvik, restorasyon, 150 m², arsa karşılığı, promosyon gibi başlıkları kullanıcı açıkça söylemedikçe ana çözümde kullanma.
-- Kısa değerlendirme bölümünde soyut sektör yorumu yapma.
-- Kullanıcıya mevzuata dayalı, seçici ve uygulanabilir yol haritası ver.
-
-BAĞLAM:
-${context}`,
-          maxTokens: 2800
+          system: SYSTEM_PROMPT,
+          userText: `BAĞLAM:\n${context}\n\nSORU: ${cleanQuestion}`,
+          maxTokens: 4000
         });
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({
           text: answerText,
           debug: {
-            profile: retrieval.profile,
-            sourceCount: retrieval.primaryDocs.length + retrieval.conditionalDocs.length,
+            sourceCount: retrieval.documents.length,
             subqueries: retrieval.subqueries,
-            facts: retrieval.facts,
-            primarySources: retrieval.primaryDocs.map(doc => doc.source),
-            conditionalSources: retrieval.conditionalDocs.map(doc => doc.source)
+            sources: retrieval.documents.map(doc => doc.source)
           }
         }));
       } catch (err) {
