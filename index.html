@@ -53,9 +53,19 @@ body {
 .nav-item.active { background: rgba(201,168,76,0.12); color: var(--gold-lt); }
 .nav-icon { width: 14px; height: 14px; flex-shrink: 0; opacity: 0.6; }
 .nav-item.active .nav-icon { opacity: 1; }
-.history-section { flex: 1; overflow-y: auto; padding: 12px 14px; min-height: 0; -webkit-overflow-scrolling: touch; }
-.history-section::-webkit-scrollbar { width: 3px; }
-.history-section::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+/* ── SIDEBAR SCROLLBAR — görünür ── */
+.history-section {
+  flex: 1; overflow-y: scroll; padding: 12px 14px; min-height: 0;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(201,168,76,0.25) transparent;
+}
+.history-section::-webkit-scrollbar { width: 4px; }
+.history-section::-webkit-scrollbar-track { background: transparent; }
+.history-section::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.25); border-radius: 4px; }
+.history-section::-webkit-scrollbar-thumb:hover { background: rgba(201,168,76,0.45); }
+
 .history-section-title { font-size: 9px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.2); padding: 0 8px; margin-bottom: 6px; }
 .new-chat-btn { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 7px; cursor: pointer; transition: all 0.15s; margin-bottom: 8px; color: rgba(255,255,255,0.3); font-size: 12px; border: 1px dashed rgba(255,255,255,0.1); }
 .new-chat-btn:hover { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.6); border-color: rgba(255,255,255,0.2); }
@@ -85,13 +95,23 @@ body {
 .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #4CAF50; display: inline-block; margin-right: 5px; }
 .trust-badge { font-size: 11px; color: var(--mid-gray); display: flex; align-items: center; gap: 6px; }
 
-/* ── CHAT ── */
+/* ── CHAT AREA ── */
 .chat-area { flex: 1; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
-.messages { flex: 1; overflow-y: auto; padding: 0 32px; scroll-behavior: smooth; min-height: 0; -webkit-overflow-scrolling: touch; }
-.messages::-webkit-scrollbar { width: 4px; }
-.messages::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 2px; }
 
-/* ── WELCOME (desktop) ── */
+/* ── MESSAGES SCROLLBAR — görünür ── */
+.messages {
+  flex: 1; overflow-y: scroll; padding: 0 32px;
+  scroll-behavior: smooth; min-height: 0;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.18) transparent;
+}
+.messages::-webkit-scrollbar { width: 5px; }
+.messages::-webkit-scrollbar-track { background: transparent; }
+.messages::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.18); border-radius: 4px; }
+.messages::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.32); }
+
+/* ── WELCOME ── */
 .welcome { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100%; padding: 20px; text-align: center; }
 .welcome-emblem { width: 88px; height: 88px; border-radius: 20px; background: var(--black); display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
 .welcome-emblem-text { font-family: 'Cormorant Garamond', serif; font-size: 44px; font-weight: 600; color: var(--gold); line-height: 1; }
@@ -106,29 +126,134 @@ body {
 .suggestion-title { font-size: 13px; font-weight: 500; color: var(--black); margin-bottom: 4px; }
 .suggestion-desc { font-size: 12px; color: var(--mid-gray); line-height: 1.5; }
 
-/* ── MESSAGES ── */
-.msg-row { display: flex; gap: 14px; padding: 20px 0; border-bottom: 1px solid rgba(0,0,0,0.04); animation: fadeIn 0.2s ease; }
+/* ── MESAJ SATIRI ── */
+.msg-row {
+  display: flex; gap: 14px; padding: 20px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  animation: fadeIn 0.2s ease;
+}
 .msg-row:last-child { border-bottom: none; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
 .msg-avatar { width: 28px; height: 28px; border-radius: 7px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; margin-top: 2px; }
 .msg-avatar.bot { background: var(--black); color: var(--gold); font-family: 'Cormorant Garamond', serif; font-size: 14px; }
 .msg-avatar.user { background: rgba(0,0,0,0.06); color: var(--black); }
+
 .msg-content { flex: 1; min-width: 0; }
 .msg-sender { font-size: 11px; font-weight: 500; color: var(--mid-gray); margin-bottom: 6px; letter-spacing: 0.02em; }
+
+/* ── PREMIUM YANIT KARTI ── */
+.msg-row .msg-content:has(.msg-text) .msg-sender {
+  display: flex; align-items: center; gap: 6px;
+}
+
+/* Bot yanıt metni — premium kart */
+.msg-avatar.bot ~ .msg-content .msg-text {
+  background: white;
+  border: 1px solid rgba(201,168,76,0.15);
+  border-radius: 0 12px 12px 12px;
+  padding: 20px 24px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03);
+}
+
 .msg-text { font-size: 14px; color: var(--black); line-height: 1.75; }
-.msg-text h2 { font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 600; color: var(--black); margin: 16px 0 8px; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
-.msg-text h3 { font-size: 13px; font-weight: 600; color: var(--black); margin: 12px 0 6px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+/* H2 — gold alt çizgi */
+.msg-text h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 17px; font-weight: 600;
+  color: var(--black); margin: 20px 0 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(201,168,76,0.3);
+  display: flex; align-items: center; gap: 8px;
+}
+.msg-text h2::before {
+  content: '';
+  display: inline-block;
+  width: 3px; height: 14px;
+  background: var(--gold);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* H3 — küçük gold nokta */
+.msg-text h3 {
+  font-size: 11px; font-weight: 600;
+  color: var(--gold-dk); margin: 14px 0 6px;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  display: flex; align-items: center; gap: 6px;
+}
+.msg-text h3::before {
+  content: '';
+  display: inline-block;
+  width: 4px; height: 4px;
+  border-radius: 50%; background: var(--gold);
+  flex-shrink: 0;
+}
+
 .msg-text p { margin-bottom: 8px; }
 .msg-text p:last-child { margin-bottom: 0; }
 .msg-text strong { font-weight: 600; color: var(--black); }
 .msg-text em { font-style: italic; color: var(--mid-gray); }
+
+/* Listeler */
 .msg-text ul, .msg-text ol { padding-left: 20px; margin-bottom: 10px; }
 .msg-text li { margin-bottom: 5px; line-height: 1.6; }
-.msg-text hr { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
-.msg-text .warning-box { background: rgba(201,168,76,0.06); border-left: 3px solid var(--gold); border-radius: 0 6px 6px 0; padding: 10px 14px; margin-top: 14px; font-size: 12px; color: var(--mid-gray); line-height: 1.6; }
-.msg-actions { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
-.msg-action-btn { display: flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background: white; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500; color: var(--mid-gray); transition: all 0.15s; white-space: nowrap; }
+
+/* Kod blokları */
+.msg-text code {
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 12px;
+  background: rgba(0,0,0,0.04);
+  border: 1px solid rgba(0,0,0,0.07);
+  border-radius: 4px;
+  padding: 0 5px;
+  color: #444;
+}
+.msg-text pre {
+  background: #F8F7F3;
+  border: 1px solid rgba(201,168,76,0.15);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 6px 6px 0;
+  padding: 12px 16px;
+  margin: 10px 0;
+  overflow-x: auto;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.msg-text pre code {
+  background: none; border: none; padding: 0;
+}
+
+.msg-text hr { border: none; border-top: 1px solid rgba(201,168,76,0.15); margin: 16px 0; }
+
+/* Uyarı kutusu */
+.msg-text .warning-box {
+  background: rgba(201,168,76,0.06);
+  border: 1px solid rgba(201,168,76,0.2);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 8px 8px 0;
+  padding: 12px 16px;
+  margin-top: 16px;
+  font-size: 12px; color: #666;
+  line-height: 1.6;
+}
+
+/* Mesaj aksiyon butonları */
+.msg-actions { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+.msg-action-btn {
+  display: flex; align-items: center; gap: 5px;
+  padding: 6px 12px; border-radius: 6px;
+  border: 1px solid var(--border);
+  background: white; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 500;
+  color: var(--mid-gray); transition: all 0.15s;
+  white-space: nowrap;
+}
 .msg-action-btn:hover { border-color: var(--gold-dk); color: var(--black); background: rgba(201,168,76,0.04); }
+
+/* Typing animasyonu */
 .typing-dots { display: flex; gap: 4px; padding: 4px 0; align-items: center; }
 .typing-dots span { width: 5px; height: 5px; border-radius: 50%; background: var(--mid-gray); animation: bounce 1.2s infinite; }
 .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
@@ -164,116 +289,49 @@ body {
 /* ── MOBILE ── */
 @media (max-width: 768px) {
   .layout { grid-template-columns: 1fr; height: 100dvh; }
-
-  .sidebar {
-    display: none;
-    position: fixed;
-    left: 0; top: 0; bottom: 0;
-    width: 85vw; max-width: 320px;
-    z-index: 200;
-    transform: translateX(-100%);
-    transition: transform 0.25s ease;
-    height: 100dvh;
-  }
+  .sidebar { display: none; position: fixed; left: 0; top: 0; bottom: 0; width: 85vw; max-width: 320px; z-index: 200; transform: translateX(-100%); transition: transform 0.25s ease; height: 100dvh; }
   .sidebar.mobile-open { display: flex; transform: translateX(0); }
-
   .mobile-header { display: flex; }
   .topbar { display: none; }
-
-  /* MAIN tam ekran */
   .main { height: 100dvh; }
-
-  /* MESSAGES padding */
   .messages { padding: 0 14px; }
-
-  /* WELCOME — mobil için kompakt */
-  .welcome {
-    justify-content: flex-start;
-    padding: 16px 14px 0;
-    min-height: unset;
-  }
+  .welcome { justify-content: flex-start; padding: 16px 14px 0; min-height: unset; }
   .welcome-emblem { width: 52px; height: 52px; border-radius: 14px; margin-bottom: 12px; }
   .welcome-emblem-text { font-size: 28px; }
   .welcome-title { font-size: 18px; margin-bottom: 6px; }
   .welcome-desc { font-size: 13px; margin-bottom: 10px; max-width: 100%; }
   .trust-row { gap: 10px; margin-bottom: 14px; }
   .trust-item { font-size: 11px; }
-
-  /* Suggestion kartları yatay scroll */
-  .suggestion-grid {
-    display: flex;
-    flex-direction: row;
-    overflow-x: auto;
-    gap: 10px;
-    padding-bottom: 12px;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    width: 100%;
-    max-width: 100%;
-  }
+  .suggestion-grid { display: flex; flex-direction: row; overflow-x: auto; gap: 10px; padding-bottom: 12px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; width: 100%; max-width: 100%; }
   .suggestion-grid::-webkit-scrollbar { display: none; }
-  .suggestion-card {
-    min-width: 200px;
-    max-width: 200px;
-    padding: 14px 16px;
-    scroll-snap-align: start;
-    flex-shrink: 0;
-    border-radius: 10px;
-  }
+  .suggestion-card { min-width: 200px; max-width: 200px; padding: 14px 16px; scroll-snap-align: start; flex-shrink: 0; border-radius: 10px; }
   .suggestion-icon { width: 22px; height: 22px; margin-bottom: 8px; }
   .suggestion-title { font-size: 12px; }
   .suggestion-desc { font-size: 11px; }
-
-  /* INPUT AREA */
-  .input-area {
-    padding: 8px 12px;
-    padding-bottom: calc(8px + var(--safe-bottom));
-    border-top: 1px solid var(--border);
-  }
-  .input-box {
-    padding: 10px 12px;
-    border-radius: 12px;
-    max-width: 100%;
-  }
-  .input-box textarea { font-size: 16px; /* iOS zoom önleme */ }
+  .input-area { padding: 8px 12px; padding-bottom: calc(8px + var(--safe-bottom)); border-top: 1px solid var(--border); }
+  .input-box { padding: 10px 12px; border-radius: 12px; max-width: 100%; }
+  .input-box textarea { font-size: 16px; }
   .upload-btn { width: 38px; height: 38px; }
   .send-btn { width: 38px; height: 38px; }
   .input-hint { font-size: 9px; margin-top: 4px; }
-
-  /* MSG ACTIONS mobil — scroll */
-  .msg-actions {
-    display: flex;
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    gap: 6px;
-    padding-bottom: 4px;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-  }
+  .msg-actions { display: flex; overflow-x: auto; flex-wrap: nowrap; gap: 6px; padding-bottom: 4px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
   .msg-actions::-webkit-scrollbar { display: none; }
-  .msg-action-btn {
-    flex-shrink: 0;
-    padding: 8px 14px;
-    font-size: 12px;
-    min-height: 36px;
-  }
-
-  /* Mesaj font */
+  .msg-action-btn { flex-shrink: 0; padding: 8px 14px; font-size: 12px; min-height: 36px; }
   .msg-text { font-size: 14px; }
   .msg-row { padding: 16px 0; gap: 10px; }
+
+  /* Mobilde bot kart padding küçük */
+  .msg-avatar.bot ~ .msg-content .msg-text { padding: 14px 16px; border-radius: 0 10px 10px 10px; }
 }
 
+/* ── SORU ÖNERİLERİ ── */
 .msg-suggestions { margin-top: 14px; }
 .msg-suggestions-label { font-size: 10px; font-weight: 500; color: var(--mid-gray); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
 .msg-suggestion-btn { display: block; width: 100%; text-align: left; padding: 9px 14px; margin-bottom: 6px; border-radius: 8px; border: 1px solid var(--border); background: white; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--black); transition: all 0.15s; line-height: 1.4; }
 .msg-suggestion-btn:hover { border-color: var(--gold-dk); background: rgba(201,168,76,0.04); color: var(--black); }
 .msg-suggestion-btn::before { content: '→ '; color: var(--gold); font-weight: 600; }
 @media (max-width: 768px) { .msg-suggestion-btn { font-size: 13px; padding: 10px 14px; } }
-@media (max-width: 380px) {
-  .welcome-title { font-size: 16px; }
-  .suggestion-card { min-width: 175px; max-width: 175px; }
-}
+@media (max-width: 380px) { .welcome-title { font-size: 16px; } .suggestion-card { min-width: 175px; max-width: 175px; } }
 </style>
 </head>
 <body>
@@ -493,8 +551,6 @@ function renderMessage(role, text, fileInfo, suggestions) {
       <button class="msg-action-btn" onclick="printAsPDF(this)"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M4 13h8M8 3v7M5 7l3 3 3-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>PDF kaydet</button>
       <button class="msg-action-btn" onclick="copyText(this)"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="8" height="9" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M3 11V3h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Kopyala</button>`;
     content.appendChild(actions);
-
-    // Soru önerileri
     if (suggestions && suggestions.length > 0) {
       const suggestionsDiv = document.createElement('div');
       suggestionsDiv.className = 'msg-suggestions';
