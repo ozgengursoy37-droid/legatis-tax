@@ -108,6 +108,67 @@ async function searchDocuments(embedding, matchCount = 8) {
   return data || [];
 }
 
+// Sorunun guncel rakamsal veri gerektirip gerektirmedigini tespit et
+function needsCurrentData(question) {
+  const keywords = [
+    'limit', 'sinir', 'tutar', 'oran', 'had', 'miktar',
+    'fatura kesme', 'asgari ucret', 'vergi dilim', 'stopaj',
+    '2024', '2025', '2026', 'guncel', 'bu yil', 'teblig',
+    'yeniden degerleme', 'maktu', 'nispi', 'binde', 'yuzde'
+  ];
+  // Turkce karakter normalize
+  const normalize = s => s.toLowerCase()
+    .replace(/ş/g,'s').replace(/Ş/g,'s')
+    .replace(/ğ/g,'g').replace(/Ğ/g,'g')
+    .replace(/ü/g,'u').replace(/Ü/g,'u')
+    .replace(/ö/g,'o').replace(/Ö/g,'o')
+    .replace(/ç/g,'c').replace(/Ç/g,'c')
+    .replace(/ı/g,'i').replace(/İ/g,'i');
+  const q = normalize(question);
+  return keywords.some(k => q.includes(normalize(k)));
+}
+
+// Web search ile guncel resmi veri cek -- sadece izinli domainler
+async function fetchOfficialWebData(question) {
+  try {
+    const searchPrompt = 'Turk vergi mevzuatinda su konuda 2026 yili icin guncel rakamsal limit, oran veya tutari bul: "' + question + '". Yalnizca resmi kaynaklardan (GIB, Resmi Gazete, Hazine) bilgi ver. Rakam ve yasal dayanak (kanun/teblig adi ve numarasi) ile birlikte ver. Bulamazsan sadece "BULUNAMADI" yaz.';
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': process.env.ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-5',
+        max_tokens: 800,
+        tools: [{
+          type: 'web_search_20250305',
+          name: 'web_search',
+          max_uses: 2,
+          allowed_domains: ['gib.gov.tr', 'resmigazete.gov.tr', 'hazine.gov.tr']
+        }],
+        messages: [{ role: 'user', content: searchPrompt }]
+      })
+    });
+
+    const data = await response.json();
+
+    // Tum text bloklarini topla
+    const textBlocks = (data.content || [])
+      .filter(block => block.type === 'text')
+      .map(block => block.text)
+      .join('\n');
+
+    const result = textBlocks.trim();
+    if (!result || result.includes('BULUNAMADI')) return null;
+    return result;
+  } catch (e) {
+    return null; // Web search basarisiz olursa sessizce gec
+  }
+}
+
 const SYSTEM_PROMPT = `KAPSAMLI ANALİZ ZORUNLULUĞU:
 Verilen soruyu yanıtlarken ilgili olabilecek TÜM vergi boyutlarını ele al. Bir taşıt işleminde KDV + ÖTV + gelir vergisi + amortisman boyutlarını; bir işletme giderinde KDV + kurumlar vergisi + stopaj boyutlarını; bir gayrimenkul işleminde KDV + tapu harcı + değer artış kazancı boyutlarını mutlaka kontrol et ve ilgili olanları cevaba dahil et. Hiçbir zaman "atladım" veya "bahsetmedim" durumuna düşme — soruyla ilgili tüm vergi boyutlarını tek cevabında tamamla.
 
@@ -226,7 +287,25 @@ const server = http.createServer(async (req, res) => {
         const embedding = await getEmbedding(question);
         const documents = await searchDocuments(embedding, 8);
 
-        if (!documents || documents.length === 0) {
+        // RAG bağlamı
+        let ragContext = '';
+        if (documents && documents.length > 0) {
+          ragContext = documents.map(doc =>
+            `[Kaynak: ${doc.metadata?.source || 'Bilinmiyor'}]\n${doc.content}`
+          ).join('\n\n---\n\n');
+        }
+
+        // Güncel veri gerekiyorsa resmi kaynaklardan web search yap
+        let webContext = '';
+        if (needsCurrentData(question)) {
+          const webData = await fetchOfficialWebData(question);
+          if (webData) {
+            webContext = `\n\n---\n\n[GÜNCEL RESMİ KAYNAK — GİB/Resmi Gazete/Hazine]\n${webData}`;
+          }
+        }
+
+        // İkisi de boşsa "bulunamadı" dön
+        if (!ragContext && !webContext) {
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({
             text: 'Bu konuda bilgi tabanımda yeterli mevzuat kaynağı bulunamadı. Güncel bilgi için vergi danışmanınıza başvurun.',
@@ -235,9 +314,7 @@ const server = http.createServer(async (req, res) => {
           return;
         }
 
-        const context = documents.map(doc =>
-          `[Kaynak: ${doc.metadata?.source || 'Bilinmiyor'}]\n${doc.content}`
-        ).join('\n\n---\n\n');
+        const context = ragContext + webContext;
 
         const anthropicResponse = await fetch('https://api.anthropic.com/v1/messages', {
           method: 'POST',
