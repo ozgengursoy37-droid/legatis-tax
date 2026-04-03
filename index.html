@@ -46,11 +46,11 @@ body {
 .logo-text { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: #F2EEE4; letter-spacing: -0.02em; transition: color 0.15s; }
 .logo-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); margin-bottom: 2px; flex-shrink: 0; }
 .logo-sub { font-size: 10px; font-weight: 400; color: var(--gold); letter-spacing: 0.12em; text-transform: uppercase; }
-.sidebar-section { padding: 12px 14px 6px; flex-shrink: 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
-.sidebar-section-title { font-size: 9px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.2); padding: 0 8px; margin-bottom: 4px; }
-.nav-item { display: flex; align-items: center; gap: 8px; padding: 7px 8px; border-radius: 6px; cursor: pointer; transition: background 0.15s; color: rgba(255,255,255,0.45); font-size: 12px; font-weight: 400; text-decoration: none; margin-bottom: 1px; }
+.sidebar-section { padding: 12px 14px 8px; flex-shrink: 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.sidebar-section-title { font-size: 9px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.2); padding: 0 8px; margin-bottom: 6px; }
+.nav-item { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 7px; cursor: pointer; transition: background 0.15s, color 0.15s; color: rgba(255,255,255,0.45); font-size: 12px; font-weight: 400; text-decoration: none; margin-bottom: 2px; }
 .nav-item:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.8); }
-.nav-item.active { background: rgba(201,168,76,0.12); color: var(--gold-lt); }
+.nav-item.active { background: rgba(201,168,76,0.13); color: var(--gold-lt); font-weight: 500; }
 .nav-icon { width: 14px; height: 14px; flex-shrink: 0; opacity: 0.6; }
 .nav-item.active .nav-icon { opacity: 1; }
 
@@ -360,38 +360,26 @@ body {
     </div>
 
     <div class="sidebar-section">
-      <div class="sidebar-section-title">Uzmanlık Alanları</div>
-      <a class="nav-item active" href="#" onclick="setCategory('Tüm Sorular', this); return false;">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/></svg>
-        Tüm Sorular
+      <div class="sidebar-section-title">Ana Menü</div>
+      <a class="nav-item active" href="#" onclick="goHome(); return false;">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M2 12.5V3.5C2 2.95 2.45 2.5 3 2.5h10c.55 0 1 .45 1 1v7c0 .55-.45 1-1 1H5l-3 2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M5 6h6M5 9h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        Soru Sor
       </a>
-      <a class="nav-item" href="#" onclick="setCategory('Katma Değer Vergisi', this); return false;">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-        Katma Değer Vergisi
-      </a>
-      <a class="nav-item" href="#" onclick="setCategory('Kurumlar Vergisi', this); return false;">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-        Kurumlar Vergisi
-      </a>
-      <a class="nav-item" href="#" onclick="setCategory('Gelir Vergisi', this); return false;">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M3 13V7l5-4 5 4v6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="6" y="10" width="4" height="3" rx="0.5" stroke="currentColor" stroke-width="1.2"/></svg>
-        Gelir Vergisi
-      </a>
-      <a class="nav-item" href="#" onclick="setCategory('Teşvik & Avantajlar', this); return false;">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M2 14l4-4 3 3 5-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Teşvik & Avantajlar
-      </a>
-      <a class="nav-item" href="#" onclick="setCategory('Vergi İncelemeleri', this); return false;">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M13 10.5A5.5 5.5 0 1 1 2.5 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M10 2l3 3-3 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Vergi İncelemeleri
-      </a>
-      <a class="nav-item" href="#" onclick="setCategory('Muhasebe & Hesaplar', this); return false;">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><rect x="3" y="2" width="10" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M6 6h4M6 9h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-        Muhasebe & Hesaplar
-      </a>
-      <a class="nav-item" href="#" onclick="setCategory('Belge Analizi', this); return false;">
+      <a class="nav-item" href="#" onclick="triggerFileUpload(); return false;">
         <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M6 7h4M6 10h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-        Belge Analizi
+        Belge & Mizan Analizi
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Hızlı Erişim</div>
+      <a class="nav-item" href="#" onclick="sendSuggestion('En sık yapılan vergi hataları nelerdir?'); return false;">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 3.5 3.5.5-2.5 2.5.7 3.5L8 10.5l-3.2 1.5.7-3.5L3 6l3.5-.5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+        Sık Sorulanlar
+      </a>
+      <a class="nav-item" href="#" onclick="sendSuggestion('2026 yılı güncel vergi limitleri ve hadleri nelerdir?'); return false;">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        Son Gelişmeler
       </a>
     </div>
 
@@ -736,10 +724,9 @@ async function logout() {
   document.getElementById('logoutBtn').style.display = 'none';
 }
 
-function setCategory(name, el) {
-  currentCategory = name;
+function setNavActive(el) {
   document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-  el.classList.add('active'); closeMobileSidebar();
+  if (el) el.classList.add('active');
 }
 
 function openMobileSidebar() { document.getElementById('sidebar').classList.add('mobile-open'); document.getElementById('mobileSidebarOverlay').classList.add('open'); }
