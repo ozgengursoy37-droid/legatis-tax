@@ -3,11 +3,57 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
+const ExcelJS = require('exceljs');
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_KEY
 );
+
+async function parseExcelToText(buffer) {
+  const wb = new ExcelJS.Workbook();
+  await wb.xlsx.load(buffer);
+  const ws = wb.worksheets[0];
+
+  const lines = ['HESAP KODU | HESAP ADI | DÖVİZ | BORÇ | ALACAK | BORÇ BAKİYESİ | ALACAK BAKİYESİ'];
+  let headerPassed = false;
+
+  ws.eachRow((row) => {
+    const vals = row.values.slice(1);
+    const first = vals[0];
+
+    if (!headerPassed) {
+      if (String(first).includes('HESAP KODU')) headerPassed = true;
+      return;
+    }
+
+    if (!first) return;
+    const firstStr = String(first).trim();
+    if (!firstStr) return;
+
+    // Sadece ana hesap + grup + hesap seviyesi (nokta sayısı max 1)
+    // Örn: 1, 10, 100, 102, 102.01 dahil — 102.01.001 hariç
+    const dotCount = (firstStr.match(/\./g) || []).length;
+    if (dotCount > 1) return;
+
+    const fmt = (v) =>
+      v !== null && v !== undefined && v !== '' && !isNaN(Number(v))
+        ? Number(v).toFixed(2)
+        : '';
+
+    lines.push([
+      firstStr,
+      vals[1] ? String(vals[1]).trim() : '',
+      vals[2] ? String(vals[2]).trim() : '',
+      fmt(vals[3]),
+      fmt(vals[4]),
+      fmt(vals[5]),
+      fmt(vals[6]),
+    ].join(' | '));
+  });
+
+  return lines.join('\n');
+}
 
 function parseMultipart(buffer, boundary) {
   const parts = [];
@@ -307,20 +353,50 @@ const server = http.createServer(async (req, res) => {
           res.end(JSON.stringify({ error: 'Dosya bulunamadi' }));
           return;
         }
-        const base64Data = fileData.toString('base64');
+
         let messageContent = [];
+
         if (fileMimeType === 'application/pdf') {
-          messageContent = [{ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64Data } }, { type: 'text', text: question }];
+          const base64Data = fileData.toString('base64');
+          messageContent = [
+            { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64Data } },
+            { type: 'text', text: question }
+          ];
         } else if (fileMimeType.startsWith('image/')) {
+          const base64Data = fileData.toString('base64');
           const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
           const mediaType = validImageTypes.includes(fileMimeType) ? fileMimeType : 'image/jpeg';
-          messageContent = [{ type: 'image', source: { type: 'base64', media_type: mediaType, data: base64Data } }, { type: 'text', text: question }];
+          messageContent = [
+            { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64Data } },
+            { type: 'text', text: question }
+          ];
+        } else if (
+          fileMimeType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+          fileMimeType === 'application/vnd.ms-excel' ||
+          fileName.endsWith('.xlsx') ||
+          fileName.endsWith('.xls')
+        ) {
+          // Excel dosyasını parse et, düz metin olarak gönder
+          const excelText = await parseExcelToText(fileData);
+          messageContent = [
+            {
+              type: 'text',
+              text: `Aşağıdaki mizan/Excel verisini vergi mevzuatı açısından analiz et.\n\nDosya adı: ${fileName}\n\nMİZAN VERİSİ:\n${excelText}\n\nKULLANICI SORUSU: ${question}`
+            }
+          ];
         } else {
-          messageContent = [{ type: 'text', text: `Kullanici bir belge yukledi (${fileName}). ${question}` }];
+          messageContent = [
+            { type: 'text', text: `Kullanici bir belge yukledi (${fileName}). ${question}` }
+          ];
         }
+
         const anthropicResponse = await fetch('https://api.anthropic.com/v1/messages', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-api-key': process.env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': process.env.ANTHROPIC_API_KEY,
+            'anthropic-version': '2023-06-01'
+          },
           body: JSON.stringify({
             model: 'claude-sonnet-4-5',
             max_tokens: 6000,
@@ -328,13 +404,21 @@ const server = http.createServer(async (req, res) => {
             messages: [{ role: 'user', content: messageContent }]
           })
         });
+
         const anthropicData = await anthropicResponse.json();
         const analysisText = anthropicData.content?.[0]?.text || 'Analiz yapilamadi.';
+
         if (userId) {
-          await supabase.from('user_questions').insert({ user_id: userId, category: 'Belge Analizi', question_text: `[Belge: ${fileName}] ${question}` });
+          await supabase.from('user_questions').insert({
+            user_id: userId,
+            category: 'Belge Analizi',
+            question_text: `[Belge: ${fileName}] ${question}`
+          });
         }
+
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ok: true, analysis: analysisText }));
+
       } catch (err) {
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Analiz hatasi: ' + err.message }));
