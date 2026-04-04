@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- v3 — Premium Rebuild -->
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
@@ -11,280 +10,302 @@
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --gold: #C9A84C; --gold-lt: #E8D49A; --gold-dk: #8B6B2A;
-  --black: #111111; --surface: #181818; --surface2: #1E1E1E;
-  --line: rgba(255,255,255,0.09); --mid: rgba(255,255,255,0.68);
-  --dim: rgba(255,255,255,0.42);
+  --black: #0A0A0A;
+  --black2: #111111;
+  --ivory: #F7F4EC;
+  --ivory2: #EDE8DC;
+  --ivory3: #E4DFD4;
+  --line-dark: rgba(255,255,255,0.07);
+  --line-light: rgba(0,0,0,0.08);
+  --text-dark: #F2EEE4;
+  --text-mid-dark: rgba(242,238,228,0.6);
+  --text-dim-dark: rgba(242,238,228,0.32);
+  --text-light: #0A0A0A;
+  --text-mid-light: rgba(10,10,10,0.55);
+  --text-dim-light: rgba(10,10,10,0.35);
 }
 html { scroll-behavior: smooth; }
-body { font-family: 'DM Sans', sans-serif; color: #F2EEE4; background: var(--black); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+body { font-family: 'DM Sans', sans-serif; background: var(--ivory); color: var(--text-light); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
 
 /* REVEAL */
-.reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
 .reveal.visible { opacity: 1; transform: none; }
 .reveal-delay-1 { transition-delay: 0.1s; }
 .reveal-delay-2 { transition-delay: 0.2s; }
 .reveal-delay-3 { transition-delay: 0.3s; }
-.reveal-delay-4 { transition-delay: 0.4s; }
-.reveal-delay-5 { transition-delay: 0.5s; }
 
 /* NAV */
-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; background: rgba(8,8,8,0.92); backdrop-filter: blur(16px); border-bottom: 1px solid var(--line); }
-.nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 40px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  background: rgba(0,0,0,0.96);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--line-dark);
+}
+.nav-inner { max-width: 1160px; margin: 0 auto; padding: 0 40px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
 .nav-logo { display: flex; align-items: baseline; gap: 4px; text-decoration: none; }
 .nav-logo-text { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: #F2EEE4; letter-spacing: -0.02em; }
-.nav-logo-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); margin-bottom: 2px; }
+.nav-logo-dot { width: 5px; height: 5px; border-radius: 50%; background: #F2EEE4; margin-bottom: 2px; }
 .nav-links { display: flex; align-items: center; gap: 36px; }
-.nav-link { color: var(--dim); text-decoration: none; font-size: 13px; transition: color 0.15s; }
-.nav-link:hover { color: rgba(255,255,255,0.8); }
-.nav-right { display: flex; align-items: center; gap: 16px; }
-.nav-cta { background: var(--gold); color: #080808; text-decoration: none; font-size: 13px; font-weight: 600; padding: 8px 20px; border-radius: 6px; transition: all 0.15s; white-space: nowrap; }
-.nav-cta:hover { background: var(--gold-lt); transform: translateY(-1px); }
-.hamburger { display: none; background: none; border: none; cursor: pointer; padding: 4px; color: var(--mid); }
+.nav-link { color: var(--text-mid-dark); text-decoration: none; font-size: 13px; transition: color 0.15s; }
+.nav-link:hover { color: #F2EEE4; }
+.nav-cta { background: #F2EEE4; color: #0A0A0A; text-decoration: none; font-size: 13px; font-weight: 600; padding: 8px 20px; border-radius: 6px; transition: all 0.15s; }
+.nav-cta:hover { background: white; transform: translateY(-1px); }
+.hamburger { display: none; background: none; border: none; cursor: pointer; padding: 4px; color: var(--text-mid-dark); }
 
-/* MOBİL DRAWER */
+/* MOBILE DRAWER */
 .mobile-drawer { display: none; position: fixed; inset: 0; z-index: 300; }
 .mobile-drawer.open { display: block; }
 .drawer-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.7); }
-.drawer-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 280px; background: var(--surface); border-left: 1px solid var(--line); padding: 24px; display: flex; flex-direction: column; gap: 8px; }
-.drawer-close { align-self: flex-end; background: none; border: none; color: var(--mid); cursor: pointer; font-size: 24px; margin-bottom: 8px; }
-.drawer-link { display: block; color: rgba(255,255,255,0.6); text-decoration: none; font-size: 15px; padding: 12px 0; border-bottom: 1px solid var(--line); transition: color 0.15s; }
+.drawer-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 280px; background: #111; border-left: 1px solid var(--line-dark); padding: 24px; display: flex; flex-direction: column; gap: 8px; }
+.drawer-close { align-self: flex-end; background: none; border: none; color: var(--text-mid-dark); cursor: pointer; font-size: 24px; margin-bottom: 8px; }
+.drawer-link { display: block; color: rgba(255,255,255,0.6); text-decoration: none; font-size: 15px; padding: 12px 0; border-bottom: 1px solid var(--line-dark); transition: color 0.15s; }
 .drawer-link:hover { color: #F2EEE4; }
-.drawer-cta { display: block; text-align: center; background: var(--gold); color: #080808; text-decoration: none; font-size: 14px; font-weight: 600; padding: 13px; border-radius: 8px; margin-top: 16px; }
+.drawer-cta { display: block; text-align: center; background: #F2EEE4; color: #0A0A0A; text-decoration: none; font-size: 14px; font-weight: 600; padding: 13px; border-radius: 8px; margin-top: 16px; }
 
-/* HERO */
-.hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 140px 40px 100px; position: relative; overflow: hidden; }
-.hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(201,168,76,0.07) 0%, transparent 60%); pointer-events: none; }
-.hero-badge { display: inline-flex; align-items: center; gap: 8px; border: 1px solid rgba(201,168,76,0.2); border-radius: 100px; padding: 5px 14px; margin-bottom: 40px; opacity: 0; animation: fadeUp 0.8s ease 0.1s forwards; }
-.hero-badge-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); animation: pulse 2s infinite; }
+/* HERO — siyah zemin */
+.hero {
+  background: var(--black);
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 120px 40px 80px; position: relative; overflow: hidden;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 1px solid rgba(255,255,255,0.1); border-radius: 100px;
+  padding: 5px 14px; margin-bottom: 40px;
+  opacity: 0; animation: fadeUp 0.8s ease 0.1s forwards;
+}
+.hero-badge-dot { width: 5px; height: 5px; border-radius: 50%; background: #4CAF50; animation: pulse 2s infinite; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-.hero-badge-text { font-size: 11px; font-weight: 500; color: var(--gold-lt); letter-spacing: 0.1em; text-transform: uppercase; }
-.hero-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(52px, 9vw, 110px); font-weight: 300; color: #F2EEE4; line-height: 1.0; letter-spacing: -0.03em; margin-bottom: 32px; opacity: 0; animation: fadeUp 0.9s ease 0.2s forwards; }
+.hero-badge-text { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.5); letter-spacing: 0.1em; text-transform: uppercase; }
+.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(48px, 8vw, 100px);
+  font-weight: 300; color: #F2EEE4;
+  line-height: 1.0; letter-spacing: -0.03em; margin-bottom: 28px;
+  opacity: 0; animation: fadeUp 0.9s ease 0.2s forwards;
+}
 .hero-title strong { font-weight: 600; }
-.hero-title em { font-style: italic; color: var(--gold); }
-.hero-desc { font-size: 17px; color: var(--mid); max-width: 460px; line-height: 1.8; margin-bottom: 48px; font-weight: 300; opacity: 0; animation: fadeUp 0.9s ease 0.35s forwards; }
-.hero-cta-row { display: flex; align-items: center; gap: 14px; justify-content: center; margin-bottom: 80px; opacity: 0; animation: fadeUp 0.9s ease 0.45s forwards; flex-wrap: wrap; }
-.btn-gold { background: var(--gold); color: #080808; text-decoration: none; font-size: 14px; font-weight: 600; padding: 13px 30px; border-radius: 7px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; }
-.btn-gold:hover { background: var(--gold-lt); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,168,76,0.25); }
-.btn-ghost { color: var(--dim); text-decoration: none; font-size: 14px; border: 1px solid var(--line); padding: 13px 24px; border-radius: 7px; transition: all 0.15s; }
-.btn-ghost:hover { color: rgba(255,255,255,0.8); border-color: rgba(255,255,255,0.2); }
-.hero-stats { display: flex; align-items: center; gap: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; opacity: 0; animation: fadeUp 0.9s ease 0.55s forwards; }
-.hero-stat { padding: 20px 40px; text-align: center; border-right: 1px solid var(--line); }
+.hero-title em { font-style: italic; color: rgba(242,238,228,0.5); }
+.hero-desc {
+  font-size: 16px; color: var(--text-mid-dark); max-width: 440px; line-height: 1.8;
+  margin-bottom: 44px; font-weight: 300;
+  opacity: 0; animation: fadeUp 0.9s ease 0.35s forwards;
+}
+.hero-cta-row {
+  display: flex; align-items: center; gap: 12px; justify-content: center; margin-bottom: 72px;
+  opacity: 0; animation: fadeUp 0.9s ease 0.45s forwards; flex-wrap: wrap;
+}
+.btn-primary { background: #F2EEE4; color: #0A0A0A; text-decoration: none; font-size: 14px; font-weight: 600; padding: 13px 28px; border-radius: 7px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; }
+.btn-primary:hover { background: white; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+.btn-ghost-dark { color: var(--text-dim-dark); text-decoration: none; font-size: 14px; border: 1px solid rgba(255,255,255,0.1); padding: 13px 22px; border-radius: 7px; transition: all 0.15s; }
+.btn-ghost-dark:hover { color: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.2); }
+.hero-stats {
+  display: flex; align-items: center; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; overflow: hidden;
+  opacity: 0; animation: fadeUp 0.9s ease 0.55s forwards;
+}
+.hero-stat { padding: 18px 36px; text-align: center; border-right: 1px solid rgba(255,255,255,0.08); }
 .hero-stat:last-child { border-right: none; }
-.hero-stat-num { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 600; color: #F2EEE4; line-height: 1; }
-.hero-stat-label { font-size: 10px; color: var(--dim); margin-top: 4px; letter-spacing: 0.08em; text-transform: uppercase; }
+.hero-stat-num { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 600; color: #F2EEE4; line-height: 1; }
+.hero-stat-label { font-size: 9px; color: var(--text-dim-dark); margin-top: 4px; letter-spacing: 0.08em; text-transform: uppercase; }
 @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:none} }
 
-/* KANUN GÜVEN BARI */
-.trust-bar { padding: 0 40px; background: var(--black); margin-bottom: 0; }
-.trust-bar-inner { max-width: 1200px; margin: 0 auto; border: 1px solid var(--line); border-radius: 12px; padding: 24px 40px; display: flex; align-items: center; gap: 0; flex-wrap: wrap; }
-.trust-bar-label { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); padding-right: 32px; border-right: 1px solid var(--line); white-space: nowrap; flex-shrink: 0; }
-.trust-bar-laws { display: flex; flex-wrap: wrap; gap: 8px; padding-left: 32px; flex: 1; }
-.trust-law { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.04); border: 1px solid var(--line); border-radius: 4px; padding: 4px 10px; letter-spacing: 0.06em; transition: color 0.15s, border-color 0.15s; }
-.trust-law:hover { color: var(--gold-lt); border-color: rgba(201,168,76,0.2); }
-.trust-bar-stat { padding-left: 32px; border-left: 1px solid var(--line); text-align: right; flex-shrink: 0; white-space: nowrap; }
-.trust-bar-stat-num { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: #F2EEE4; font-weight: 600; }
-.trust-bar-stat-label { font-size: 9px; color: var(--dim); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 2px; }
+/* KANUN BARI — ivory zemin */
+.trust-bar { background: var(--ivory); padding: 32px 40px; border-bottom: 1px solid var(--line-light); }
+.trust-bar-inner { max-width: 1160px; margin: 0 auto; display: flex; align-items: center; gap: 0; flex-wrap: wrap; }
+.trust-bar-label { font-size: 9px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-dim-light); padding-right: 28px; border-right: 1px solid var(--line-light); white-space: nowrap; flex-shrink: 0; }
+.trust-bar-laws { display: flex; flex-wrap: wrap; gap: 6px; padding-left: 28px; flex: 1; }
+.trust-law { font-size: 11px; font-weight: 500; color: var(--text-dim-light); background: rgba(0,0,0,0.04); border: 1px solid var(--line-light); border-radius: 4px; padding: 4px 10px; letter-spacing: 0.04em; transition: all 0.15s; }
+.trust-law:hover { color: var(--text-light); border-color: rgba(0,0,0,0.2); }
 
-/* APP PREVIEW */
-.preview-section { padding: 60px 40px 100px; display: flex; justify-content: center; background: var(--black); }
-.preview-wrap { max-width: 1000px; width: 100%; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
-.preview-bar { background: var(--surface); padding: 11px 16px; display: flex; align-items: center; gap: 7px; border-bottom: 1px solid var(--line); }
+/* APP PREVIEW — siyah -->
+.preview-section { background: var(--black); padding: 60px 40px 80px; }
+.preview-wrap { max-width: 960px; margin: 0 auto; border: 1px solid var(--line-dark); border-radius: 14px; overflow: hidden; box-shadow: 0 40px 80px rgba(0,0,0,0.6); }
+.preview-bar { background: #111; padding: 11px 16px; display: flex; align-items: center; gap: 7px; border-bottom: 1px solid var(--line-dark); }
 .pd { width: 10px; height: 10px; border-radius: 50%; }
-.preview-url { flex: 1; text-align: center; font-size: 11px; color: var(--dim); }
+.preview-url { flex: 1; text-align: center; font-size: 11px; color: var(--text-dim-dark); }
 .preview-body { display: grid; grid-template-columns: 200px 1fr; }
-.pv-sidebar { background: #080808; padding: 20px 14px; border-right: 1px solid var(--line); }
-.pv-logo { font-family: 'Cormorant Garamond', serif; font-size: 16px; color: #F2EEE4; margin-bottom: 3px; display: flex; align-items: baseline; gap: 3px; }
-.pv-logo-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); }
-.pv-sub { font-size: 8px; color: var(--gold); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 20px; }
-.pv-label { font-size: 8px; color: var(--dim); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px; margin-top: 14px; }
-.pv-item { font-size: 10px; color: rgba(255,255,255,0.35); padding: 5px 8px; border-radius: 4px; margin-bottom: 1px; }
-.pv-item.a { background: rgba(201,168,76,0.1); color: var(--gold-lt); }
-.pv-main { background: #F7F6F2; padding: 28px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.pv-emblem { width: 52px; height: 52px; background: #080808; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 28px; color: var(--gold); margin-bottom: 12px; }
-.pv-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; color: #0D0D0D; margin-bottom: 6px; }
-.pv-desc { font-size: 10px; color: #888; margin-bottom: 20px; }
-.pv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; max-width: 380px; }
-.pv-card { background: white; border: 1px solid rgba(0,0,0,0.07); border-radius: 8px; padding: 11px 12px; }
-.pv-card-t { font-size: 10px; font-weight: 500; color: #0D0D0D; margin-bottom: 3px; }
-.pv-card-d { font-size: 9px; color: #888; }
+.pv-sidebar { background: #000; padding: 18px 13px; border-right: 1px solid var(--line-dark); }
+.pv-logo { font-family: 'Cormorant Garamond', serif; font-size: 15px; color: #F2EEE4; margin-bottom: 3px; display: flex; align-items: baseline; gap: 3px; }
+.pv-logo-dot { width: 4px; height: 4px; border-radius: 50%; background: #F2EEE4; }
+.pv-sub { font-size: 8px; color: rgba(242,238,228,0.35); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 18px; }
+.pv-label { font-size: 8px; color: rgba(242,238,228,0.2); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 5px; margin-top: 12px; }
+.pv-item { font-size: 10px; color: rgba(242,238,228,0.3); padding: 5px 8px; border-radius: 5px; margin-bottom: 1px; }
+.pv-item.a { background: rgba(242,238,228,0.07); color: rgba(242,238,228,0.8); }
+.pv-main { background: var(--ivory); padding: 28px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.pv-emblem { width: 48px; height: 48px; background: #000; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 24px; color: #F2EEE4; margin-bottom: 12px; }
+.pv-title { font-family: 'Cormorant Garamond', serif; font-size: 17px; color: #0A0A0A; margin-bottom: 5px; text-align: center; }
+.pv-desc { font-size: 10px; color: rgba(10,10,10,0.45); margin-bottom: 18px; text-align: center; }
+.pv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; width: 100%; max-width: 360px; }
+.pv-card { background: white; border: 1px solid rgba(0,0,0,0.07); border-radius: 7px; padding: 10px 12px; }
+.pv-card-t { font-size: 10px; font-weight: 500; color: #0A0A0A; margin-bottom: 3px; }
+.pv-card-d { font-size: 9px; color: rgba(10,10,10,0.45); }
 
-/* CANLI DEMO */
-.demo-section { padding: 80px 40px; background: var(--surface); border-top: 1px solid var(--line); }
-.demo-inner { max-width: 800px; margin: 0 auto; }
+/* DEMO — ivory */
+.demo-section { background: var(--ivory2); border-top: 1px solid var(--line-light); border-bottom: 1px solid var(--line-light); padding: 80px 40px; }
+.demo-inner { max-width: 760px; margin: 0 auto; }
 .demo-header { text-align: center; margin-bottom: 40px; }
-.demo-kicker { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; display: block; }
-.demo-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 4vw, 44px); font-weight: 400; color: #F2EEE4; line-height: 1.15; }
-.demo-title em { font-style: italic; color: var(--gold); }
-.demo-subtitle { font-size: 14px; color: var(--mid); margin-top: 12px; }
-.demo-box { background: var(--surface2); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
-.demo-box-bar { background: var(--surface); padding: 14px 20px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; }
-.demo-box-bar-label { font-size: 11px; color: var(--dim); letter-spacing: 0.06em; }
-.demo-live-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; color: var(--gold); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; }
+.kicker { font-size: 9px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-dim-light); margin-bottom: 14px; display: block; }
+.section-title-light { font-family: 'Cormorant Garamond', serif; font-size: clamp(26px, 3.5vw, 40px); font-weight: 400; color: var(--text-light); line-height: 1.15; }
+.section-title-light em { font-style: italic; color: var(--text-mid-light); }
+.demo-box { background: white; border: 1px solid var(--line-light); border-radius: 14px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
+.demo-box-bar { background: var(--ivory); padding: 14px 20px; border-bottom: 1px solid var(--line-light); display: flex; align-items: center; justify-content: space-between; }
+.demo-box-bar-label { font-size: 11px; color: var(--text-dim-light); letter-spacing: 0.04em; }
+.demo-live-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; color: var(--text-dim-light); letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600; }
 .demo-live-dot { width: 5px; height: 5px; border-radius: 50%; background: #4CAF50; animation: pulse 2s infinite; }
-.demo-suggestions { display: flex; flex-wrap: wrap; gap: 8px; padding: 20px 20px 0; }
-.demo-suggestion { font-size: 12px; color: rgba(255,255,255,0.45); background: rgba(255,255,255,0.04); border: 1px solid var(--line); border-radius: 6px; padding: 7px 12px; cursor: pointer; transition: all 0.15s; line-height: 1.4; }
-.demo-suggestion:hover { color: var(--gold-lt); border-color: rgba(201,168,76,0.2); background: rgba(201,168,76,0.04); }
-.demo-messages { min-height: 160px; max-height: 320px; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
-.demo-messages::-webkit-scrollbar { width: 4px; }
-.demo-messages::-webkit-scrollbar-track { background: transparent; }
-.demo-messages::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+.demo-suggestions { display: flex; flex-wrap: wrap; gap: 7px; padding: 18px 18px 0; }
+.demo-suggestion { font-size: 12px; color: var(--text-mid-light); background: var(--ivory); border: 1px solid var(--line-light); border-radius: 6px; padding: 7px 12px; cursor: pointer; transition: all 0.15s; line-height: 1.4; }
+.demo-suggestion:hover { color: var(--text-light); border-color: rgba(0,0,0,0.2); background: var(--ivory2); }
+.demo-messages { min-height: 140px; max-height: 280px; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+.demo-messages::-webkit-scrollbar { width: 3px; }
+.demo-messages::-webkit-scrollbar-thumb { background: var(--line-light); border-radius: 4px; }
 .demo-msg { display: flex; gap: 10px; animation: msgIn 0.3s ease; }
-@keyframes msgIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+@keyframes msgIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
 .demo-msg-user { flex-direction: row-reverse; }
-.demo-msg-avatar { width: 28px; height: 28px; border-radius: 7px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
-.demo-msg-avatar-ai { background: rgba(201,168,76,0.12); color: var(--gold); font-family: 'Cormorant Garamond', serif; font-size: 14px; border: 1px solid rgba(201,168,76,0.2); }
-.demo-msg-avatar-user { background: rgba(255,255,255,0.07); color: var(--mid); }
-.demo-msg-bubble { max-width: 88%; }
-.demo-msg-bubble-user { background: rgba(255,255,255,0.06); border: 1px solid var(--line); border-radius: 10px 10px 3px 10px; padding: 10px 14px; font-size: 13px; color: rgba(255,255,255,0.8); line-height: 1.6; }
-.demo-msg-bubble-ai { background: rgba(201,168,76,0.04); border: 1px solid rgba(201,168,76,0.12); border-radius: 10px 10px 10px 3px; padding: 10px 14px; font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.7; }
-.demo-msg-bubble-ai strong { color: var(--gold-lt); font-weight: 500; }
+.demo-msg-avatar { width: 26px; height: 26px; border-radius: 7px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
+.demo-msg-avatar-ai { background: var(--black); color: #F2EEE4; font-family: 'Cormorant Garamond', serif; font-size: 13px; }
+.demo-msg-avatar-user { background: rgba(0,0,0,0.07); color: var(--text-dim-light); }
+.demo-msg-bubble { max-width: 86%; }
+.demo-msg-bubble-user { background: var(--black); border-radius: 10px 10px 3px 10px; padding: 10px 14px; font-size: 13px; color: #F2EEE4; line-height: 1.6; }
+.demo-msg-bubble-ai { background: var(--ivory); border: 1px solid var(--line-light); border-radius: 10px 10px 10px 3px; padding: 10px 14px; font-size: 13px; color: var(--text-mid-light); line-height: 1.7; }
+.demo-msg-bubble-ai strong { color: var(--text-light); font-weight: 500; }
 .demo-typing { display: flex; gap: 4px; padding: 4px 0; }
-.demo-typing span { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); opacity: 0.4; animation: typing 1.2s infinite; }
+.demo-typing span { width: 5px; height: 5px; border-radius: 50%; background: rgba(0,0,0,0.25); animation: typing 1.2s infinite; }
 .demo-typing span:nth-child(2) { animation-delay: 0.2s; }
 .demo-typing span:nth-child(3) { animation-delay: 0.4s; }
 @keyframes typing { 0%,60%,100%{opacity:0.2;transform:none} 30%{opacity:1;transform:translateY(-3px)} }
-.demo-input-row { padding: 16px 20px; border-top: 1px solid var(--line); display: flex; gap: 10px; }
-.demo-input { flex: 1; background: rgba(255,255,255,0.04); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #F2EEE4; font-family: 'DM Sans', sans-serif; outline: none; transition: border-color 0.15s; }
-.demo-input::placeholder { color: var(--dim); }
-.demo-input:focus { border-color: rgba(201,168,76,0.25); }
-.demo-send { background: var(--gold); border: none; border-radius: 8px; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.15s; }
-.demo-send:hover { background: var(--gold-lt); }
+.demo-input-row { padding: 14px 18px; border-top: 1px solid var(--line-light); display: flex; gap: 10px; }
+.demo-input { flex: 1; background: var(--ivory); border: 1px solid var(--line-light); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--text-light); font-family: 'DM Sans', sans-serif; outline: none; transition: border-color 0.15s; }
+.demo-input::placeholder { color: var(--text-dim-light); }
+.demo-input:focus { border-color: rgba(0,0,0,0.25); }
+.demo-send { background: var(--black); border: none; border-radius: 8px; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.15s; }
+.demo-send:hover { background: #222; }
 .demo-send:disabled { opacity: 0.4; cursor: not-allowed; }
-.demo-disclaimer { text-align: center; font-size: 11px; color: var(--dim); margin-top: 14px; letter-spacing: 0.03em; }
+.demo-disclaimer { text-align: center; font-size: 11px; color: var(--text-dim-light); margin-top: 14px; }
 
-/* FEATURES */
-.features { padding: 120px 40px; background: var(--black); border-top: 1px solid var(--line); }
-.section-wrap { max-width: 1200px; margin: 0 auto; }
-.section-header { margin-bottom: 64px; }
-.section-kicker { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; display: block; }
-.section-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(36px, 4vw, 56px); font-weight: 400; color: #F2EEE4; line-height: 1.1; }
-.section-title em { font-style: italic; color: var(--gold); }
-.feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
-.feat-card { padding: 36px 32px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); transition: background 0.2s; position: relative; overflow: hidden; }
-.feat-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--gold); transform: scaleX(0); transition: transform 0.3s ease; transform-origin: left; }
+/* ÖZELLIKLER — siyah */
+.features { background: var(--black); border-top: 1px solid var(--line-dark); padding: 100px 40px; }
+.section-wrap { max-width: 1160px; margin: 0 auto; }
+.kicker-dark { font-size: 9px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-dim-dark); margin-bottom: 14px; display: block; }
+.section-title-dark { font-family: 'Cormorant Garamond', serif; font-size: clamp(32px, 4vw, 52px); font-weight: 300; color: #F2EEE4; line-height: 1.1; }
+.section-title-dark em { font-style: italic; color: rgba(242,238,228,0.45); }
+.feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line-dark); border-radius: 14px; overflow: hidden; margin-top: 56px; }
+.feat-card { padding: 32px 28px; border-right: 1px solid var(--line-dark); border-bottom: 1px solid var(--line-dark); transition: background 0.2s; position: relative; overflow: hidden; }
+.feat-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: #F2EEE4; transform: scaleX(0); transition: transform 0.3s ease; transform-origin: left; }
 .feat-card:hover::after { transform: scaleX(1); }
 .feat-card:hover { background: rgba(255,255,255,0.02); }
 .feat-card:nth-child(3), .feat-card:nth-child(6) { border-right: none; }
 .feat-card:nth-child(4), .feat-card:nth-child(5), .feat-card:nth-child(6) { border-bottom: none; }
-.feat-icon { width: 40px; height: 40px; margin-bottom: 20px; color: var(--gold); opacity: 0.8; }
-.feat-title { font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 600; color: #F2EEE4; margin-bottom: 10px; }
-.feat-desc { font-size: 13px; color: var(--mid); line-height: 1.75; }
-.section-cta { margin-top: 48px; display: flex; align-items: center; gap: 16px; }
-.section-cta-text { font-size: 14px; color: var(--dim); }
-.section-cta-link { font-size: 14px; color: var(--gold); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: gap 0.15s; }
-.section-cta-link:hover { gap: 10px; }
+.feat-icon { width: 32px; height: 32px; margin-bottom: 18px; color: rgba(242,238,228,0.5); }
+.feat-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; color: #F2EEE4; margin-bottom: 10px; }
+.feat-desc { font-size: 13px; color: var(--text-mid-dark); line-height: 1.75; }
+.section-cta { margin-top: 44px; display: flex; align-items: center; gap: 14px; }
+.section-cta-text { font-size: 13px; color: var(--text-dim-dark); }
+.section-cta-link { font-size: 13px; color: rgba(242,238,228,0.6); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: all 0.15s; }
+.section-cta-link:hover { color: #F2EEE4; gap: 10px; }
 
-/* HOW */
-.how { padding: 120px 40px; background: var(--surface); border-top: 1px solid var(--line); }
-.how-grid { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; margin-top: 64px; }
-.how-step { padding: 40px 36px; border-right: 1px solid var(--line); position: relative; }
+/* NASIL ÇALIŞIR — ivory */
+.how { background: var(--ivory2); border-top: 1px solid var(--line-light); padding: 100px 40px; }
+.how-grid { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line-light); border-radius: 14px; overflow: hidden; margin-top: 56px; }
+.how-step { padding: 36px 32px; border-right: 1px solid var(--line-light); }
 .how-step:last-child { border-right: none; }
-.how-step-kicker { font-size: 10px; color: var(--gold); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 20px; display: block; }
-.how-step-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: #F2EEE4; margin-bottom: 12px; line-height: 1.3; }
-.how-step-desc { font-size: 13px; color: var(--mid); line-height: 1.75; }
+.how-step-num { font-family: 'Cormorant Garamond', serif; font-size: 11px; color: var(--text-dim-light); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 18px; display: block; }
+.how-step-title { font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 600; color: var(--text-light); margin-bottom: 10px; line-height: 1.3; }
+.how-step-desc { font-size: 13px; color: var(--text-mid-light); line-height: 1.75; }
 
-/* DIFFERENCE */
-.difference { padding: 120px 40px; background: var(--black); border-top: 1px solid var(--line); }
-.diff-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: start; }
-.diff-list { margin-top: 48px; }
-.diff-item { padding: 28px 0; border-bottom: 1px solid var(--line); display: flex; gap: 24px; }
-.diff-item:first-child { border-top: 1px solid var(--line); }
-.diff-num { font-family: 'Cormorant Garamond', serif; font-size: 24px; color: rgba(201,168,76,0.2); font-weight: 600; flex-shrink: 0; margin-top: 2px; width: 28px; }
-.diff-item-title { font-size: 15px; font-weight: 500; color: #F2EEE4; margin-bottom: 7px; }
-.diff-item-desc { font-size: 13px; color: var(--mid); line-height: 1.7; }
-.diff-card { background: var(--surface2); border: 1px solid var(--line); border-radius: 14px; padding: 36px; position: sticky; top: 80px; }
-.diff-card-kicker { font-size: 9px; color: var(--gold); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 10px; }
-.diff-card-title { font-family: 'Cormorant Garamond', serif; font-size: 17px; color: #F2EEE4; margin-bottom: 20px; line-height: 1.5; }
-.diff-quote { font-size: 13px; color: rgba(255,255,255,0.4); line-height: 1.8; border-left: 2px solid rgba(201,168,76,0.25); padding-left: 16px; margin-bottom: 20px; font-style: italic; }
-.diff-rows { display: flex; flex-direction: column; gap: 8px; }
-.diff-row { background: rgba(255,255,255,0.02); border: 1px solid var(--line); border-radius: 7px; padding: 11px 14px; font-size: 12px; color: rgba(255,255,255,0.45); display: flex; align-items: flex-start; gap: 10px; line-height: 1.5; }
-.diff-row-arrow { color: var(--gold); flex-shrink: 0; }
+/* FARK — siyah */
+.difference { background: var(--black2); border-top: 1px solid var(--line-dark); padding: 100px 40px; }
+.diff-inner { max-width: 1160px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+.diff-list { margin-top: 44px; }
+.diff-item { padding: 24px 0; border-bottom: 1px solid var(--line-dark); display: flex; gap: 22px; }
+.diff-item:first-child { border-top: 1px solid var(--line-dark); }
+.diff-num { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: rgba(242,238,228,0.15); font-weight: 600; flex-shrink: 0; margin-top: 2px; width: 26px; }
+.diff-item-title { font-size: 14px; font-weight: 500; color: #F2EEE4; margin-bottom: 7px; }
+.diff-item-desc { font-size: 13px; color: var(--text-mid-dark); line-height: 1.7; }
+.diff-card { background: rgba(255,255,255,0.03); border: 1px solid var(--line-dark); border-radius: 14px; padding: 32px; position: sticky; top: 80px; }
+.diff-card-kicker { font-size: 9px; color: var(--text-dim-dark); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 10px; }
+.diff-card-title { font-family: 'Cormorant Garamond', serif; font-size: 16px; color: #F2EEE4; margin-bottom: 18px; line-height: 1.5; }
+.diff-quote { font-size: 12px; color: rgba(242,238,228,0.35); line-height: 1.8; border-left: 1px solid rgba(242,238,228,0.15); padding-left: 14px; margin-bottom: 18px; font-style: italic; }
+.diff-rows { display: flex; flex-direction: column; gap: 7px; }
+.diff-row { background: rgba(255,255,255,0.03); border: 1px solid var(--line-dark); border-radius: 7px; padding: 10px 13px; font-size: 12px; color: rgba(242,238,228,0.4); display: flex; align-items: flex-start; gap: 9px; line-height: 1.5; }
+.diff-row-arrow { color: rgba(242,238,228,0.4); flex-shrink: 0; }
 
-/* FOUNDER */
-.founder { padding: 120px 40px; background: var(--surface); border-top: 1px solid var(--line); }
-.founder-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
-.founder-text {}
-.founder-kicker { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; display: block; }
-.founder-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 3vw, 44px); font-weight: 400; color: #F2EEE4; line-height: 1.15; margin-bottom: 20px; }
-.founder-title em { font-style: italic; color: var(--gold); }
-.founder-desc { font-size: 14px; color: var(--mid); line-height: 1.8; margin-bottom: 32px; }
-.founder-credentials { display: flex; flex-direction: column; gap: 12px; }
+/* KURUCU — ivory */
+.founder { background: var(--ivory); border-top: 1px solid var(--line-light); padding: 100px 40px; }
+.founder-inner { max-width: 1160px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+.founder-kicker { font-size: 9px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-dim-light); margin-bottom: 14px; display: block; }
+.founder-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(26px, 3vw, 40px); font-weight: 400; color: var(--text-light); line-height: 1.15; margin-bottom: 18px; }
+.founder-title em { font-style: italic; color: var(--text-mid-light); }
+.founder-desc { font-size: 14px; color: var(--text-mid-light); line-height: 1.8; margin-bottom: 28px; }
+.founder-credentials { display: flex; flex-direction: column; gap: 10px; }
 .founder-cred { display: flex; align-items: flex-start; gap: 12px; }
-.founder-cred-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); flex-shrink: 0; margin-top: 7px; }
-.founder-cred-text { font-size: 13px; color: var(--mid); line-height: 1.6; }
-.founder-cards { display: flex; flex-direction: column; gap: 16px; }
-.founder-card { background: var(--surface2); border: 1px solid var(--line); border-radius: 14px; padding: 28px; display: flex; gap: 20px; align-items: center; transition: border-color 0.2s; }
-.founder-card:hover { border-color: rgba(201,168,76,0.2); }
-.founder-avatar { width: 64px; height: 64px; border-radius: 10px; background: rgba(201,168,76,0.06); border: 1px solid rgba(201,168,76,0.15); flex-shrink: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-.founder-avatar-placeholder { font-family: 'Cormorant Garamond', serif; font-size: 26px; color: rgba(201,168,76,0.3); }
-.founder-info {}
-.founder-name { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; color: #F2EEE4; margin-bottom: 3px; }
-.founder-role { font-size: 11px; color: var(--gold); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
-.founder-bio { font-size: 12px; color: var(--mid); line-height: 1.6; }
-.founder-coming-soon { font-size: 11px; color: var(--dim); text-align: center; margin-top: 4px; letter-spacing: 0.06em; }
+.founder-cred-dot { width: 4px; height: 4px; border-radius: 50%; background: rgba(0,0,0,0.3); flex-shrink: 0; margin-top: 7px; }
+.founder-cred-text { font-size: 13px; color: var(--text-mid-light); line-height: 1.6; }
+.founder-card { background: white; border: 1px solid var(--line-light); border-radius: 14px; padding: 28px; display: flex; gap: 18px; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+.founder-avatar { width: 60px; height: 60px; border-radius: 10px; background: rgba(0,0,0,0.05); border: 1px solid var(--line-light); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.founder-avatar-placeholder { font-family: 'Cormorant Garamond', serif; font-size: 24px; color: rgba(0,0,0,0.2); }
+.founder-name { font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 600; color: var(--text-light); margin-bottom: 2px; }
+.founder-role { font-size: 10px; color: var(--text-dim-light); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
+.founder-bio { font-size: 12px; color: var(--text-mid-light); line-height: 1.6; }
+.founder-coming { font-size: 10px; color: var(--text-dim-light); text-align: center; margin-top: 10px; letter-spacing: 0.04em; }
 
-/* PRICING */
-.pricing { padding: 120px 40px; background: var(--black); border-top: 1px solid var(--line); }
-.pricing-sub { font-size: 15px; color: var(--mid); margin-top: 12px; max-width: 520px; line-height: 1.7; }
-.pricing-anchor { display: inline-flex; align-items: center; gap: 12px; margin-top: 20px; padding: 12px 20px; background: rgba(201,168,76,0.04); border: 1px solid rgba(201,168,76,0.12); border-radius: 8px; }
-.pricing-anchor-old { font-size: 13px; color: rgba(255,255,255,0.25); text-decoration: line-through; }
-.pricing-anchor-arrow { color: var(--gold); font-size: 14px; }
-.pricing-anchor-new { font-size: 13px; color: var(--gold-lt); font-weight: 500; }
-.pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; margin-top: 56px; }
-.p-card { padding: 40px 32px; border-right: 1px solid var(--line); display: flex; flex-direction: column; }
+/* FİYATLAR — siyah */
+.pricing { background: var(--black); border-top: 1px solid var(--line-dark); padding: 100px 40px; }
+.pricing-sub { font-size: 15px; color: var(--text-mid-dark); margin-top: 10px; max-width: 480px; line-height: 1.7; }
+.pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line-dark); border-radius: 14px; overflow: hidden; margin-top: 52px; }
+.p-card { padding: 36px 28px; border-right: 1px solid var(--line-dark); display: flex; flex-direction: column; }
 .p-card:last-child { border-right: none; }
-.p-card.featured { background: rgba(201,168,76,0.04); }
-.p-badge { display: inline-flex; align-items: center; background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.2); border-radius: 4px; padding: 3px 10px; font-size: 9px; font-weight: 600; color: var(--gold); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 20px; width: fit-content; }
-.p-plan { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim); margin-bottom: 12px; }
-.p-price { font-family: 'Cormorant Garamond', serif; font-size: 60px; font-weight: 600; color: #F2EEE4; line-height: 1; }
-.p-price sup { font-size: 22px; font-weight: 400; color: var(--dim); vertical-align: super; }
-.p-price-custom { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 500; color: #F2EEE4; line-height: 1.2; margin-bottom: 4px; }
-.p-period { font-size: 12px; color: var(--dim); margin-bottom: 28px; padding-bottom: 24px; border-bottom: 1px solid var(--line); }
-.p-features { flex: 1; display: flex; flex-direction: column; gap: 11px; margin-bottom: 28px; }
-.p-feat { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.5; }
-.p-feat-check { color: var(--gold); flex-shrink: 0; margin-top: 1px; font-size: 12px; }
-.p-feat.off { color: rgba(255,255,255,0.18); }
-.p-feat.off .p-feat-check { color: rgba(255,255,255,0.12); }
-.p-btn { display: block; text-align: center; padding: 12px; border-radius: 7px; font-size: 13px; font-weight: 500; text-decoration: none; transition: all 0.15s; }
-.p-btn-free { border: 1px solid var(--line); color: var(--dim); }
-.p-btn-free:hover { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.8); }
-.p-btn-gold { background: var(--gold); color: #080808; font-weight: 600; }
-.p-btn-gold:hover { background: var(--gold-lt); box-shadow: 0 4px 20px rgba(201,168,76,0.2); }
-.p-btn-ent { border: 1px solid var(--line); color: var(--dim); }
-.p-btn-ent:hover { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.7); }
+.p-card.featured { background: rgba(255,255,255,0.03); }
+.p-badge { display: inline-flex; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 3px 10px; font-size: 9px; font-weight: 600; color: rgba(242,238,228,0.6); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 18px; width: fit-content; }
+.p-plan { font-size: 9px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-dim-dark); margin-bottom: 10px; }
+.p-price { font-family: 'Cormorant Garamond', serif; font-size: 54px; font-weight: 600; color: #F2EEE4; line-height: 1; }
+.p-price sup { font-size: 20px; font-weight: 400; color: var(--text-dim-dark); vertical-align: super; }
+.p-price-custom { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 400; color: #F2EEE4; line-height: 1.2; margin-bottom: 4px; }
+.p-period { font-size: 11px; color: var(--text-dim-dark); margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--line-dark); }
+.p-features { flex: 1; display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+.p-feat { display: flex; align-items: flex-start; gap: 9px; font-size: 12px; color: rgba(242,238,228,0.45); line-height: 1.5; }
+.p-feat-check { color: rgba(242,238,228,0.45); flex-shrink: 0; margin-top: 1px; }
+.p-feat.off { color: rgba(242,238,228,0.18); }
+.p-feat.off .p-feat-check { color: rgba(242,238,228,0.12); }
+.p-btn { display: block; text-align: center; padding: 11px; border-radius: 7px; font-size: 12px; font-weight: 500; text-decoration: none; transition: all 0.15s; }
+.p-btn-free { border: 1px solid var(--line-dark); color: var(--text-dim-dark); }
+.p-btn-free:hover { border-color: rgba(255,255,255,0.2); color: rgba(242,238,228,0.7); }
+.p-btn-primary { background: #F2EEE4; color: #0A0A0A; font-weight: 600; }
+.p-btn-primary:hover { background: white; box-shadow: 0 4px 16px rgba(242,238,228,0.15); }
+.p-btn-ent { border: 1px solid var(--line-dark); color: var(--text-dim-dark); }
+.p-btn-ent:hover { border-color: rgba(255,255,255,0.2); color: rgba(242,238,228,0.7); }
 
-/* CTA */
-.cta-section { padding: 120px 40px; background: var(--surface); border-top: 1px solid var(--line); text-align: center; }
-.cta-inner { max-width: 560px; margin: 0 auto; }
-.cta-emblem { width: 60px; height: 60px; background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.18); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 30px; color: var(--gold); margin: 0 auto 32px; }
-.cta-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 4vw, 46px); font-weight: 400; color: #F2EEE4; margin-bottom: 16px; line-height: 1.2; }
-.cta-title em { font-style: italic; color: var(--gold); }
-.cta-desc { font-size: 15px; color: var(--mid); margin-bottom: 40px; line-height: 1.8; }
-.cta-note { font-size: 11px; color: var(--dim); margin-top: 14px; letter-spacing: 0.04em; }
+/* CTA — ivory */
+.cta-section { background: var(--ivory); border-top: 1px solid var(--line-light); padding: 100px 40px; text-align: center; }
+.cta-inner { max-width: 520px; margin: 0 auto; }
+.cta-emblem { width: 56px; height: 56px; background: var(--black); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 28px; color: #F2EEE4; margin: 0 auto 28px; }
+.cta-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(26px, 3.5vw, 42px); font-weight: 400; color: var(--text-light); margin-bottom: 14px; line-height: 1.2; }
+.cta-title em { font-style: italic; color: var(--text-mid-light); }
+.cta-desc { font-size: 15px; color: var(--text-mid-light); margin-bottom: 36px; line-height: 1.8; }
+.btn-primary-light { background: var(--black); color: #F2EEE4; text-decoration: none; font-size: 14px; font-weight: 600; padding: 13px 28px; border-radius: 7px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; }
+.btn-primary-light:hover { background: #222; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+.cta-note { font-size: 11px; color: var(--text-dim-light); margin-top: 14px; letter-spacing: 0.03em; }
 
-/* FOOTER */
-footer { background: var(--black); border-top: 1px solid var(--line); padding: 60px 40px 40px; }
-.footer-top { max-width: 1200px; margin: 0 auto 40px; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 60px; }
-.footer-brand {}
-.footer-logo-row { display: flex; align-items: baseline; gap: 5px; margin-bottom: 12px; }
-.footer-logo-text { font-family: 'Cormorant Garamond', serif; font-size: 18px; color: #F2EEE4; font-weight: 600; }
-.footer-logo-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); }
-.footer-brand-desc { font-size: 12px; color: var(--dim); line-height: 1.7; max-width: 220px; margin-bottom: 16px; }
-.footer-address { font-size: 11px; color: rgba(255,255,255,0.15); line-height: 1.7; }
-.footer-col-title { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
-.footer-col-links { display: flex; flex-direction: column; gap: 10px; }
-.footer-col-link { font-size: 12px; color: var(--dim); text-decoration: none; transition: color 0.15s; }
-.footer-col-link:hover { color: rgba(255,255,255,0.7); }
-.footer-trust-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
-.footer-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.03); border: 1px solid var(--line); border-radius: 4px; padding: 4px 8px; }
-.footer-badge svg { width: 11px; height: 11px; opacity: 0.5; }
-.footer-bottom { max-width: 1200px; margin: 0 auto; padding-top: 24px; border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-.footer-copy { font-size: 11px; color: rgba(255,255,255,0.15); }
-.footer-legal-links { display: flex; gap: 20px; }
-.footer-legal-link { font-size: 11px; color: rgba(255,255,255,0.2); text-decoration: none; transition: color 0.15s; }
-.footer-legal-link:hover { color: rgba(255,255,255,0.5); }
-.footer-disclaimer { max-width: 1200px; margin: 20px auto 0; font-size: 10px; color: rgba(255,255,255,0.1); line-height: 1.6; }
+/* FOOTER — siyah */
+footer { background: var(--black); border-top: 1px solid var(--line-dark); padding: 56px 40px 36px; }
+.footer-top { max-width: 1160px; margin: 0 auto 36px; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 56px; }
+.footer-logo-row { display: flex; align-items: baseline; gap: 4px; margin-bottom: 10px; }
+.footer-logo-text { font-family: 'Cormorant Garamond', serif; font-size: 17px; color: #F2EEE4; font-weight: 600; }
+.footer-logo-dot { width: 4px; height: 4px; border-radius: 50%; background: #F2EEE4; }
+.footer-brand-desc { font-size: 12px; color: var(--text-dim-dark); line-height: 1.7; max-width: 220px; margin-bottom: 12px; }
+.footer-address { font-size: 11px; color: rgba(242,238,228,0.12); line-height: 1.7; }
+.footer-col-title { font-size: 9px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-dim-dark); margin-bottom: 14px; }
+.footer-col-links { display: flex; flex-direction: column; gap: 9px; }
+.footer-col-link { font-size: 12px; color: var(--text-dim-dark); text-decoration: none; transition: color 0.15s; }
+.footer-col-link:hover { color: rgba(242,238,228,0.6); }
+.footer-badges { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 14px; }
+.footer-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; color: rgba(242,238,228,0.2); background: rgba(255,255,255,0.03); border: 1px solid var(--line-dark); border-radius: 4px; padding: 4px 8px; }
+.footer-bottom { max-width: 1160px; margin: 0 auto; padding-top: 22px; border-top: 1px solid var(--line-dark); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+.footer-copy { font-size: 11px; color: rgba(242,238,228,0.12); }
+.footer-legal-links { display: flex; gap: 18px; }
+.footer-legal-link { font-size: 11px; color: rgba(242,238,228,0.15); text-decoration: none; transition: color 0.15s; }
+.footer-legal-link:hover { color: rgba(242,238,228,0.45); }
+.footer-disclaimer { max-width: 1160px; margin: 18px auto 0; font-size: 10px; color: rgba(242,238,228,0.08); line-height: 1.6; }
 
 /* RESPONSIVE */
 @media (max-width: 960px) {
@@ -292,44 +313,38 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 6
   .hamburger { display: block; }
   .feat-grid, .how-grid, .pricing-grid { grid-template-columns: 1fr; }
   .feat-card { border-right: none; }
-  .feat-card:nth-child(4), .feat-card:nth-child(5) { border-bottom: 1px solid var(--line); }
-  .how-step { border-right: none; border-bottom: 1px solid var(--line); }
+  .how-step { border-right: none; border-bottom: 1px solid var(--line-light); }
   .how-step:last-child { border-bottom: none; }
-  .p-card { border-right: none; border-bottom: 1px solid var(--line); }
+  .p-card { border-right: none; border-bottom: 1px solid var(--line-dark); }
   .p-card:last-child { border-bottom: none; }
-  .diff-inner { grid-template-columns: 1fr; gap: 48px; }
+  .diff-inner { grid-template-columns: 1fr; gap: 44px; }
   .diff-card { position: static; }
   .preview-body { grid-template-columns: 1fr; }
   .pv-sidebar { display: none; }
-  .hero-stats { flex-direction: column; gap: 0; }
-  .hero-stat { border-right: none; border-bottom: 1px solid var(--line); width: 100%; }
+  .founder-inner { grid-template-columns: 1fr; gap: 44px; }
+  .footer-top { grid-template-columns: 1fr 1fr; gap: 36px; }
+  .hero-stats { flex-direction: column; }
+  .hero-stat { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); width: 100%; }
   .hero-stat:last-child { border-bottom: none; }
-  .trust-bar-inner { flex-direction: column; align-items: flex-start; gap: 16px; }
-  .trust-bar-label { border-right: none; padding-right: 0; }
-  .trust-bar-laws { padding-left: 0; }
-  .trust-bar-stat { padding-left: 0; border-left: none; text-align: left; }
-  .founder-inner { grid-template-columns: 1fr; gap: 48px; }
-  .footer-top { grid-template-columns: 1fr 1fr; gap: 40px; }
 }
 @media (max-width: 600px) {
   .nav-inner { padding: 0 20px; }
-  .hero { padding: 110px 20px 60px; }
+  .hero { padding: 100px 20px 60px; }
   .trust-bar, .preview-section, .demo-section, .features, .how, .difference, .founder, .pricing, .cta-section { padding-left: 20px; padding-right: 20px; }
-  .features, .how, .difference, .founder, .pricing, .cta-section { padding-top: 80px; padding-bottom: 80px; }
-  .demo-section { padding-top: 60px; padding-bottom: 60px; }
+  .features, .how, .difference, .founder, .pricing, .cta-section { padding-top: 72px; padding-bottom: 72px; }
   .hero-cta-row { flex-direction: column; align-items: stretch; text-align: center; }
-  .btn-gold, .btn-ghost { justify-content: center; }
-  .hero-stats { width: 100%; }
-  .hero-stat { padding: 16px 20px; }
-  .footer-top { grid-template-columns: 1fr; gap: 32px; }
-  footer { padding: 40px 20px 32px; }
+  .btn-primary, .btn-ghost-dark { justify-content: center; }
+  .trust-bar-inner { flex-direction: column; align-items: flex-start; gap: 14px; }
+  .trust-bar-label { border-right: none; padding-right: 0; }
+  .trust-bar-laws { padding-left: 0; }
+  .footer-top { grid-template-columns: 1fr; gap: 28px; }
+  footer { padding: 40px 20px 28px; }
   .demo-suggestions { flex-direction: column; }
 }
 </style>
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
   <div class="nav-inner">
     <a href="/" class="nav-logo">
@@ -342,7 +357,7 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 6
       <a href="#fark" class="nav-link">Neden Legatis</a>
       <a href="#fiyatlar" class="nav-link">Fiyatlar</a>
     </div>
-    <div class="nav-right">
+    <div style="display:flex;align-items:center;gap:12px;">
       <a href="/app" class="nav-cta">Şimdi Dene →</a>
       <button class="hamburger" onclick="openDrawer()">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
@@ -351,7 +366,6 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 6
   </div>
 </nav>
 
-<!-- MOBİL DRAWER -->
 <div class="mobile-drawer" id="drawer">
   <div class="drawer-overlay" onclick="closeDrawer()"></div>
   <div class="drawer-panel">
@@ -375,19 +389,19 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 6
   </h1>
   <p class="hero-desc">Legatis Tax, vergi sorularınızı mevzuata dayalı, mükellef odaklı yorumla yanıtlar. Haklarınızı, avantajlarınızı ve risklerinizi — anında.</p>
   <div class="hero-cta-row">
-    <a href="/app" class="btn-gold">
+    <a href="/app" class="btn-primary">
       Şimdi Soru Sor — Ücretsiz
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </a>
-    <a href="#demo" class="btn-ghost">Canlı Demo Gör</a>
+    <a href="#demo" class="btn-ghost-dark">Canlı Demo Gör</a>
   </div>
   <div class="hero-stats">
     <div class="hero-stat">
-      <div class="hero-stat-num" data-count="14" data-suffix="+">0</div>
-      <div class="hero-stat-label">Vergi Kanunu</div>
+      <div class="hero-stat-num" data-count="48" data-suffix="+">0</div>
+      <div class="hero-stat-label">Kanun & Tebliğ</div>
     </div>
     <div class="hero-stat">
-      <div class="hero-stat-num" data-count="7000" data-suffix="+">0</div>
+      <div class="hero-stat-num" data-count="35000" data-suffix="+">0</div>
       <div class="hero-stat-label">Mevzuat Bölümü</div>
     </div>
     <div class="hero-stat">
@@ -395,7 +409,7 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 6
       <div class="hero-stat-label">Kesintisiz Erişim</div>
     </div>
     <div class="hero-stat">
-      <div class="hero-stat-num" style="font-size:22px;letter-spacing:-0.01em;">Ücretsiz</div>
+      <div class="hero-stat-num" style="font-size:20px;letter-spacing:-0.01em;">Ücretsiz</div>
       <div class="hero-stat-label">Başlangıç</div>
     </div>
   </div>
@@ -412,15 +426,13 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 6
       <span class="trust-law">VUK</span>
       <span class="trust-law">TTK</span>
       <span class="trust-law">ÖTV Kanunu</span>
-      <span class="trust-law">SGK Mevzuatı</span>
+      <span class="trust-law">Amme Alacakları</span>
       <span class="trust-law">AR-GE Teşvikleri</span>
-      <span class="trust-law">İndirimli Kurumlar Vergisi</span>
-      <span class="trust-law">Serbest Bölge Mevzuatı</span>
+      <span class="trust-law">Damga Vergisi</span>
+      <span class="trust-law">Harçlar Kanunu</span>
+      <span class="trust-law">Serbest Bölgeler</span>
+      <span class="trust-law">İYUK</span>
       <span class="trust-law">+ Daha Fazlası</span>
-    </div>
-    <div class="trust-bar-stat">
-      <div class="trust-bar-stat-num" data-count="1200" data-suffix="+">1.200+</div>
-      <div class="trust-bar-stat-label">Yanıtlanan Soru</div>
     </div>
   </div>
 </div>
@@ -432,19 +444,18 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 6
       <div class="pd" style="background:#FF5F57"></div>
       <div class="pd" style="background:#FFBD2E"></div>
       <div class="pd" style="background:#28C840"></div>
-      <div class="preview-url">legatis-tax.app — Vergi Danışmanlık Asistanı</div>
+      <div class="preview-url">legatis-tax-production-142c.up.railway.app/app</div>
     </div>
     <div class="preview-body">
       <div class="pv-sidebar">
         <div class="pv-logo">Legatis Tax<div class="pv-logo-dot"></div></div>
         <div class="pv-sub">Vergi Danışmanlık</div>
-        <div class="pv-label">Kategoriler</div>
-        <div class="pv-item a">Tüm Sorular</div>
-        <div class="pv-item">KDV</div>
-        <div class="pv-item">Kurumlar Vergisi</div>
-        <div class="pv-item">Gelir Vergisi</div>
-        <div class="pv-item">Teşvik & Avantajlar</div>
-        <div class="pv-item">Belge Analizi</div>
+        <div class="pv-label">Ana Menü</div>
+        <div class="pv-item a">Soru Sor</div>
+        <div class="pv-item">Belge & Mizan Analizi</div>
+        <div class="pv-label">Hızlı Erişim</div>
+        <div class="pv-item">Sık Sorulanlar</div>
+        <div class="pv-item">Son Gelişmeler</div>
       </div>
       <div class="pv-main">
         <div class="pv-emblem">L</div>
@@ -454,7 +465,7 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 6
           <div class="pv-card"><div class="pv-card-t">Vergi yükümü nasıl azaltırım?</div><div class="pv-card-d">Yasal optimizasyon yolları</div></div>
           <div class="pv-card"><div class="pv-card-t">Vergi incelemesine hazırlık</div><div class="pv-card-d">Riskler ve stratejiler</div></div>
           <div class="pv-card"><div class="pv-card-t">Şirket ortaklık işlemleri</div><div class="pv-card-d">Kâr dağıtımı ve vergi</div></div>
-          <div class="pv-card"><div class="pv-card-t">Belge analizi yap</div><div class="pv-card-d">PDF ve görsel yükle</div></div>
+          <div class="pv-card"><div class="pv-card-t">Belge analizi yap</div><div class="pv-card-d">PDF ve Excel yükle</div></div>
         </div>
       </div>
     </div>
@@ -465,9 +476,9 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 6
 <section class="demo-section" id="demo">
   <div class="demo-inner">
     <div class="demo-header reveal">
-      <span class="demo-kicker">Canlı Demo</span>
-      <h2 class="demo-title">Bir soru sorun,<br><em>farkı görün.</em></h2>
-      <p class="demo-subtitle">Şimdi gerçek bir vergi sorusu sorun — kayıt gerektirmez.</p>
+      <span class="kicker">Canlı Demo</span>
+      <h2 class="section-title-light">Bir soru sorun,<br><em>farkı görün.</em></h2>
+      <p style="font-size:14px;color:var(--text-mid-light);margin-top:10px;">Şimdi gerçek bir vergi sorusu sorun — kayıt gerektirmez.</p>
     </div>
     <div class="demo-box reveal reveal-delay-1">
       <div class="demo-box-bar">
@@ -484,7 +495,7 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 6
       <div class="demo-input-row">
         <input class="demo-input" id="demoInput" type="text" placeholder="Bir vergi sorusu yazın..." maxlength="300" onkeydown="if(event.key==='Enter')sendDemo()">
         <button class="demo-send" id="demoSendBtn" onclick="sendDemo()">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h12M8 2l6 6-6 6" stroke="#080808" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 8h12M8 2l6 6-6 6" stroke="#F2EEE4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
       </div>
     </div>
@@ -496,46 +507,46 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 6
 <section class="features" id="ozellikler">
   <div class="section-wrap">
     <div class="section-header reveal">
-      <span class="section-kicker">Özellikler</span>
-      <h2 class="section-title">Tek platformda<br><em>kapsamlı vergi danışmanlığı</em></h2>
+      <span class="kicker-dark">Özellikler</span>
+      <h2 class="section-title-dark">Tek platformda<br><em>kapsamlı vergi danışmanlığı</em></h2>
     </div>
     <div class="feat-grid">
       <div class="feat-card reveal reveal-delay-1">
         <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z"/></svg>
         <h3 class="feat-title">Mükellef Lehine Yorum</h3>
-        <p class="feat-desc">Aynı mevzuatın size en uygun yasal yorumunu bulur, haklarınızı ve avantajlarınızı açıkça gösteririz. Genel bir yanıt değil, durumunuza özel analiz.</p>
+        <p class="feat-desc">Aynı mevzuatın size en uygun yasal yorumunu bulur. Haklarınızı ve avantajlarınızı açıkça gösteririz.</p>
       </div>
       <div class="feat-card reveal reveal-delay-2">
-        <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        <h3 class="feat-title">Belge Analizi</h3>
-        <p class="feat-desc">VDK yazısı, sözleşme, fatura, beyanname — yükleyin. AI belgeyi mevzuat çerçevesinde analiz eder, risk ve avantajlarınızı somut olarak ortaya koyar.</p>
+        <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <h3 class="feat-title">Belge & Mizan Analizi</h3>
+        <p class="feat-desc">VDK yazısı, mizan, sözleşme, fatura, beyanname — yükleyin, AI mevzuat çerçevesinde analiz etsin.</p>
       </div>
       <div class="feat-card reveal reveal-delay-3">
         <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
-        <h3 class="feat-title">Her Yanıt Kanun Maddesinden</h3>
-        <p class="feat-desc">GVK, KVK, KDV, VUK, TTK, ÖTV, SGK, AR-GE ve 14'ten fazla kanun. Her yanıt kanun adı ve madde numarasıyla desteklenir — doğrulayabilirsiniz.</p>
+        <h3 class="feat-title">Kanun Maddesiyle Destekli</h3>
+        <p class="feat-desc">GVK, KVK, KDV, VUK, TTK ve 48'den fazla kanun. Her yanıt kanun adı ve madde numarasıyla desteklenir.</p>
       </div>
       <div class="feat-card reveal reveal-delay-1">
         <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-        <h3 class="feat-title">Kategorili Uzmanlık</h3>
-        <p class="feat-desc">KDV, Kurumlar Vergisi, Gelir Vergisi, Teşvik & Avantajlar, Vergi İncelemeleri — her konu için özelleştirilmiş derin analiz, genel bir chatbot değil.</p>
+        <h3 class="feat-title">Kapsamlı Uzmanlık Alanları</h3>
+        <p class="feat-desc">KDV, Kurumlar Vergisi, Gelir Vergisi, Teşvik & Avantajlar, Vergi İncelemeleri — her konu için derinlemesine analiz.</p>
       </div>
       <div class="feat-card reveal reveal-delay-2">
         <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         <h3 class="feat-title">Anında Yanıt</h3>
-        <p class="feat-desc">Dakikalar değil, saniyeler. 7.000'den fazla mevzuat bölümü taranır, sorunuza özel analiz anında gelir. Teknik bilgiye gerek yok.</p>
+        <p class="feat-desc">35.000'den fazla mevzuat bölümü taranır, sorunuza özel analiz saniyeler içinde gelir.</p>
       </div>
       <div class="feat-card reveal reveal-delay-3">
         <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
         <h3 class="feat-title">Sohbet Geçmişi</h3>
-        <p class="feat-desc">Tüm danışmanlık oturumlarınız kayıtlı ve erişilebilir. Eski konularınıza geri dönün, süregelen durumları takip edin, sorularınızı derinleştirin.</p>
+        <p class="feat-desc">Tüm danışmanlık oturumlarınız kayıtlı ve erişilebilir. Eski konularınıza geri dönün, derinleştirin.</p>
       </div>
     </div>
     <div class="section-cta reveal">
       <span class="section-cta-text">Tüm özellikleri ücretsiz keşfedin</span>
       <a href="/app" class="section-cta-link">
         Uygulamayı aç
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </a>
     </div>
   </div>
@@ -545,91 +556,82 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 6
 <section class="how" id="nasil-calisir">
   <div class="section-wrap">
     <div class="section-header reveal">
-      <span class="section-kicker">Nasıl Çalışır</span>
-      <h2 class="section-title">3 adımda<br><em>uzman yanıt</em></h2>
+      <span class="kicker">Nasıl Çalışır</span>
+      <h2 class="section-title-light">3 adımda<br><em>uzman yanıt</em></h2>
     </div>
     <div class="how-grid">
       <div class="how-step reveal reveal-delay-1">
-        <span class="how-step-kicker">Adım 01</span>
+        <span class="how-step-num">Adım 01</span>
         <h3 class="how-step-title">Sorunuzu yazın veya belge yükleyin</h3>
-        <p class="how-step-desc">Vergi sorunuzu serbest dille anlatın ya da PDF, Word, Excel veya görsel olarak belgenizi yükleyin. Teknik bilgiye gerek yok.</p>
+        <p class="how-step-desc">Vergi sorunuzu serbest dille anlatın ya da PDF, Word, Excel veya mizan dosyanızı yükleyin. Teknik bilgiye gerek yok.</p>
       </div>
       <div class="how-step reveal reveal-delay-2">
-        <span class="how-step-kicker">Adım 02</span>
-        <h3 class="how-step-title">7.000+ mevzuat bölümü taranır</h3>
-        <p class="how-step-desc">Sorunuzla ilgili kanun maddeleri, tebliğler ve muktezalar anında taranır, eşleştirilir ve yorumlanır. Saniyeler içinde.</p>
+        <span class="how-step-num">Adım 02</span>
+        <h3 class="how-step-title">35.000+ mevzuat bölümü taranır</h3>
+        <p class="how-step-desc">Sorunuzla ilgili kanun maddeleri, tebliğler ve muktezalar anında taranır, eşleştirilir ve yorumlanır.</p>
       </div>
       <div class="how-step reveal reveal-delay-3">
-        <span class="how-step-kicker">Adım 03</span>
+        <span class="how-step-num">Adım 03</span>
         <h3 class="how-step-title">Mükellef lehine analiz gelir</h3>
         <p class="how-step-desc">Yasal alternatifler, vergisel etkiler, riskler ve önerilen adımlar — kanun maddesiyle desteklenerek, uygulanabilir biçimde.</p>
       </div>
-    </div>
-    <div class="section-cta reveal">
-      <span class="section-cta-text">Hemen bir soru sorun, farkı görün</span>
-      <a href="/app" class="section-cta-link">
-        Deneyin
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </a>
     </div>
   </div>
 </section>
 
 <!-- NEDEN LEGATİS -->
 <section class="difference" id="fark">
-  <div class="section-wrap">
-    <div class="diff-inner">
-      <div>
-        <div class="reveal">
-          <span class="section-kicker">Neden Legatis Tax</span>
-          <h2 class="section-title">Her an yanınızda olan,<br><em>deneyimli bir vergi<br>danışmanı.</em></h2>
+  <div class="diff-inner">
+    <div>
+      <div class="reveal">
+        <span class="kicker-dark">Neden Legatis Tax</span>
+        <h2 class="section-title-dark">Her an yanınızda olan,<br><em>deneyimli bir vergi danışmanı.</em></h2>
+      </div>
+      <div class="diff-list">
+        <div class="diff-item reveal reveal-delay-1">
+          <div class="diff-num">01</div>
+          <div>
+            <div class="diff-item-title">Açıkça sizin tarafınızdayız</div>
+            <p class="diff-item-desc">Genel AI araçları tarafsız yanıt verir. Legatis Tax mükellef odaklı yorumlar — aynı mevzuatın size en uygun yasal yorumunu gösterir.</p>
+          </div>
         </div>
-        <div class="diff-list">
-          <div class="diff-item reveal reveal-delay-1">
-            <div class="diff-num">01</div>
-            <div>
-              <div class="diff-item-title">Açıkça sizin tarafınızdayız</div>
-              <p class="diff-item-desc">Genel AI araçları tarafsız yanıt verir. Legatis Tax mükellef odaklı yorumlar — aynı mevzuatın size en uygun, yasal yorumunu gösterir.</p>
-            </div>
+        <div class="diff-item reveal reveal-delay-2">
+          <div class="diff-num">02</div>
+          <div>
+            <div class="diff-item-title">Kanun maddesi olmayan bilgi vermeyiz</div>
+            <p class="diff-item-desc">Her yanıtta hangi kanunun hangi maddesine dayandığı açıkça belirtilir. "Sanırım" değil, kaynağıyla.</p>
           </div>
-          <div class="diff-item reveal reveal-delay-2">
-            <div class="diff-num">02</div>
-            <div>
-              <div class="diff-item-title">Kanun maddesi olmayan bilgi vermeyiz</div>
-              <p class="diff-item-desc">Her yanıtta hangi kanunun hangi maddesine dayandığı açıkça belirtilir. "Sanırım bu şekilde" değil, "GVK Madde 89/1'e göre" — kaynağıyla.</p>
-            </div>
-          </div>
-          <div class="diff-item reveal reveal-delay-3">
-            <div class="diff-num">03</div>
-            <div>
-              <div class="diff-item-title">Denetim deneyimiyle şekillendirilmiş</div>
-              <p class="diff-item-desc">Platformun arkasında yıllarca vergi denetimi ve özel sektör danışmanlığı yapan Legatis Denetim Danışmanlık var. Bu birikim, platformun vergi sorularını nasıl ele aldığını şekillendirir.</p>
-            </div>
+        </div>
+        <div class="diff-item reveal reveal-delay-3">
+          <div class="diff-num">03</div>
+          <div>
+            <div class="diff-item-title">Denetim deneyimiyle şekillendirilmiş</div>
+            <p class="diff-item-desc">Platformun arkasında yıllarca vergi denetimi ve özel sektör danışmanlığı yapan Legatis Denetim Danışmanlık var.</p>
           </div>
         </div>
       </div>
-      <div class="diff-card reveal">
-        <div class="diff-card-kicker">Gerçek Örnek</div>
-        <div class="diff-card-title">Vergi incelemesine davet edildiniz. Ne yapmalısınız?</div>
-        <div class="diff-quote">"Sayın mükellef, aşağıda belirtilen konularda izahat vermenizi rica ederiz..."</div>
-        <div class="diff-rows">
-          <div class="diff-row"><span class="diff-row-arrow">→</span>Bu aşamada henüz resmi inceleme başlamış değil</div>
-          <div class="diff-row"><span class="diff-row-arrow">→</span>Yazılı izahat verme veya görüşmeye katılma hakkınız var</div>
-          <div class="diff-row"><span class="diff-row-arrow">→</span>Mali müşaviriniz sizin adınıza katılabilir (VUK Mad. 8)</div>
-          <div class="diff-row"><span class="diff-row-arrow">→</span>Yanıt süresi ve dikkat edilmesi gerekenler analiz edilir</div>
-        </div>
+    </div>
+    <div class="diff-card reveal">
+      <div class="diff-card-kicker">Gerçek Örnek</div>
+      <div class="diff-card-title">Vergi incelemesine davet edildiniz. Ne yapmalısınız?</div>
+      <div class="diff-quote">"Sayın mükellef, aşağıda belirtilen konularda izahat vermenizi rica ederiz..."</div>
+      <div class="diff-rows">
+        <div class="diff-row"><span class="diff-row-arrow">→</span>Bu aşamada henüz resmi inceleme başlamış değil</div>
+        <div class="diff-row"><span class="diff-row-arrow">→</span>Yazılı izahat verme veya görüşmeye katılma hakkınız var</div>
+        <div class="diff-row"><span class="diff-row-arrow">→</span>Mali müşaviriniz sizin adınıza katılabilir (VUK Mad. 8)</div>
+        <div class="diff-row"><span class="diff-row-arrow">→</span>Yanıt süresi ve dikkat edilmesi gerekenler analiz edilir</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- FOUNDER / EKİP -->
+<!-- KURUCU -->
 <section class="founder" id="ekip">
   <div class="section-wrap">
     <div class="founder-inner">
       <div class="reveal">
         <span class="founder-kicker">Arkamızdaki Ekip</span>
-        <h2 class="founder-title">Uzmanlık birikimini<br>teknolojiyle<br><em>buluşturduk.</em></h2>
+        <h2 class="founder-title">Uzmanlık birikimini<br>teknolojiyle <em>buluşturduk.</em></h2>
         <p class="founder-desc">Legatis Tax, bir teknoloji girişimi ile köklü bir vergi danışmanlık firmasının birleşiminden doğdu. Yapay zekanın gücünü, yıllarca VDK denetimlerinde ve özel sektörde birikmiş vergi uzmanlığıyla birleştiriyoruz.</p>
         <div class="founder-credentials">
           <div class="founder-cred"><div class="founder-cred-dot"></div><div class="founder-cred-text">Legatis Denetim Danışmanlık — Kurumsal vergi danışmanlığı ve denetim deneyimi</div></div>
@@ -638,17 +640,15 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 6
         </div>
       </div>
       <div class="reveal reveal-delay-2">
-        <div class="founder-cards">
-          <div class="founder-card">
-            <div class="founder-avatar"><div class="founder-avatar-placeholder">L</div></div>
-            <div class="founder-info">
-              <div class="founder-name">Yakında</div>
-              <div class="founder-role">Kurucu / Vergi Danışmanı</div>
-              <div class="founder-bio">Ekip tanıtımı yakında paylaşılacak.</div>
-            </div>
+        <div class="founder-card">
+          <div class="founder-avatar"><div class="founder-avatar-placeholder">L</div></div>
+          <div>
+            <div class="founder-name">Yakında</div>
+            <div class="founder-role">Kurucu / Vergi Danışmanı</div>
+            <div class="founder-bio">Ekip tanıtımı yakında paylaşılacak.</div>
           </div>
         </div>
-        <p class="founder-coming-soon">Ekip profilleri piyasaya çıkış öncesinde tamamlanacak</p>
+        <p class="founder-coming">Ekip profilleri piyasaya çıkış öncesinde tamamlanacak</p>
       </div>
     </div>
   </div>
@@ -658,8 +658,8 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 6
 <section class="pricing" id="fiyatlar">
   <div class="section-wrap">
     <div class="section-header reveal">
-      <span class="section-kicker">Erişim Planları</span>
-      <h2 class="section-title">Şeffaf,<br><em>erişilebilir fiyatlandırma</em></h2>
+      <span class="kicker-dark">Erişim Planları</span>
+      <h2 class="section-title-dark">Şeffaf,<br><em>erişilebilir fiyatlandırma</em></h2>
       <p class="pricing-sub">Dilediğiniz zaman iptal. İlk gün ücretsiz başlayın.</p>
     </div>
     <div class="pricing-grid">
@@ -672,7 +672,7 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 6
           <div class="p-feat"><span class="p-feat-check">✓</span>Tüm vergi kategorileri</div>
           <div class="p-feat"><span class="p-feat-check">✓</span>Kanun maddesi referansları</div>
           <div class="p-feat"><span class="p-feat-check">✓</span>Sohbet geçmişi</div>
-          <div class="p-feat off"><span class="p-feat-check">—</span>Belge analizi</div>
+          <div class="p-feat off"><span class="p-feat-check">—</span>Belge & mizan analizi</div>
           <div class="p-feat off"><span class="p-feat-check">—</span>PDF rapor indirme</div>
           <div class="p-feat off"><span class="p-feat-check">—</span>Sınırsız soru</div>
         </div>
@@ -685,14 +685,14 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 6
         <div class="p-period">/ ay · istediğiniz zaman iptal</div>
         <div class="p-features">
           <div class="p-feat"><span class="p-feat-check">✓</span>Sınırsız soru</div>
-          <div class="p-feat"><span class="p-feat-check">✓</span>Belge analizi (PDF, Word, Excel, görsel)</div>
+          <div class="p-feat"><span class="p-feat-check">✓</span>Belge & mizan analizi (PDF, Excel, görsel)</div>
           <div class="p-feat"><span class="p-feat-check">✓</span>PDF rapor indirme</div>
           <div class="p-feat"><span class="p-feat-check">✓</span>Tüm vergi kategorileri</div>
           <div class="p-feat"><span class="p-feat-check">✓</span>Kanun maddesi referansları</div>
           <div class="p-feat"><span class="p-feat-check">✓</span>Sohbet geçmişi</div>
           <div class="p-feat"><span class="p-feat-check">✓</span>Yeni özellik öncelikli erişim</div>
         </div>
-        <a href="https://legatis-tax.lemonsqueezy.com/checkout/buy/49780de3-18e9-465b-ae4d-1f6df068b838" target="_blank" class="p-btn p-btn-gold">Profesyonel'e Geç</a>
+        <a href="https://legatis-tax.lemonsqueezy.com/checkout/buy/49780de3-18e9-465b-ae4d-1f6df068b838" target="_blank" class="p-btn p-btn-primary">Profesyonel'e Geç</a>
       </div>
       <div class="p-card reveal reveal-delay-3">
         <div class="p-plan">Kurumsal</div>
@@ -703,7 +703,6 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 6
           <div class="p-feat"><span class="p-feat-check">✓</span>Çoklu kullanıcı erişimi</div>
           <div class="p-feat"><span class="p-feat-check">✓</span>Firma bazlı özelleştirme</div>
           <div class="p-feat"><span class="p-feat-check">✓</span>Öncelikli destek hattı</div>
-          <div class="p-feat"><span class="p-feat-check">✓</span>Özel sistem entegrasyonu</div>
           <div class="p-feat"><span class="p-feat-check">✓</span>SLA garantisi</div>
         </div>
         <a href="https://wa.me/905304145946?text=Kurumsal%20plan%20hakkında%20bilgi%20almak%20istiyorum" target="_blank" class="p-btn p-btn-ent">WhatsApp ile Görüşün →</a>
@@ -718,9 +717,9 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 6
     <div class="cta-emblem">L</div>
     <h2 class="cta-title">Vergi sorularınız için<br><em>7/24 uzman danışmanlık.</em></h2>
     <p class="cta-desc">İlk sorunuzu şimdi sorun.</p>
-    <a href="/app" class="btn-gold">
+    <a href="/app" class="btn-primary-light">
       Şimdi Ücretsiz Başlayın
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </a>
     <div class="cta-note">Ücretsiz plan · İstediğiniz zaman iptal</div>
   </div>
@@ -729,24 +728,24 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 6
 <!-- FOOTER -->
 <footer>
   <div class="footer-top">
-    <div class="footer-brand">
+    <div>
       <div class="footer-logo-row">
         <span class="footer-logo-text">Legatis Tax</span>
         <div class="footer-logo-dot"></div>
       </div>
       <p class="footer-brand-desc">Türkiye'nin ilk mükellef taraflı yapay zeka vergi danışmanı. Legatis Denetim Danışmanlık tarafından desteklenmektedir.</p>
       <p class="footer-address">Legatis Denetim Danışmanlık A.Ş.<br>İstanbul, Türkiye</p>
-      <div class="footer-trust-badges" style="margin-top:16px;">
+      <div class="footer-badges">
         <span class="footer-badge">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           SSL Şifrelemeli
         </span>
         <span class="footer-badge">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
           KVKK Uyumlu
         </span>
         <span class="footer-badge">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           7/24 Erişim
         </span>
       </div>
@@ -792,19 +791,15 @@ footer { background: var(--black); border-top: 1px solid var(--line); padding: 6
 </footer>
 
 <script>
-// Drawer
 function openDrawer() { document.getElementById('drawer').classList.add('open'); }
 function closeDrawer() { document.getElementById('drawer').classList.remove('open'); }
 
-// Scroll reveal
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
 }, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-// Sayaç animasyonu
 function animateCount(el) {
-  if (el.dataset.zero === 'true') return;
   const target = parseInt(el.dataset.count);
   const suffix = el.dataset.suffix || '';
   const duration = 1600;
@@ -824,14 +819,11 @@ const countObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.5 });
 countEls.forEach(el => countObserver.observe(el));
 
-// CANLI DEMO
-const FLOWISE_API = 'https://flowiseai-railway-production-c71e.up.railway.app/api/v1/prediction/eeed0f20-21f3-47dd-b931-2a344293c5be';
 let demoSessionId = 'demo_' + Math.random().toString(36).substr(2, 9);
 let demoLoading = false;
 
 function sendDemoQ(btn) {
-  const q = btn.textContent;
-  document.getElementById('demoInput').value = q;
+  document.getElementById('demoInput').value = btn.textContent;
   document.getElementById('demoSuggestions').style.display = 'none';
   sendDemo();
 }
@@ -845,66 +837,36 @@ function sendDemo() {
   demoLoading = true;
   document.getElementById('demoSendBtn').disabled = true;
   document.getElementById('demoSuggestions').style.display = 'none';
-
   const msgs = document.getElementById('demoMessages');
-
-  // Kullanıcı mesajı
-  msgs.innerHTML += `
-    <div class="demo-msg demo-msg-user">
-      <div class="demo-msg-avatar demo-msg-avatar-user">S</div>
-      <div class="demo-msg-bubble"><div class="demo-msg-bubble-user">${escHtml(q)}</div></div>
-    </div>`;
-
-  // Typing
+  msgs.innerHTML += `<div class="demo-msg demo-msg-user"><div class="demo-msg-avatar demo-msg-avatar-user">S</div><div class="demo-msg-bubble"><div class="demo-msg-bubble-user">${escHtml(q)}</div></div></div>`;
   const typingId = 'typing_' + Date.now();
-  msgs.innerHTML += `
-    <div class="demo-msg" id="${typingId}">
-      <div class="demo-msg-avatar demo-msg-avatar-ai">L</div>
-      <div class="demo-msg-bubble"><div class="demo-msg-bubble-ai"><div class="demo-typing"><span></span><span></span><span></span></div></div></div>
-    </div>`;
+  msgs.innerHTML += `<div class="demo-msg" id="${typingId}"><div class="demo-msg-avatar demo-msg-avatar-ai">L</div><div class="demo-msg-bubble"><div class="demo-msg-bubble-ai"><div class="demo-typing"><span></span><span></span><span></span></div></div></div></div>`;
   msgs.scrollTop = msgs.scrollHeight;
-
-  fetch(FLOWISE_API, {
+  fetch('/api/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ question: q, sessionId: demoSessionId })
   })
   .then(r => r.json())
   .then(data => {
-    const answer = data.text || data.answer || (data.choices && data.choices[0]?.message?.content) || 'Yanıt alınamadı.';
-    const typing = document.getElementById(typingId);
-    if (typing) typing.remove();
-    msgs.innerHTML += `
-      <div class="demo-msg">
-        <div class="demo-msg-avatar demo-msg-avatar-ai">L</div>
-        <div class="demo-msg-bubble"><div class="demo-msg-bubble-ai">${formatAnswer(answer)}</div></div>
-      </div>`;
+    const answer = data.text || 'Yanıt alınamadı.';
+    const el = document.getElementById(typingId);
+    if (el) el.remove();
+    msgs.innerHTML += `<div class="demo-msg"><div class="demo-msg-avatar demo-msg-avatar-ai">L</div><div class="demo-msg-bubble"><div class="demo-msg-bubble-ai">${formatAnswer(answer)}</div></div></div>`;
     msgs.scrollTop = msgs.scrollHeight;
   })
   .catch(() => {
-    const typing = document.getElementById(typingId);
-    if (typing) typing.remove();
-    msgs.innerHTML += `
-      <div class="demo-msg">
-        <div class="demo-msg-avatar demo-msg-avatar-ai">L</div>
-        <div class="demo-msg-bubble"><div class="demo-msg-bubble-ai">Bağlantı hatası oluştu. Lütfen tekrar deneyin veya <a href="/app" style="color:var(--gold)">uygulamayı açın</a>.</div></div>
-      </div>`;
+    const el = document.getElementById(typingId);
+    if (el) el.remove();
+    msgs.innerHTML += `<div class="demo-msg"><div class="demo-msg-avatar demo-msg-avatar-ai">L</div><div class="demo-msg-bubble"><div class="demo-msg-bubble-ai">Bağlantı hatası. <a href="/app" style="color:var(--text-light);text-decoration:underline;">Uygulamayı açın →</a></div></div></div>`;
     msgs.scrollTop = msgs.scrollHeight;
   })
-  .finally(() => {
-    demoLoading = false;
-    document.getElementById('demoSendBtn').disabled = false;
-  });
+  .finally(() => { demoLoading = false; document.getElementById('demoSendBtn').disabled = false; });
 }
 
-function escHtml(t) {
-  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
+function escHtml(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function formatAnswer(text) {
-  // Kalın metinler (**text**)
   text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-  // Satır sonları
   text = text.replace(/\n/g, '<br>');
   return text;
 }
